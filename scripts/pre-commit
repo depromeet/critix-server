@@ -2,10 +2,8 @@
 
 PROJECT_ROOT=$(git rev-parse --show-toplevel)
 
-# part1
 stagedFiles=$(git diff --staged --name-only)
 
-# part2
 echo "Running spotlessApply. Formatting code..."
 cd $PROJECT_ROOT && ./gradlew spotlessApply
 
@@ -14,7 +12,6 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# part3
 for file in $stagedFiles; do
   if test -f "$file"; then
     git add $file
