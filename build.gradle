@@ -44,3 +44,21 @@ spotless {
 	}
 }
 
+tasks.register("updateGitHooks", Copy) {
+	from(file("${rootProject.rootDir}/scripts/pre-commit"))
+	into(file("${rootProject.rootDir}/.git/hooks"))
+}
+
+tasks.register('makeGitHooksExecutable', Exec) {
+	if (System.getProperty("os.name").contains("Windows")) {
+		commandLine("attrib", "+x", "${rootProject.rootDir}/.git/hooks/pre-commit")
+	} else {
+		commandLine("chmod", "+x", "${rootProject.rootDir}/.git/hooks/pre-commit")
+	}
+	dependsOn("updateGitHooks")
+}
+
+tasks.withType(JavaCompile) {
+	dependsOn("makeGitHooksExecutable")
+}
+
