@@ -4,6 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'com.diffplug.spotless' version '6.20.0'
 	id 'jacoco'
+	id "org.sonarqube" version "6.0.1.5171"
 }
 
 group = 'depromeet'
@@ -120,6 +121,26 @@ jacocoTestReport {
 		)
 	}
 	finalizedBy jacocoTestCoverageVerification
+}
+
+
+
+sonar {
+	properties {
+		property "sonar.projectKey", "depromeet-onepiece_onepiece"
+		property "sonar.organization", "depromeet-onepiece"
+		property "sonar.host.url", "https://sonarcloud.io"
+		// 자코코 결과 리포트 주소
+		property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/index.xml'
+		property 'sonar.sources', 'src'
+		property 'sonar.language', 'java'
+		property 'sonar.sourceEncoding', 'UTF-8'
+		// 테스트 커버리지에서 제외할 클래스
+		property 'sonar.exclusions', '**/test/**, **/resources/**, **/*Application*.java, **/*Controller*.java, **/*Config.java' +
+				'**/*Response.java, **/*Exception.java, **/security/**, **/support/**, **/Q*.java'
+		property 'sonar.test.inclusions', '**/*Test.java'
+		property 'sonar.java.coveragePlugin', 'jacoco'
+	}
 }
 
 tasks.register("updateGitHooks", Copy) {
