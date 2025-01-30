@@ -125,23 +125,20 @@ jacocoTestReport {
 
 
 
-sonar {
-	properties {
-		property "sonar.projectKey", "depromeet-onepiece_onepiece"
-		property "sonar.organization", "depromeet-onepiece"
-		property "sonar.host.url", "https://sonarcloud.io"
-		// 자코코 결과 리포트 주소
-		property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/index.xml'
-		property 'sonar.sources', 'src'
-		property 'sonar.language', 'java'
-		property 'sonar.sourceEncoding', 'UTF-8'
-		// 테스트 커버리지에서 제외할 클래스
-		property 'sonar.exclusions', '**/test/**, **/resources/**, **/*Application*.java, **/*Controller*.java, **/*Config.java' +
-				'**/*Response.java, **/*Exception.java, **/security/**, **/support/**, **/Q*.java'
-		property 'sonar.test.inclusions', '**/*Test.java'
-		property 'sonar.java.coveragePlugin', 'jacoco'
+allprojects {
+	apply plugin: "org.sonarqube"
+
+	sonarqube {
+		properties {
+			property "sonar.projectKey", "depromeet-onepiece_onepiece"
+			property "sonar.organization", "depromeet-onepiece"
+			property "sonar.host.url", "https://sonarcloud.io"
+			property "sonar.sources", "src"
+			property "sonar.java.coveragePlugin", "jacoco"
+		}
 	}
 }
+
 
 tasks.register("updateGitHooks", Copy) {
 	from(file("${rootProject.rootDir}/scripts/pre-commit"))
