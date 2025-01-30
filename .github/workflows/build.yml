@@ -25,6 +25,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
+      - name: Gradle Cache Reset
+        run: rm -rf ~/.gradle/caches
+
+
       - name: Check Available Gradle Tasks
         run: ./gradlew tasks --all
 
