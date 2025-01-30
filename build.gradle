@@ -130,7 +130,6 @@ sonar {
 		property "sonar.projectKey", "depromeet-onepiece_onepiece"
 		property "sonar.organization", "depromeet-onepiece"
 		property "sonar.host.url", "https://sonarcloud.io"
-		property "sonar.branch.name", "develop"
 		// 자코코 결과 리포트 주소
 		property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/index.xml'
 		property 'sonar.sources', 'src'
