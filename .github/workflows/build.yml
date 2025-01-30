@@ -3,18 +3,19 @@ on:
   pull_request:
     branches:
       - develop
+
 jobs:
-  test:
+  sonarcloud:
+    name: SonarCloud
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        java-version: [ 21 ]
+        java-version: [17]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          ref: develop
-          fetch-depth: 0
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -25,26 +26,20 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Gradle Cache Reset
-        run: rm -rf ~/.gradle/caches
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
-      - name: Check Available Gradle Tasks
-        run: ./gradlew tasks --all
-
-      - name: Verify Sonar Task Exists
-        run: |
-          if ! ./gradlew tasks --all | grep -q "sonar"; then
-            echo "❌ ERROR: 'sonar' task not found! Check build.gradle settings."
-            exit 1
-          else
-            echo "✅ 'sonar' task found!"
-          fi
-
-      - name: Gradle Build
-        run: ./gradlew build
-
-      - name: SonarCloud Scan
+      - name: SonarCloud scan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
