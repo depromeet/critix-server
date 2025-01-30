@@ -16,6 +16,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0   # ✅ 전체 Git 히스토리를 가져오기 (Shallow Clone 비활성화)
+
+      - name: Fetch all branches
+        run: git fetch --unshallow   # ✅ shallow clone을 해제하고 전체 브랜치 가져오기
+
+      - name: Show Git Branches
+        run: git branch -a           # ✅ 모든 브랜치가 정상적으로 가져와졌는지 확인
 
       - name: Set up Java
         uses: actions/setup-java@v3
