@@ -1,0 +1,19 @@
+#!/bin/sh
+
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+
+stagedFiles=$(git diff --staged --name-only)
+
+echo "Running spotlessApply. Formatting code..."
+cd $PROJECT_ROOT && ./gradlew spotlessApply
+
+if [ $? -ne 0 ]; then
+  echo "Spotless apply failed!"
+  exit 1
+fi
+
+for file in $stagedFiles; do
+  if test -f "$file"; then
+    git add $file
+  fi
+done
