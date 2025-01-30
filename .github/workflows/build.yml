@@ -25,12 +25,17 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+      - name: Check Available Gradle Tasks
+        run: ./gradlew tasks --all
+
+      - name: Verify Sonar Task Exists
+        run: |
+          if ! ./gradlew tasks --all | grep -q "sonar"; then
+            echo "❌ ERROR: 'sonar' task not found! Check build.gradle settings."
+            exit 1
+          else
+            echo "✅ 'sonar' task found!"
+          fi
 
       - name: Gradle Build
         run: ./gradlew build
