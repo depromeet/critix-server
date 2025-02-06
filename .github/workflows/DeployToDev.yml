@@ -1,7 +1,6 @@
 name: Deploy to Development Server
 
 on:
-  pull_request:
   workflow_dispatch:
   push:
     branches:
