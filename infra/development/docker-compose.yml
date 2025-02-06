@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  onepiece-api:
+    image: ${DOCKER_USERNAME}/onepiece-api:latest
+    container_name: onepiece-api
+    ports:
+      - "${DOCKER_ONEPIECE_API_PORT}:8080"
+    env_file:
+      - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - onepiece-network
+
+networks:
+  onepiece-network:
+    driver: bridge
