@@ -74,5 +74,5 @@ jobs:
           password: ${{ secrets.NCP_SERVER_PASSWORD }}
           port: ${{ secrets.NCP_SERVER_PORT }}
           script: |
-            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }} pull
-            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }} --env-file ${{ secrets.ENV_FILE_PATH }} up -d
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/docker-compose.yml pull
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/docker-compose.yml --env-file ${{ secrets.ENV_FILE_PATH }} up -d
