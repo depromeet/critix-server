@@ -1,8 +1,10 @@
 name: "[Feat] 구현할 내용"
-about: "Suggest an idea for this project"
-title: ""
-labels: ""
-assignees: ""
+title: "Feature Implementation Suggestion"
+labels:
+  - ""
+assignees:
+  - ""
+  
 
 ---
 
