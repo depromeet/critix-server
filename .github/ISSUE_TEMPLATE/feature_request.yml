@@ -1,17 +1,18 @@
 name: "[Feat] 구현할 내용"
-title: "Feature Implementation Suggestion"
-labels:
-  - ""
-assignees:
-  - ""
-  
----
+description: "Feature Implementation Suggestion"
+labels: []
+assignees: []
 
-## ✨ 이슈 내용
-> 여기에 이슈에 대한 설명을 작성하세요.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ✨ 이슈 내용
+        여기에 이슈에 대한 설명을 작성하세요.
 
-## 💡 작업 내용
-- [ ]
-- [ ]
+        ## 💡 작업 내용
+        - [ ] 작업 1
+        - [ ] 작업 2
 
-## 📌 참고 사항
+        ## 📌 참고 사항
+        추가적인 참고 사항을 입력하세요.
