@@ -76,7 +76,7 @@ public class CustomResponse<T> {
   // GlobalControllerAdvice에서 오류 설정
   private CustomResponse(GlobalErrorCode errorCode, String message) {
     Objects.requireNonNull(errorCode, "Result must not be null");
-    Objects.requireNonNull(message, "Message must not be nulle");
+    Objects.requireNonNull(message, "Message must not be null");
 
     this.status = errorCode.getStatus();
     this.message = message;

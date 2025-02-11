@@ -35,24 +35,25 @@ public class GlobalControllerAdvice {
   /** 변수 Binding시 발생하는 오류 */
   @ExceptionHandler(BindException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<CustomResponse<Void>> invalidArgumentBindResponse(BindException e) {
+  public ResponseEntity<CustomResponse<Void>> invalidArgumentBindResponse(BindException exception) {
     log.error(
         "Exception : {}, 입력값 : {}",
-        e.getBindingResult().getFieldError(),
-        e.getBindingResult().getFieldError());
+        exception.getBindingResult().getFieldError(),
+        exception.getBindingResult().getFieldError());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(
             CustomResponse.error(
                 GlobalErrorCode.VALID_EXCEPTION,
-                Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage()));
+                Objects.requireNonNull(exception.getBindingResult().getFieldError())
+                    .getDefaultMessage()));
   }
 
   /** 지원하지 않은 HTTP method 호출 할 경우 발생 */
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
   protected ResponseEntity<CustomResponse<Void>> handleHttpRequestMethodNotSupportedException(
-      HttpRequestMethodNotSupportedException e) {
-    log.error("handleHttpRequestMethodNotSupportedException", e);
+      HttpRequestMethodNotSupportedException exception) {
+    log.error("handleHttpRequestMethodNotSupportedException", exception);
 
     return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
         .body(CustomResponse.error(GlobalErrorCode.METHOD_NOT_ALLOWED));
@@ -61,8 +62,8 @@ public class GlobalControllerAdvice {
   @ExceptionHandler(AccessDeniedException.class)
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   protected ResponseEntity<CustomResponse<Void>> handleAccessDeniedException(
-      AccessDeniedException e) {
-    log.info("{}", e.getMessage());
+      AccessDeniedException exception) {
+    log.info("{}", exception.getMessage());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .body(CustomResponse.error(GlobalErrorCode.ACCESS_DENIED));
   }
@@ -70,32 +71,32 @@ public class GlobalControllerAdvice {
   /**
    * 프로젝트내 설정한 예외가 발생할때 처리하는 부분
    *
-   * @param e 발생한 예외
+   * @param exception 발생한 예외
    * @return 예외를 처리해서 반환한다.
    */
   @ExceptionHandler(GlobalException.class)
   protected ResponseEntity<CustomResponse<Void>> handleGlobalBaseException(
-      final GlobalException e) {
+      final GlobalException exception) {
     log.error(
         "{} Exception {}: {}",
-        e.getErrorCode(),
-        e.getErrorCode().getCode(),
-        e.getErrorCode().getMessage());
+        exception.getErrorCode(),
+        exception.getErrorCode().getCode(),
+        exception.getErrorCode().getMessage());
 
-    return ResponseEntity.status(e.getErrorCode().getStatus())
-        .body(CustomResponse.error(e.getErrorCode(), e.getMessage()));
+    return ResponseEntity.status(exception.getErrorCode().getStatus())
+        .body(CustomResponse.error(exception.getErrorCode(), exception.getMessage()));
   }
 
   /**
    * 처리되지 않은 에러를 여기서 처리 한다.
    *
-   * @param e 발생한 에러
+   * @param exception 발생한 에러
    * @return CustomResponse로 메시지를 감춰서 반환한다.
    */
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected ResponseEntity<CustomResponse<Void>> handleException(Exception e) {
-    log.error("Exception : {}", GlobalErrorCode.OTHER.getMessage(), e);
+  protected ResponseEntity<CustomResponse<Void>> handleException(Exception exception) {
+    log.error("Exception : {}", GlobalErrorCode.OTHER.getMessage(), exception);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(CustomResponse.error(GlobalErrorCode.OTHER));
   }
