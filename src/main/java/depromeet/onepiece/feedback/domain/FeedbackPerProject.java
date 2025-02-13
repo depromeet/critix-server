@@ -1,7 +1,12 @@
 package depromeet.onepiece.feedback.domain;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FeedbackPerProject {
 
   // 전체 프로젝트 평가
