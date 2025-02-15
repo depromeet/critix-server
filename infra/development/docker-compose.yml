@@ -13,7 +13,7 @@ services:
     networks:
       - onepiece-network
   mongo1:
-    image: mongo:latest
+    image: mongo:8
     container_name: mongo1
     ports:
       - "27017:27017"
@@ -24,7 +24,7 @@ services:
       - onepiece-network
 
   mongo2:
-    image: mongo:latest
+    image: mongo:8
     container_name: mongo2
     ports:
       - "27018:27017"
@@ -34,7 +34,7 @@ services:
     networks:
       - onepiece-network
   mongo3:
-    image: mongo:latest
+    image: mongo:8
     container_name: mongo3
     ports:
       - "27019:27017"
