@@ -19,13 +19,13 @@ public class FeedbackCommandController {
   private final FeedbackCommandService portfolioCommandService;
 
   @Operation(summary = "포트폴리오 종합평가 반환", description = "종합평가를 반환하는 API")
-  @GetMapping("/")
+  @GetMapping("/overall")
   public OverallFeedbackResponseDto overallFeedback(@RequestParam String portfolioId) {
     return portfolioCommandService.overallFeedback(portfolioId);
   }
 
   @Operation(summary = "포트폴리오 프로젝트 별 피드백 반환", description = "프로젝트 별 피드백을 반환하는 API")
-  @GetMapping("/")
+  @GetMapping("/project")
   public ProjectFeedbackResponseDto projectFeedback(@RequestParam String portfolioId) {
     return portfolioCommandService.projectFeedback(portfolioId);
   }
