@@ -3,7 +3,7 @@ package depromeet.onepiece.feedback.command.presentation.request;
 import java.util.List;
 import java.util.Map;
 
-public record ChatGPTRequestDto(
+public record ChatGPTRequest(
     String model,
     List<Message> messages,
     ResponseFormat response_format,

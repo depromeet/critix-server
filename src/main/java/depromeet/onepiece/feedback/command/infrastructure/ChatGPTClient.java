@@ -1,7 +1,7 @@
 package depromeet.onepiece.feedback.command.infrastructure;
 
-import depromeet.onepiece.feedback.command.presentation.request.ChatGPTRequestDto;
-import depromeet.onepiece.feedback.command.presentation.response.ChatGPTResponseDto;
+import depromeet.onepiece.feedback.command.presentation.request.ChatGPTRequest;
+import depromeet.onepiece.feedback.command.presentation.response.ChatGPTResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -13,7 +13,7 @@ public class ChatGPTClient {
   private static final String API_URL = ChatGPTConstants.API_URL;
   private final ChatGPTProperties chatGPTProperties;
 
-  public ChatGPTResponseDto sendMessage(ChatGPTRequestDto request) {
+  public ChatGPTResponse sendMessage(ChatGPTRequest request) {
     return restClient
         .post()
         .uri(API_URL)
@@ -21,6 +21,6 @@ public class ChatGPTClient {
         .header("Content-Type", "application/json")
         .body(request)
         .retrieve()
-        .body(ChatGPTResponseDto.class);
+        .body(ChatGPTResponse.class);
   }
 }

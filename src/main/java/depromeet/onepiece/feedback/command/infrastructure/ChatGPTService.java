@@ -1,8 +1,8 @@
 package depromeet.onepiece.feedback.command.infrastructure;
 
-import depromeet.onepiece.feedback.command.presentation.request.ChatGPTRequestDto;
-import depromeet.onepiece.feedback.command.presentation.response.OverallFeedbackResponseDto;
-import depromeet.onepiece.feedback.command.presentation.response.ProjectFeedbackResponseDto;
+import depromeet.onepiece.feedback.command.presentation.request.ChatGPTRequest;
+import depromeet.onepiece.feedback.command.presentation.response.OverallFeedbackResponse;
+import depromeet.onepiece.feedback.command.presentation.response.ProjectFeedbackResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 public class ChatGPTService {
   private final ChatGPTClient chatGPTClient;
 
-  public OverallFeedbackResponseDto overallFeedback(ChatGPTRequestDto requestDto) {
-    ChatGPTRequestDto updatedRequest =
-        new ChatGPTRequestDto(
+  public OverallFeedbackResponse overallFeedback(ChatGPTRequest requestDto) {
+    ChatGPTRequest updatedRequest =
+        new ChatGPTRequest(
             requestDto.model(),
             requestDto.messages(),
             requestDto.response_format(),
@@ -25,9 +25,9 @@ public class ChatGPTService {
     return chatGPTClient.sendMessage(updatedRequest);
   }
 
-  public ProjectFeedbackResponseDto projectFeedback(ChatGPTRequestDto requestDto) {
-    ChatGPTRequestDto updatedRequest =
-        new ChatGPTRequestDto(
+  public ProjectFeedbackResponse projectFeedback(ChatGPTRequest requestDto) {
+    ChatGPTRequest updatedRequest =
+        new ChatGPTRequest(
             requestDto.model(),
             requestDto.messages(),
             requestDto.response_format(),

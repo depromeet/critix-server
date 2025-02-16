@@ -1,8 +1,8 @@
 package depromeet.onepiece.feedback.command.presentation;
 
 import depromeet.onepiece.feedback.command.application.FeedbackCommandService;
-import depromeet.onepiece.feedback.command.presentation.response.OverallFeedbackResponseDto;
-import depromeet.onepiece.feedback.command.presentation.response.ProjectFeedbackResponseDto;
+import depromeet.onepiece.feedback.command.presentation.response.OverallFeedbackResponse;
+import depromeet.onepiece.feedback.command.presentation.response.ProjectFeedbackResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,13 @@ public class FeedbackCommandController {
 
   @Operation(summary = "포트폴리오 종합평가 반환", description = "종합평가를 반환하는 API")
   @GetMapping("/overall")
-  public OverallFeedbackResponseDto overallFeedback(@RequestParam String portfolioId) {
+  public OverallFeedbackResponse overallFeedback(@RequestParam String portfolioId) {
     return portfolioCommandService.overallFeedback(portfolioId);
   }
 
   @Operation(summary = "포트폴리오 프로젝트 별 피드백 반환", description = "프로젝트 별 피드백을 반환하는 API")
   @GetMapping("/project")
-  public ProjectFeedbackResponseDto projectFeedback(@RequestParam String portfolioId) {
+  public ProjectFeedbackResponse projectFeedback(@RequestParam String portfolioId) {
     return portfolioCommandService.projectFeedback(portfolioId);
   }
 }
