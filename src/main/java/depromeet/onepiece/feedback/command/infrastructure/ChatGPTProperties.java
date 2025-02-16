@@ -1,4 +1,4 @@
-package depromeet.onepiece.portfolio.command.infrastructure;
+package depromeet.onepiece.feedback.command.infrastructure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
