@@ -12,7 +12,37 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     networks:
       - onepiece-network
+  mongo1:
+    image: mongo:8
+    container_name: mongo1
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo1data:/data/db
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+    networks:
+      - onepiece-network
 
+  mongo2:
+    image: mongo:8
+    container_name: mongo2
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./mongo2data:/data/db
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+    networks:
+      - onepiece-network
+  mongo3:
+    image: mongo:8
+    container_name: mongo3
+    ports:
+      - "27019:27017"
+    volumes:
+      - ./mongo3data:/data/db
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+    networks:
+      - onepiece-network
 networks:
   onepiece-network:
     driver: bridge
