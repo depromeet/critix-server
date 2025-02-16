@@ -18,7 +18,7 @@ public class FeedbackCommandService {
     // portfolioId로 포트폴리오 조회
     // 포트폴리오 이미지 추출
     // chatgptservice의 overallfeedback 포트폴리오 이미지 담아서 호출
-    ChatGPTRequest requestDto = new ChatGPTRequest();
+    ChatGPTRequest requestDto = createOverallFeedbackRequest(portfolioId);
     return chatGPTService.overallFeedback(requestDto);
   }
 
@@ -27,7 +27,7 @@ public class FeedbackCommandService {
     // portfolioId로 포트폴리오 조회
     // 포트폴리오 이미지 추출
     // chatgptservice의 projectfeedback 포트폴리오 이미지 담아서 호출
-    ChatGPTRequest requestDto = new ChatGPTRequest();
+    ChatGPTRequest requestDto = createProjectFeedbackRequest(portfolioId);
     return chatGPTService.projectFeedback(requestDto);
   }
 
