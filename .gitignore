@@ -1,0 +1,43 @@
+# Java 관련
+*.class
+*.war
+*.jar
+
+# IDE 설정 파일
+/.idea/
+/.vscode/
+/.project
+/.classpath
+/.settings/
+
+# OS 관련
+.DS_Store
+Thumbs.db
+
+# 환경 변수 및 보안 파일
+.env
+config/*.yml
+config/*.properties
+src/main/resources/application-*.yml
+src/main/resources/application-*.properties
+
+# 로그 및 빌드 파일
+/logs/
+*.log
+/build/
+/target/
+
+# Git 관련
+*.swp
+*.swo
+*.bak
+
+# IntelliJ 관련
+*.iml
+*.ipr
+*.iws
+
+# 기타
+*.~
+*.tmp
+*.backup
