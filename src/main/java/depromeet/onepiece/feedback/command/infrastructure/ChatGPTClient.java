@@ -1,7 +1,7 @@
-package depromeet.onepiece.portfolio.command.infrastructure;
+package depromeet.onepiece.feedback.command.infrastructure;
 
-import depromeet.onepiece.portfolio.command.presentation.response.ChatGPTRequestDto;
-import depromeet.onepiece.portfolio.command.presentation.response.ChatGPTResponseDto;
+import depromeet.onepiece.feedback.command.presentation.request.ChatGPTRequestDto;
+import depromeet.onepiece.feedback.command.presentation.response.ChatGPTResponseDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
