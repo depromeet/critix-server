@@ -1,22 +1,19 @@
 package depromeet.onepiece.common.config;
 
+import depromeet.onepiece.feedback.command.infrastructure.ChatGPTConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class RestClientConfig {
+  private static final String API_URL = ChatGPTConstants.API_URL;
 
   @Bean
   public RestClient restClient() {
-    HttpComponentsClientHttpRequestFactory requestFactory =
-        new HttpComponentsClientHttpRequestFactory();
-    requestFactory.setConnectTimeout(10000); // 10 seconds
-
-    RestTemplate restTemplate = new RestTemplate(requestFactory);
-
-    return RestClient.create(restTemplate);
+    return RestClient.builder()
+        .baseUrl(API_URL)
+        .defaultHeader("Content-Type", "application/json")
+        .build();
   }
 }
