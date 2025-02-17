@@ -23,14 +23,14 @@ public class Feedback {
   private ObjectId portfolioId;
 
   @Field("overall_evaluation")
-  private depromeet.onepiece.feedback.domain.OverallEvaluation overallEvaluation;
+  private OverallEvaluation overallEvaluation;
 
   @Field("feedback_per_page")
-  private List<depromeet.onepiece.feedback.domain.FeedbackPerPage> feedbackPerPage;
+  private List<FeedbackPerPage> feedbackPerPage;
 
   @Field("additional_chat")
-  private List<depromeet.onepiece.feedback.domain.AdditionalChat> additionalChat;
+  private List<AdditionalChat> additionalChat;
 
   @Field("feedback_per_project")
-  private List<depromeet.onepiece.feedback.domain.FeedbackPerProject> feedbackPerProjects;
+  private List<FeedbackPerProject> feedbackPerProjects;
 }

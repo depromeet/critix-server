@@ -23,5 +23,5 @@ public class OverallEvaluation {
   private String grade;
 
   @Field("evaluation_list")
-  private List<depromeet.onepiece.feedback.domain.EvaluationItem> evaluationItemList;
+  private List<EvaluationItem> evaluationItemList;
 }

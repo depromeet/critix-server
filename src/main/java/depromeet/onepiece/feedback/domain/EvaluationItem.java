@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class EvaluationItem {
 
   @Field("evaluation_type")
-  private depromeet.onepiece.feedback.domain.EvaluationType evaluationType;
+  private EvaluationType evaluationType;
 
   @Field("evaluation_content")
   private String evaluationContent;
