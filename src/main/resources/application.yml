@@ -34,3 +34,7 @@ cloud:
       static-region: "ap-southeast-2"
     stack:
       auto: false
+
+encryption:
+  secret-key: ${ENCRYPTION_SECRET_KEY}
+  algorithm: ${ENCRYPTION_ALGORITHM}
