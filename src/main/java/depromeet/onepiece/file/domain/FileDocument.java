@@ -5,6 +5,7 @@ import static org.springframework.data.mongodb.core.mapping.Field.Write.NON_NULL
 
 import depromeet.onepiece.common.domain.BaseTimeDocument;
 import depromeet.onepiece.common.utils.EncryptionUtil;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,8 +15,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Getter
+@Builder
 @Document
 @NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PROTECTED)
 public class FileDocument extends BaseTimeDocument {
   @MongoId private ObjectId id;
 
@@ -28,9 +31,9 @@ public class FileDocument extends BaseTimeDocument {
   @Field(value = "file_type", write = NON_NULL)
   private FileType fileType;
 
-  @Builder
-  public static FileDocument create(String logicalName, FileType fileType) {
+  public static FileDocument create(ObjectId id, String logicalName, FileType fileType) {
     return FileDocument.builder()
+        .id(id)
         .logicalName(EncryptionUtil.encrypt(logicalName))
         .fileType(fileType)
         .build();
