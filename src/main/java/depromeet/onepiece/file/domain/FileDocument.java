@@ -1,5 +1,6 @@
 package depromeet.onepiece.file.domain;
 
+import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 import static org.springframework.data.mongodb.core.mapping.Field.Write.NON_NULL;
 
@@ -18,7 +19,7 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 @Builder
 @Document
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PRIVATE)
 public class FileDocument extends BaseTimeDocument {
   @MongoId private ObjectId id;
 
