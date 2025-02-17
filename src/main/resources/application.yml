@@ -14,3 +14,8 @@ springdoc:
   swagger-ui:
     operations-sorter: alpha
     tags-sorter: alpha
+chatgpt:
+  api-key: ${CHATGPT_API_KEY}
+  model: "gpt-4-mini"
+  temperature: 0.7
+  maxTokens: 4096
