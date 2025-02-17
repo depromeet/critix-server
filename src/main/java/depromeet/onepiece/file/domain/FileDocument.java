@@ -4,6 +4,7 @@ import static lombok.AccessLevel.PROTECTED;
 import static org.springframework.data.mongodb.core.mapping.Field.Write.NON_NULL;
 
 import depromeet.onepiece.common.domain.BaseTimeDocument;
+import depromeet.onepiece.common.utils.EncryptionUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,11 +30,14 @@ public class FileDocument extends BaseTimeDocument {
 
   @Builder
   public static FileDocument create(String logicalName, FileType fileType) {
-    return FileDocument.builder().logicalName(logicalName).fileType(fileType).build();
+    return FileDocument.builder()
+        .logicalName(EncryptionUtil.encrypt(logicalName))
+        .fileType(fileType)
+        .build();
   }
 
   public FileDocument setPhysicalPath(String physicalPath) {
-    this.physicalPath = physicalPath;
+    this.physicalPath = EncryptionUtil.encrypt(physicalPath);
     return this;
   }
 }
