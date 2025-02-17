@@ -42,11 +42,11 @@ public class CustomResponse<T> {
     return ResponseEntity.ok(new CustomResponse<>());
   }
 
-  public static CustomResponse<Void> error(GlobalErrorCode errorCode) {
+  public static CustomResponse<Void> error(ErrorCode errorCode) {
     return new CustomResponse<>(errorCode);
   }
 
-  public static CustomResponse<Void> error(GlobalErrorCode errorCode, String message) {
+  public static CustomResponse<Void> error(ErrorCode errorCode, String message) {
     return new CustomResponse<>(errorCode, message);
   }
 
@@ -66,7 +66,7 @@ public class CustomResponse<T> {
   }
 
   // 요청에 실패한 경우
-  private CustomResponse(GlobalErrorCode errorCode) {
+  private CustomResponse(ErrorCode errorCode) {
     Objects.requireNonNull(errorCode, "Global error code must not be null");
     this.status = errorCode.getStatus();
     this.message = errorCode.getMessage();
@@ -74,7 +74,7 @@ public class CustomResponse<T> {
   }
 
   // GlobalControllerAdvice에서 오류 설정
-  private CustomResponse(GlobalErrorCode errorCode, String message) {
+  private CustomResponse(ErrorCode errorCode, String message) {
     Objects.requireNonNull(errorCode, "Result must not be null");
     Objects.requireNonNull(message, "Message must not be null");
 
