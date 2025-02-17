@@ -6,8 +6,8 @@ import lombok.Getter;
 public class GlobalException extends RuntimeException {
   @Getter private final GlobalErrorCode errorCode;
 
-  public GlobalException(String message, GlobalErrorCode errorCode) {
+  public GlobalException(String message, ErrorCode errorCode) {
     super(message);
-    this.errorCode = errorCode;
+    this.errorCode = (GlobalErrorCode) errorCode;
   }
 }
