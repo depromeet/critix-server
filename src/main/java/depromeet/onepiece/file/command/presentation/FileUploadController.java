@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadController {
   private final FileUploadService fileUploadService;
 
-  @Operation(summary = "포트폴리오 첨부 파일 업로드", description = "첨부 파일 업로드 API")
+  @Operation(summary = "포트폴리오 첨부 파일 업로드", description = "포트폴리오 첨부 파일 업로드 API [담당자 : 이한음]")
   @PostMapping(value = "/portfolio", consumes = MULTIPART_FORM_DATA_VALUE)
   public PresignedUrlResponse uploadFile(
       @Parameter(
