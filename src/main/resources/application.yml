@@ -14,8 +14,23 @@ springdoc:
   swagger-ui:
     operations-sorter: alpha
     tags-sorter: alpha
+
 chatgpt:
   api-key: ${CHATGPT_API_KEY}
   model: "gpt-4-mini"
   temperature: 0.7
   maxTokens: 4096
+
+cloud:
+  ncp:
+    object-storage:
+      endpoint: "https://kr.object.ncloudstorage.com"
+      credentials:
+        access-key: ${NCP_ACCESS_KEY}
+        secret-key: ${NCP_SECRET_KEY}
+        bucket: ${NCP_BUCKET_NAME}
+    region:
+      auto: false
+      static-region: "ap-southeast-2"
+    stack:
+      auto: false
