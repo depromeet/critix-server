@@ -31,7 +31,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// HTTP CLIENT
-	implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
+	implementation 'org.apache.httpcomponents.client5:httpclient5:5.4.2'
 
 	// MONGO DB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
