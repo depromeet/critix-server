@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +37,7 @@ public class FileUploaderImpl implements FileUploader {
   public String upload(MultipartFile multipartFile, String logicalName, FileType fileType) {
     try {
       File fileToUpload = convert(multipartFile).orElseThrow(FileConvertErrorException::new);
-      FileDocument fileDocumentToSave = FileDocument.create(logicalName, fileType);
+      FileDocument fileDocumentToSave = FileDocument.create(new ObjectId(), logicalName, fileType);
       String filePath =
           generateUploadPath(fileDocumentToSave.getId().toString(), logicalName, fileType);
       amazonS3.putObject(

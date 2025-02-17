@@ -1,22 +1,31 @@
 package depromeet.onepiece.common.utils;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class EncryptionUtil {
+
   @Value("${encryption.algorithm}")
-  private static String ALGORITHM;
+  private String algorithm;
 
   @Value("${encryption.secret-key}")
+  private String secretKey;
+
+  private static String ALGORITHM;
   private static String SECRET_KEY;
+
+  @PostConstruct
+  public void init() {
+    ALGORITHM = algorithm;
+    SECRET_KEY = secretKey;
+  }
 
   public static String encrypt(String input) {
     try {

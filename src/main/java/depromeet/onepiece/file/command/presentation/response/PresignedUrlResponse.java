@@ -10,7 +10,7 @@ public record PresignedUrlResponse(
             example = "https://example.com",
             requiredMode = REQUIRED)
         String url) {
-  public static PresignedUrlResponse of(String url) {
-    return new PresignedUrlResponse(url);
+  public static PresignedUrlResponse of(String endpoint, String bucket, String url) {
+    return new PresignedUrlResponse(endpoint + "/" + bucket + "/" + url);
   }
 }
