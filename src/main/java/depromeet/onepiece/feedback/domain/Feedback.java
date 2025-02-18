@@ -31,6 +31,6 @@ public class Feedback {
   @Field("additional_chat")
   private List<AdditionalChat> additionalChat;
 
-  @Field("feedback_per_project")
-  private List<FeedbackPerProject> feedbackPerProjects;
+  @Field("project_evaluation")
+  private ProjectEvaluation projectEvaluation;
 }
