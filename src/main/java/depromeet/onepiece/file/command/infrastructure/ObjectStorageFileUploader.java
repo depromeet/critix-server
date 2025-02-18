@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FileUploaderImpl implements FileUploader {
+public class ObjectStorageFileUploader implements FileUploader {
 
   @Value("${cloud.ncp.object-storage.credentials.bucket}")
   private String bucketName;
