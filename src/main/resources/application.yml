@@ -8,14 +8,39 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: profile, email
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: ${MAX_FILE_SIZE:50MB}
+      max-request-size: ${MAX_REQUEST_SIZE:50MB}
+
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
   swagger-ui:
     operations-sorter: alpha
     tags-sorter: alpha
+
 chatgpt:
   api-key: ${CHATGPT_API_KEY}
   model: "gpt-4-mini"
   temperature: 0.7
   maxTokens: 4096
+
+cloud:
+  ncp:
+    object-storage:
+      endpoint: "https://kr.object.ncloudstorage.com"
+      credentials:
+        access-key: ${NCP_ACCESS_KEY}
+        secret-key: ${NCP_SECRET_KEY}
+        bucket: ${NCP_BUCKET_NAME}
+    region:
+      auto: false
+      static-region: "ap-southeast-2"
+    stack:
+      auto: false
+
+encryption:
+  secret-key: ${ENCRYPTION_SECRET_KEY}
+  algorithm: ${ENCRYPTION_ALGORITHM}
