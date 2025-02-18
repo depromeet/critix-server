@@ -7,14 +7,14 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EvaluationItem {
+class FeedbackContent {
 
-  @Field("evaluation_type")
-  private EvaluationType evaluationType;
+  @Field("type")
+  private FeedbackType type;
 
-  @Field("evaluation_content")
-  private String evaluationContent;
+  @Field("before_edit")
+  private String beforeEdit;
 
-  @Field("evaluation_score")
-  private int evaluationScore;
+  @Field("after_edit")
+  private String afterEdit;
 }
