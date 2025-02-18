@@ -2,6 +2,3 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost/onepiece
-
-server:
-  address: ${SERVER_ADDRESS:localhost}

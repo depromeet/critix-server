@@ -29,15 +29,15 @@ public class SwaggerConfig {
   private static final String GITHUB_URL = "https://github.com/depromeet/16th-team1-BE";
   private final Environment environment;
 
-  @Value("${server.address}")
-  private String serverAddress;
+  @Value("${springdoc.server-url}")
+  private String serverUrl;
 
   private final Map<String, String> PROFILE_SERVER_URL_MAP = new HashMap<>();
 
   @PostConstruct
   public void init() {
     PROFILE_SERVER_URL_MAP.put("local", "http://localhost:8080");
-    PROFILE_SERVER_URL_MAP.put("dev", "http://" + serverAddress + ":8080");
+    PROFILE_SERVER_URL_MAP.put("dev", "http://" + serverUrl + ":8080");
   }
 
   @Bean

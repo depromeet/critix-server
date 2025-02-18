@@ -2,6 +2,3 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URL}
-
-server:
-  address: ${SERVER_ADDRESS}
