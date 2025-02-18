@@ -1,27 +1,27 @@
 package depromeet.onepiece.feedback.domain;
 
-import java.util.List;
-import lombok.AccessLevel;
+import static lombok.AccessLevel.PROTECTED;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 public class OverallEvaluation {
 
-  @Field("pros")
-  private List<String> pros;
+  @Field("summary")
+  private String summary;
 
-  @Field("cons")
-  private List<String> cons;
+  @Field("job_fit")
+  private EvaluationDetail jobFit;
 
-  @Field("one_line_comment")
-  private String oneLineComment;
+  @Field("logical_thinking")
+  private EvaluationDetail logicalThinking;
 
-  @Field("grade")
-  private String grade;
+  @Field("writing_clarity")
+  private EvaluationDetail writingClarity;
 
-  @Field("evaluation_list")
-  private List<EvaluationItem> evaluationItemList;
+  @Field("layout_readability")
+  private EvaluationDetail layoutReadability;
 }
