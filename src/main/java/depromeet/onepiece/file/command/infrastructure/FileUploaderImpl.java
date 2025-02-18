@@ -42,7 +42,7 @@ public class FileUploaderImpl implements FileUploader {
           generateUploadPath(fileDocumentToSave.getId().toString(), logicalName, fileType);
       amazonS3.putObject(
           new PutObjectRequest(bucketName, filePath, fileToUpload)
-              .withCannedAcl(CannedAccessControlList.PublicRead));
+              .withCannedAcl(CannedAccessControlList.Private));
       removeUploadedFile(fileToUpload);
       fileRepository.save(fileDocumentToSave.setPhysicalPath(filePath));
       return filePath;
