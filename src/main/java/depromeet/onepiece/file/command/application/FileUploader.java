@@ -9,7 +9,7 @@ public interface FileUploader {
 
   default String getFileExtension(String fileName) {
     int dotIndex = fileName.lastIndexOf('.');
-    return (dotIndex == -1) ? "" : fileName.substring(dotIndex);
+    return (dotIndex == -1) ? "" : fileName.substring(dotIndex).toLowerCase();
   }
 
   default String generateUniqueFilePath(String fileExtension) {
