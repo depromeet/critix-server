@@ -11,7 +11,7 @@ public class FileDocumentRepositoryImpl implements FileDocumentRepository {
   private final FileDocumentMongoRepository fileDocumentMongoRepository;
 
   @Override
-  public void save(FileDocument fileDocument) {
-    fileDocumentMongoRepository.save(fileDocument);
+  public FileDocument save(FileDocument fileDocument) {
+    return fileDocumentMongoRepository.save(fileDocument);
   }
 }
