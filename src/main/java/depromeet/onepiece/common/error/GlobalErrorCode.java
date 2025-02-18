@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum GlobalErrorCode {
+public enum GlobalErrorCode implements ErrorCode {
   // 공통
   SUCCESS(HttpStatus.OK, "G000", "요청에 성공했습니다."),
   OTHER(HttpStatus.INTERNAL_SERVER_ERROR, "G100", "서버에 오류가 발생했습니다"),
