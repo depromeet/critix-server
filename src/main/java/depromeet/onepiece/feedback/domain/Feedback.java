@@ -1,7 +1,9 @@
 package depromeet.onepiece.feedback.domain;
 
+import static lombok.AccessLevel.PROTECTED;
+
+import depromeet.onepiece.common.domain.BaseTimeDocument;
 import java.util.List;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
@@ -11,8 +13,8 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Document
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Feedback {
+@NoArgsConstructor(access = PROTECTED)
+public class Feedback extends BaseTimeDocument {
 
   @MongoId private ObjectId id;
 

@@ -1,11 +1,12 @@
 package depromeet.onepiece.feedback.domain;
 
-import lombok.AccessLevel;
+import static lombok.AccessLevel.PROTECTED;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 public class AdditionalChat {
 
   private boolean mine;

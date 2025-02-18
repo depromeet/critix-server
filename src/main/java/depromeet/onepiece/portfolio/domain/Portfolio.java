@@ -1,8 +1,9 @@
 package depromeet.onepiece.portfolio.domain;
 
+import static lombok.AccessLevel.PROTECTED;
+
 import depromeet.onepiece.common.domain.BaseTimeDocument;
 import java.util.List;
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -11,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Document
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 public class Portfolio extends BaseTimeDocument {
   @MongoId private ObjectId id;
 
