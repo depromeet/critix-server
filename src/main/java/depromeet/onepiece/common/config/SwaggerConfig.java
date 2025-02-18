@@ -9,28 +9,55 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import io.swagger.v3.oas.models.servers.Server;
+import jakarta.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
+@RequiredArgsConstructor
 public class SwaggerConfig {
-  private static final String SERVER_NAME = "One-Piece"; // 프로젝트명
-  private static final String API_TITLE = "원피스 서버 API 문서";
-  private static final String API_DESCRIPTION = "원피스 서버 API 문서입니다.";
+  private static final String SERVER_NAME = "Critix-server"; // 프로젝트명
+  private static final String API_TITLE = "Critix 서버 API 문서";
+  private static final String API_DESCRIPTION = "Critix 서버 API 문서입니다.";
   private static final String GITHUB_URL = "https://github.com/depromeet/16th-team1-BE";
+  private final Environment environment;
+
+  @Value("${springdoc.server-url}")
+  private String serverUrl;
+
+  private final Map<String, String> PROFILE_SERVER_URL_MAP = new HashMap<>();
+
+  @PostConstruct
+  public void init() {
+    PROFILE_SERVER_URL_MAP.put("local", "http://localhost:8080");
+    PROFILE_SERVER_URL_MAP.put("dev", "http://" + serverUrl + ":8080");
+  }
 
   @Bean
   public OpenAPI openAPI() {
     return new OpenAPI()
-        .servers(
-            List.of(
-                new Server().url("http://localhost:8080").description("로컬 서버"),
-                new Server().url("https://api.dev.onepiece.com").description("개발 서버"),
-                new Server().url("https://api.prod.onepiece.com").description("운영 서버")))
+        .servers(initializeServers())
         .addSecurityItem(securityRequirement())
         .components(authSetting())
         .info(swaggerInfo());
+  }
+
+  private List<Server> initializeServers() {
+    return PROFILE_SERVER_URL_MAP.entrySet().stream()
+        .filter(entry -> environment.matchesProfiles(entry.getKey()))
+        .map(entry -> newOpenApiServer(entry.getValue(), SERVER_NAME + " " + entry.getKey()))
+        .collect(Collectors.toList());
+  }
+
+  private Server newOpenApiServer(String url, String description) {
+    return new Server().url(url).description(description);
   }
 
   private Components authSetting() {
