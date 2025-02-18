@@ -25,9 +25,6 @@ public class Feedback {
   @Field("overall_evaluation")
   private OverallEvaluation overallEvaluation;
 
-  @Field("feedback_per_page")
-  private List<FeedbackPerPage> feedbackPerPage;
-
   @Field("additional_chat")
   private List<AdditionalChat> additionalChat;
 
