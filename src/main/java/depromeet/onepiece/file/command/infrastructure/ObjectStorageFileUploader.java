@@ -34,7 +34,7 @@ public class ObjectStorageFileUploader implements FileUploader {
   private final FileDocumentRepository fileRepository;
 
   @Override
-  public String upload(MultipartFile multipartFile, String logicalName, FileType fileType) {
+  public FileDocument upload(MultipartFile multipartFile, String logicalName, FileType fileType) {
     try {
       File fileToUpload = convert(multipartFile).orElseThrow(FileConvertErrorException::new);
       FileDocument fileDocumentToSave = FileDocument.create(new ObjectId(), logicalName, fileType);
@@ -44,8 +44,7 @@ public class ObjectStorageFileUploader implements FileUploader {
           new PutObjectRequest(bucketName, filePath, fileToUpload)
               .withCannedAcl(CannedAccessControlList.Private));
       removeUploadedFile(fileToUpload);
-      fileRepository.save(fileDocumentToSave.setPhysicalPath(filePath));
-      return filePath;
+      return fileRepository.save(fileDocumentToSave.setPhysicalPath(filePath));
     } catch (Exception e) {
       throw new FileUploadFailedException();
     }

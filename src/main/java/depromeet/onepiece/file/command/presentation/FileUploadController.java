@@ -3,7 +3,7 @@ package depromeet.onepiece.file.command.presentation;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 import depromeet.onepiece.file.command.application.FileUploadService;
-import depromeet.onepiece.file.command.presentation.response.PresignedUrlResponse;
+import depromeet.onepiece.file.command.presentation.response.FileUploadResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,7 +24,7 @@ public class FileUploadController {
 
   @Operation(summary = "포트폴리오 첨부 파일 업로드", description = "포트폴리오 첨부 파일 업로드 API [담당자 : 이한음]")
   @PostMapping(value = "/portfolio", consumes = MULTIPART_FORM_DATA_VALUE)
-  public PresignedUrlResponse uploadFile(
+  public FileUploadResponse uploadFile(
       @Parameter(
               description = "게시글 첨부 파일",
               content = @Content(mediaType = MULTIPART_FORM_DATA_VALUE),

@@ -1,7 +1,8 @@
 package depromeet.onepiece.file.command.application;
 
 import depromeet.onepiece.file.command.infrastructure.PresignedUrlProperties;
-import depromeet.onepiece.file.command.presentation.response.PresignedUrlResponse;
+import depromeet.onepiece.file.command.presentation.response.FileUploadResponse;
+import depromeet.onepiece.file.domain.FileDocument;
 import depromeet.onepiece.file.domain.FileType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,11 @@ public class FileUploadService {
   private final FileUploader fileUploader;
   private final PresignedUrlProperties presignedUrlProperties;
 
-  public PresignedUrlResponse uploadPortfolio(MultipartFile multipartFile) {
-    return PresignedUrlResponse.of(
-        presignedUrlProperties.endpoint(),
-        presignedUrlProperties.bucket(),
+  public FileUploadResponse uploadPortfolio(MultipartFile multipartFile) {
+    FileDocument uploadedPortfolio =
         fileUploader.upload(
-            multipartFile, multipartFile.getOriginalFilename(), FileType.PORTFOLIO_PDF));
+            multipartFile, multipartFile.getOriginalFilename(), FileType.PORTFOLIO_PDF);
+    return FileUploadResponse.of(
+        presignedUrlProperties.endpoint(), presignedUrlProperties.bucket(), uploadedPortfolio);
   }
 }
