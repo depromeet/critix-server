@@ -20,11 +20,11 @@ public class ProjectEvaluation {
   @Field("process_review")
   private String processReview;
 
-  @Field("strengths")
-  private String strengths;
+  @Field("positiveFeedback")
+  private String positiveFeedback;
 
-  @Field("areas_for_improvement")
-  private String areasForImprovement;
+  @Field("negativeFeedback")
+  private String negativeFeedback;
 
   @Field("feedback_per_page")
   private List<FeedbackPerPage> feedbackPerPage;
