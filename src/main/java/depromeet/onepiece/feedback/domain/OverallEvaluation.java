@@ -24,4 +24,10 @@ public class OverallEvaluation {
 
   @Field("layout_readability")
   private EvaluationDetail layoutReadability;
+
+  @Field("strengths")
+  private FeedbackDetail strengths;
+
+  @Field("improvements")
+  private FeedbackDetail improvements;
 }
