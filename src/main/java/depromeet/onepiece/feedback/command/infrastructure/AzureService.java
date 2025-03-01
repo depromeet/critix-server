@@ -1,115 +1,77 @@
 package depromeet.onepiece.feedback.command.infrastructure;
 
-import com.azure.ai.openai.assistants.AssistantsClient;
-import com.azure.ai.openai.assistants.AssistantsClientBuilder;
-import com.azure.ai.openai.assistants.models.AssistantThread;
-import com.azure.ai.openai.assistants.models.AssistantThreadCreationOptions;
-import com.azure.ai.openai.assistants.models.CreateRunOptions;
-import com.azure.ai.openai.assistants.models.MessageRole;
-import com.azure.ai.openai.assistants.models.MessageTextContent;
-import com.azure.ai.openai.assistants.models.MessageTextDetails;
-import com.azure.ai.openai.assistants.models.RunStatus;
-import com.azure.ai.openai.assistants.models.ThreadMessage;
-import com.azure.ai.openai.assistants.models.ThreadMessageOptions;
-import com.azure.ai.openai.assistants.models.ThreadRun;
+import com.azure.ai.openai.OpenAIClient;
+import com.azure.ai.openai.OpenAIClientBuilder;
+import com.azure.ai.openai.models.ChatCompletions;
+import com.azure.ai.openai.models.ChatCompletionsJsonSchemaResponseFormat;
+import com.azure.ai.openai.models.ChatCompletionsJsonSchemaResponseFormatJsonSchema;
+import com.azure.ai.openai.models.ChatCompletionsOptions;
+import com.azure.ai.openai.models.ChatMessageContentItem;
+import com.azure.ai.openai.models.ChatMessageImageContentItem;
+import com.azure.ai.openai.models.ChatMessageImageUrl;
+import com.azure.ai.openai.models.ChatMessageTextContentItem;
+import com.azure.ai.openai.models.ChatRequestMessage;
+import com.azure.ai.openai.models.ChatRequestSystemMessage;
+import com.azure.ai.openai.models.ChatRequestUserMessage;
 import com.azure.core.credential.KeyCredential;
-import java.util.HashMap;
+import com.azure.core.util.BinaryData;
+import jakarta.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+import javax.security.auth.login.Configuration.Parameters;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AzureService {
-
   private final ChatGPTProperties chatGPTProperties;
-  private final AssistantsClient client;
+  private OpenAIClient client;
 
-  public AzureService(ChatGPTProperties chatGPTProperties) {
-    this.chatGPTProperties = chatGPTProperties;
-    this.client =
-        new AssistantsClientBuilder()
-            .credential(new KeyCredential(chatGPTProperties.apiKey()))
-            .buildClient();
+  @PostConstruct
+  private void initClient() {
+    String apiKey = chatGPTProperties.apiKey();
+    this.client = new OpenAIClientBuilder().credential(new KeyCredential(apiKey)).buildClient();
   }
 
-  public Map<String, String> processAssistantRequest() {
-    Map<String, String> response = new HashMap<>();
-
-    // 새로운 스레드 생성
-    String threadId = createThread();
-    ThreadRun run = executeAssistant(threadId);
-    if (run == null) {
-      response.put("status", "failed");
-      return response;
+  public void processChat(List<String> imageUrls, String prompt, String additionalChat) {
+    if (imageUrls == null || imageUrls.isEmpty()) {
+      log.error("No image URLs provided.");
+      return;
     }
 
-    String assistantResponse = getAssistantResponse(threadId);
-    response.put("status", "completed");
-    response.put("assistant_response", assistantResponse);
-    return response;
-  }
+    List<ChatRequestMessage> chatMessages = new ArrayList<>();
 
-  private String createThread() {
-    AssistantThread thread = client.createThread(new AssistantThreadCreationOptions());
-    return thread.getId();
-  }
+    chatMessages.add(new ChatRequestSystemMessage(prompt));
 
-  // 추가 질문
-  private void sendMessageToThread(String threadId, String userMessage) {
-    client.createMessage(threadId, new ThreadMessageOptions(MessageRole.USER, userMessage));
-  }
+    List<ChatMessageContentItem> messageContent = new ArrayList<>();
+    messageContent.add(new ChatMessageTextContentItem(additionalChat));
 
-  private ThreadRun executeAssistant(String threadId) {
-    ThreadRun run =
-        client.createRun(threadId, new CreateRunOptions(chatGPTProperties.overallAssistantId()));
-    log.info("Run ID: {}", run.getId());
+    messageContent.addAll(
+        imageUrls.stream()
+            .limit(100) // 최대 100개 제한
+            .map(url -> new ChatMessageImageContentItem(new ChatMessageImageUrl(url)))
+            .collect(Collectors.toList()));
 
-    while (true) {
-      run = client.getRun(threadId, run.getId());
-      log.info("Run status: {}", run.getStatus());
+    chatMessages.add(new ChatRequestUserMessage(messageContent));
 
-      if (run.getStatus() == RunStatus.COMPLETED) {
-        log.info("Assistant response is ready!");
-        return run;
-      } else if (run.getStatus() == RunStatus.FAILED) {
-        log.error("Assistant execution failed!");
-        return null;
-      }
+    // json 응답 지정 (structured output)
+    ChatCompletionsOptions chatCompletionsOptions =
+        new ChatCompletionsOptions(chatMessages)
+            .setResponseFormat(
+                new ChatCompletionsJsonSchemaResponseFormat(
+                    new ChatCompletionsJsonSchemaResponseFormatJsonSchema("get_weather")
+                        .setStrict(true)
+                        .setDescription("Fetches the weather in the given location")
+                        .setSchema(BinaryData.fromObject(new Parameters() {})) // JSON 스키마 적용
+                    ));
 
-      try {
-        Thread.sleep(2000); // 2초 대기 후 상태 재확인
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
-    }
-  }
-
-  private String getAssistantResponse(String threadId) {
-    List<ThreadMessage> messages = client.listMessages(threadId).getData();
-    if (messages.isEmpty()) {
-      log.warn("No response from Assistant.");
-      return "No response from Assistant.";
-    }
-
-    return messages.stream()
-        .map(ThreadMessage::getContent)
-        .flatMap(List::stream)
-        .filter(MessageTextContent.class::isInstance)
-        .map(MessageTextContent.class::cast)
-        .map(this::extractText)
-        .collect(Collectors.joining("\n"));
-  }
-
-  private String extractText(MessageTextContent content) {
-    if (content == null) {
-      return "";
-    }
-    if (content.getText() instanceof MessageTextDetails) {
-      return ((MessageTextDetails) content.getText()).getValue();
-    }
-    return "";
+    // api 호출
+    ChatCompletions chatCompletions =
+        client.getChatCompletions("{chatgpt모델명}", chatCompletionsOptions);
+    log.info("Chat response: {}", chatCompletions);
   }
 }
