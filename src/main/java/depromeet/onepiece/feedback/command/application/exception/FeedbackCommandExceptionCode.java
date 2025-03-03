@@ -1,4 +1,19 @@
 package depromeet.onepiece.feedback.command.application.exception;
 
-/** CommandExceptionCode는 CommandService에서 발생하는 커스텀 예외 코드를 정의해요. */
-public enum FeedbackCommandExceptionCode {}
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
+import depromeet.onepiece.common.error.ErrorCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
+@AllArgsConstructor
+public enum FeedbackCommandExceptionCode implements ErrorCode {
+  FEEDBACK_CHATGPT_ERROR(BAD_REQUEST, "FEEDBACK_100", "ChatGPT 요청에 실패하였습니다."),
+  ;
+
+  private final HttpStatus status;
+  private final String code;
+  private final String message;
+}
