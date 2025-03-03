@@ -1,5 +1,13 @@
 spring:
   security:
+    login-url: ${LOGIN_URL:/login}
+    redirect-url: ${REDIRECT_URL:/}
+    cookie:
+      domain: ${COOKIE_DOMAIN:localhost}
+      secure: ${COOKIE_SECURE:false}
+      http-only: ${COOKIE_HTTP_ONLY:true}
+    jwt:
+      secret_key: ${JWT_SECRET_KEY}
     oauth2:
       client:
         registration:
@@ -7,6 +15,7 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: profile, email
+            redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/index.html}
 
   servlet:
     multipart:
