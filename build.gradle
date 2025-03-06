@@ -51,7 +51,7 @@ dependencies {
 	implementation 'com.azure:azure-ai-openai:1.0.0-beta.12'
 
 	// PDF
-	implementation 'org.apache.pdfbox:pdfbox:2.0.27'
+	implementation 'org.apache.pdfbox:pdfbox:3.0.4'
 }
 
 
