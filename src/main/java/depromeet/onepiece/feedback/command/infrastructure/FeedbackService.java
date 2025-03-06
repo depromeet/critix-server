@@ -3,7 +3,6 @@ package depromeet.onepiece.feedback.command.infrastructure;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.internal.constraintvalidators.bv.NullValidator;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,8 +11,6 @@ import org.springframework.stereotype.Service;
 public class FeedbackService {
 
   private final AzureService azureService;
-  private final ChatGPTProperties chatGPTProperties;
-  private final NullValidator nullValidator;
 
   public void portfolioFeedback(String fileId, String additionalChat) {
     List<String> fineUrls = getFileUrl(fileId);
