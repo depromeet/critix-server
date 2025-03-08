@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.In;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +37,10 @@ public class SwaggerConfig {
 
   private final Map<String, String> PROFILE_SERVER_URL_MAP = new HashMap<>();
 
+  static {
+    SpringDocUtils.getConfig().replaceWithSchema(ObjectId.class, new StringSchema());
+  }
+
   @PostConstruct
   public void init() {
     PROFILE_SERVER_URL_MAP.put("local", "http://localhost:8080");
@@ -42,6 +49,8 @@ public class SwaggerConfig {
 
   @Bean
   public OpenAPI openAPI() {
+    SpringDocUtils.getConfig().replaceWithSchema(ObjectId.class, new StringSchema());
+
     return new OpenAPI()
         .servers(initializeServers())
         .addSecurityItem(securityRequirement())

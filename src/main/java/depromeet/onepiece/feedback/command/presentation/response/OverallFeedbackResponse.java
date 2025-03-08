@@ -1,6 +1,6 @@
 package depromeet.onepiece.feedback.command.presentation.response;
 
-import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.*;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
