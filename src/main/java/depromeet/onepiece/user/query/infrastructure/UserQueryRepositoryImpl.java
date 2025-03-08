@@ -12,8 +12,8 @@ public class UserQueryRepositoryImpl implements UserQueryRepository {
   private final UserQueryMongoRepository userQueryMongoRepository;
 
   @Override
-  public Optional<User> findByEmail(String email) {
-    return userQueryMongoRepository.findByEmail(email);
+  public Optional<User> findUserByEmailAndExternalId(String email, String externalId) {
+    return userQueryMongoRepository.findUserByEmailAndExternalId(email, externalId);
   }
 
   @Override

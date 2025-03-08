@@ -6,7 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UserQueryMongoRepository extends MongoRepository<User, ObjectId> {
-  Optional<User> findByEmail(String email);
+  Optional<User> findUserByEmailAndExternalId(String email, String externalId);
 
   User findByExternalId(String externalId);
 }

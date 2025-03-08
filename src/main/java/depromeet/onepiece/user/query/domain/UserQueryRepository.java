@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface UserQueryRepository {
 
-  Optional<User> findByEmail(String email);
+  Optional<User> findUserByEmailAndExternalId(String email, String externalId);
 
   Optional<User> findUserByExternalId(String externalId);
 }

@@ -26,9 +26,8 @@ public class AuthService {
 
   @Transactional
   public TokenResult handleLoginSuccess(AuthAttributes attributes) {
-    String email = attributes.getEmail();
     return userQueryRepository
-        .findByEmail(email)
+        .findUserByEmailAndExternalId(attributes.getEmail(), attributes.getExternalId())
         .map(user -> handleExistUser(user, attributes))
         .orElseGet(() -> handleFirstLogin(attributes));
   }
