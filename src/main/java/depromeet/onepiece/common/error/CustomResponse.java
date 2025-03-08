@@ -57,7 +57,7 @@ public class CustomResponse<T> {
     this.code = GlobalErrorCode.SUCCESS.getCode();
   }
 
-  private CustomResponse(T result) {
+  public CustomResponse(T result) {
     Objects.requireNonNull(result, "Result must not be null");
     this.status = GlobalErrorCode.SUCCESS.getStatus();
     this.message = GlobalErrorCode.SUCCESS.getMessage();

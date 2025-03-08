@@ -6,7 +6,6 @@ import depromeet.onepiece.common.auth.domain.RefreshToken;
 import depromeet.onepiece.common.auth.domain.RefreshTokenRepository;
 import depromeet.onepiece.common.auth.infrastructure.jwt.JwtTokenProvider;
 import depromeet.onepiece.common.auth.infrastructure.jwt.JwtTokenResolver;
-import depromeet.onepiece.common.auth.infrastructure.jwt.TokenProperties;
 import depromeet.onepiece.common.auth.presentation.exception.AuthenticationRequiredException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,16 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class RefreshTokenService {
-
   private final RefreshTokenRepository refreshTokenRepository;
   private final JwtTokenProvider tokenProvider;
   private final JwtTokenResolver tokenResolver;
   private final TokenInjector tokenInjector;
-  private final TokenProperties tokenProperties;
 
   @Transactional
-  public TokenResult reissueBasedOnRefreshToken(
-      HttpServletRequest request, HttpServletResponse response) {
+  public void reissueBasedOnRefreshToken(HttpServletRequest request, HttpServletResponse response) {
     String refreshToken =
         tokenResolver
             .resolveRefreshTokenFromRequest(request)
@@ -52,9 +48,7 @@ public class RefreshTokenService {
   private RefreshToken validateAndGetSavedRefreshToken(String refreshToken) {
     String externalId = tokenResolver.getSubjectFromToken(refreshToken);
     RefreshToken savedRefreshToken = this.getByTokenString(refreshToken);
-
     savedRefreshToken.validateWith(refreshToken, externalId);
-
     return savedRefreshToken;
   }
 
@@ -67,7 +61,6 @@ public class RefreshTokenService {
   private String rotate(RefreshToken refreshToken) {
     String reissuedToken = tokenProvider.generateRefreshToken(refreshToken.getExternalId());
     refreshToken.rotate(reissuedToken);
-    refreshToken.updateExpirationIfExpired(tokenProperties.expirationTime().refreshToken());
     refreshTokenRepository.save(refreshToken);
     return reissuedToken;
   }

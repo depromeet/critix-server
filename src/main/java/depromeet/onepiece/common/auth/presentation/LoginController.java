@@ -12,6 +12,6 @@ public class LoginController {
 
   @GetMapping
   public String login() {
-    return "login";
+    return "redirect:http://localhost:3000/login";
   }
 }
