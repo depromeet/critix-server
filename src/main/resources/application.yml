@@ -5,7 +5,7 @@ spring:
     cookie:
       domain: ${COOKIE_DOMAIN}
       secure: ${COOKIE_SECURE}
-      http-only: ${COOKIE_HTTP_ONLY:true}
+      http-only: ${COOKIE_HTTP_ONLY:false}
     jwt:
       secret_key: ${JWT_SECRET_KEY}
       expiration-time:
