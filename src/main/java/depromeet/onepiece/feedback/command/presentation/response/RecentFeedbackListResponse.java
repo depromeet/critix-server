@@ -12,7 +12,7 @@ import org.bson.types.ObjectId;
 public class RecentFeedbackListResponse {
   private ObjectId feedbackId;
 
-  private LocalDateTime feedbackDate;
+  private LocalDateTime date;
 
-  private String portfolioName;
+  private String title;
 }
