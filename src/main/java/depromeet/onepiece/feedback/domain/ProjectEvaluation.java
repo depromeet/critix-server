@@ -16,8 +16,11 @@ public class ProjectEvaluation {
   @Field("project_name")
   private String projectName;
 
+  @Field("image_url")
+  private String imageUrl;
+
   @Field("process")
-  private List<Boolean> process;
+  private List<Integer> process;
 
   @Field("process_review")
   private String processReview;

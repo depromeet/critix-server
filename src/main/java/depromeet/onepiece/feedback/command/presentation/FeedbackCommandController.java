@@ -52,9 +52,15 @@ public class FeedbackCommandController {
           ObjectId feedbackId) {
 
     List<FeedbackDetail> strengths =
-        List.of(new FeedbackDetail("데이터 기반의 디자인 사고", List.of("a/b 테스트 설문조사", "단순한 미적감각이 아니라 뛰어남")));
+        List.of(
+            new FeedbackDetail("데이터 기반의 디자인 사고", List.of("a/b 테스트 설문조사", "단순한 미적감각이 아니라 뛰어남")),
+            new FeedbackDetail(
+                "데이터 기반의 디자인 사고",
+                List.of("a/b 테스트 설문조사", "단순한 미적감각이 아니라 뛰어남", "a/b 테스트 설문조사", "단순한 미적감각이 아니라 뛰어남")));
     List<FeedbackDetail> improvements =
         List.of(
+            new FeedbackDetail(
+                "UI/UX 디자인 과정을 시각적으로 추가하기", List.of("더 강조할 필요가 있음", "더 개선할 여지가 있음. ")),
             new FeedbackDetail(
                 "UI/UX 디자인 과정을 시각적으로 추가하기", List.of("더 강조할 필요가 있음", "더 개선할 여지가 있음. ")));
     OverallEvaluation overallEvaluation =
@@ -70,18 +76,35 @@ public class FeedbackCommandController {
     ProjectEvaluation projectEvaluation =
         new ProjectEvaluation(
             "프로젝트 1",
-            List.of(true, false, false, false, false),
+            "https://i.ibb.co/YBd5JC54/25.png",
+            List.of(1, 2, 0, 2, 1),
             "회고가 빠져있습니다",
             List.of(
                 new FeedbackDetail(
+                    "데이터 기반의 문제 해결", List.of("단순한 ui 개선이아닌 ", "새소식 사용자의 50%가 모른다 답변")),
+                new FeedbackDetail(
                     "데이터 기반의 문제 해결", List.of("단순한 ui 개선이아닌 ", "새소식 사용자의 50%가 모른다 답변"))),
-            List.of(new FeedbackDetail("문장이 길고 가독성이 낮음", List.of("설명이 너무 상세하여 핵심을 빠르게 파악하기 어려움"))),
+            List.of(
+                new FeedbackDetail("문장이 길고 가독성이 낮음", List.of("설명이 너무 상세하여 핵심을 빠르게 파악하기 어려움")),
+                new FeedbackDetail("문장이 길고 가독성이 낮음", List.of("설명이 너무 상세하여 핵심을 빠르게 파악하기 어려움"))),
             List.of(
                 new FeedbackPerPage(
                     "1",
-                    List.of(new FeedbackContent(FeedbackType.LOGICAL_LEAP, "기존문장", "바뀐문장")),
-                    "https://avatars.githubusercontent.com/u/108571492?v=4")),
-            "전체적으로 훌륭한 프로젝트입니다.");
+                    List.of(
+                        new FeedbackContent(
+                            FeedbackType.LOGICAL_LEAP,
+                            "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
+                            "새소식의 문제점을 파악하기 위해 사용자를 대상으로 설문을 진행함. 새소식을 1회만 읽은 유저와 4회 이상 읽은 유저로 그룹을 나눠 분석함.")),
+                    "https://i.ibb.co/YBd5JC54/25.png"),
+                new FeedbackPerPage(
+                    "6",
+                    List.of(
+                        new FeedbackContent(
+                            FeedbackType.LENGTH_OR_READABILITY,
+                            "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
+                            "새소식의 문제점을 파악하기 위해 사용자를 대상으로 설문을 진행함. 새소식을 1회만 읽은 유저와 4회 이상 읽은 유저로 그룹을 나눠 분석함.")),
+                    "https://i.ibb.co/YBd5JC54/25.png")),
+            "데이터 기반 UX 개선과 A/B 테스트를 활용한 성장 전략이 돋보이는 프로젝트! 하지만 CTR 증가의 사업적 의미와 유저 락인 효과를 더욱 명확히 설명하면 설득력이 더 좋아질 것 같아요");
     Feedback feedback =
         new Feedback(
             new ObjectId(),
