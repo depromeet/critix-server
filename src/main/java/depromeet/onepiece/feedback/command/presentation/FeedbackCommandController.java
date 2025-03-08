@@ -1,6 +1,7 @@
 package depromeet.onepiece.feedback.command.presentation;
 
 import depromeet.onepiece.common.error.CustomResponse;
+import depromeet.onepiece.feedback.command.infrastructure.AzureService;
 import depromeet.onepiece.feedback.command.infrastructure.FeedbackService;
 import depromeet.onepiece.feedback.command.presentation.response.RecentFeedbackListResponse;
 import depromeet.onepiece.feedback.command.presentation.response.RemainCountResponse;
@@ -34,13 +35,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class FeedbackCommandController {
   private final FeedbackService feedbackService;
+  private final AzureService azureService;
 
-  @Operation(summary = "포트폴리오 피드백", description = "포트폴리오 피드백을 반환하는 API [담당자 : 김수진]")
-  @PostMapping(value = "")
-  public void portfolioFeedback(
-      @RequestParam(value = "fileId") String fileId, @RequestBody String additionalChat) {
-    feedbackService.portfolioFeedback(fileId, additionalChat);
-  }
+  //  @Operation(summary = "포트폴리오 피드백", description = "포트폴리오 피드백을 반환하는 API [담당자 : 김수진]")
+  //  @PostMapping(value = "")
+  //  public void portfolioFeedback(
+  //      @RequestParam(value = "fileId") String fileId, @RequestBody String additionalChat) {
+  //    feedbackService.portfolioFeedback(fileId, additionalChat);
+  //  }
 
   @Operation(summary = "포트폴리오 응답 가져오기", description = "포트폴리오 피드백을 feedback id로 가져오기")
   @GetMapping("")
@@ -108,5 +110,13 @@ public class FeedbackCommandController {
   @GetMapping("/remain")
   public ResponseEntity<CustomResponse<RemainCountResponse>> getRemainCount() {
     return CustomResponse.okResponseEntity(new RemainCountResponse(5));
+  }
+
+  @Operation(summary = "포트폴리오 피드백", description = "포트폴리오 피드백을 반환하는 API [담당자 : 김수진]")
+  @PostMapping(value = "")
+  public ResponseEntity<CustomResponse<String>> getTest(
+      @RequestParam(value = "fileId") String fileId, @RequestBody String additionalChat) {
+    String feedback = feedbackService.portfolioFeedback(fileId, "");
+    return CustomResponse.okResponseEntity(feedback);
   }
 }

@@ -14,12 +14,15 @@ import com.azure.ai.openai.models.ChatRequestMessage;
 import com.azure.ai.openai.models.ChatRequestSystemMessage;
 import com.azure.ai.openai.models.ChatRequestUserMessage;
 import com.azure.core.credential.KeyCredential;
+import com.azure.core.http.netty.NettyAsyncHttpClientBuilder;
 import com.azure.core.util.BinaryData;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import javax.security.auth.login.Configuration.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,15 +37,18 @@ public class AzureService {
   @PostConstruct
   private void initClient() {
     String apiKey = chatGPTProperties.apiKey();
-    this.client = new OpenAIClientBuilder().credential(new KeyCredential(apiKey)).buildClient();
+    this.client =
+        new OpenAIClientBuilder()
+            .credential(new KeyCredential(apiKey))
+            .httpClient(
+                new NettyAsyncHttpClientBuilder()
+                    .readTimeout(java.time.Duration.ofSeconds(200))
+                    .build())
+            .buildClient();
   }
 
-  public void processChat(List<String> imageUrls, String prompt, String additionalChat) {
-    if (imageUrls == null || imageUrls.isEmpty()) {
-      log.error("No image URLs provided.");
-      return;
-    }
-
+  public String processChat(
+      List<String> imageUrls, String prompt, String additionalChat, String jsonSchema) {
     List<ChatRequestMessage> chatMessages = new ArrayList<>();
 
     chatMessages.add(new ChatRequestSystemMessage(prompt));
@@ -52,26 +58,45 @@ public class AzureService {
 
     messageContent.addAll(
         imageUrls.stream()
-            .limit(100) // 최대 100개 제한
+            .limit(70)
             .map(url -> new ChatMessageImageContentItem(new ChatMessageImageUrl(url)))
             .collect(Collectors.toList()));
 
     chatMessages.add(new ChatRequestUserMessage(messageContent));
 
-    // json 응답 지정 (structured output)
     ChatCompletionsOptions chatCompletionsOptions =
         new ChatCompletionsOptions(chatMessages)
             .setResponseFormat(
                 new ChatCompletionsJsonSchemaResponseFormat(
                     new ChatCompletionsJsonSchemaResponseFormatJsonSchema("get_weather")
                         .setStrict(true)
-                        .setDescription("Fetches the weather in the given location")
-                        .setSchema(BinaryData.fromObject(new Parameters() {})) // JSON 스키마 적용
-                    ));
+                        .setDescription("디자이너의 포트폴리오(이미지 순서대로 1페이지, 2페이지, 3페이지..)")
+                        .setSchema(BinaryData.fromString(jsonSchema))));
 
-    // api 호출
-    ChatCompletions chatCompletions =
-        client.getChatCompletions("{chatgpt모델명}", chatCompletionsOptions);
-    log.info("Chat response: {}", chatCompletions);
+    try {
+      ChatCompletions chatCompletions =
+          client.getChatCompletions("gpt-4o-mini", chatCompletionsOptions);
+      Map<String, Object> result = new HashMap<>();
+      result.put("id", chatCompletions.getId());
+      result.put("choices", chatCompletions.getChoices());
+      result.put("usage", chatCompletions.getUsage());
+      result.put("model", chatCompletions.getModel());
+      result.put("systemFingerprint", chatCompletions.getSystemFingerprint());
+      result.put("promptFilterResults", chatCompletions.getPromptFilterResults());
+      result.put("createdAt", chatCompletions.getCreatedAt().toString());
+      log.info("Chat response: {}", result);
+
+      ObjectMapper objectMapper = new ObjectMapper();
+      String jsonResponse =
+          objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+
+      log.info("Chat response: {}", jsonResponse);
+      return chatCompletions.getChoices().stream()
+          .map(choice -> choice.getMessage().getContent())
+          .collect(Collectors.joining("\n"));
+    } catch (Exception e) {
+      log.error("Azure OpenAI API 호출 중 오류 발생", e);
+      throw new RuntimeException("OpenAI API 호출 실패", e);
+    }
   }
 }
