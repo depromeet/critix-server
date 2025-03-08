@@ -1,14 +1,16 @@
 package depromeet.onepiece.feedback.domain;
 
-import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.*;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-class EvaluationDetail {
+@AllArgsConstructor
+public class EvaluationDetail {
 
   @Field("score")
   private int score;
