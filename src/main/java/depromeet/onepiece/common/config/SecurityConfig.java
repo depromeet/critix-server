@@ -1,45 +1,86 @@
 package depromeet.onepiece.common.config;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
+import depromeet.onepiece.common.auth.infrastructure.SecurityProperties;
 import java.util.Collections;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+  private final DefaultOAuth2UserService defaultOAuth2UserService;
+  private final AuthenticationSuccessHandler authenticationSuccessHandler;
+  private final AuthenticationFailureHandler authenticationFailureHandler;
+  private final SecurityProperties securityProperties;
+
+  private static final String[] PUBLIC_ENDPOINTS = {
+    "/api/v1/**",
+  };
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    return http.cors(
-            corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
+  public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    disabledConfigurations(httpSecurity);
+    configurationSessionManagement(httpSecurity);
+    configurationCors(httpSecurity);
+    configureAuthorizeHttpRequests(httpSecurity);
+    configurationOAuth2Login(httpSecurity);
+    return httpSecurity.build();
+  }
+
+  private void disabledConfigurations(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity
         .csrf(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
         .formLogin(AbstractHttpConfigurer::disable)
-        .logout(AbstractHttpConfigurer::disable)
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(
-            auth ->
-                auth.requestMatchers(SWAGGER_PATTERNS)
-                    .permitAll()
-                    .requestMatchers(STATIC_RESOURCES_PATTERNS)
-                    .permitAll()
-                    .requestMatchers(PERMIT_ALL_PATTERNS)
-                    .permitAll()
-                    .requestMatchers(PUBLIC_ENDPOINTS)
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
-        // .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-        .build();
+        .logout(AbstractHttpConfigurer::disable);
+  }
+
+  private void configurationSessionManagement(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
+  }
+
+  private void configurationCors(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity.cors(
+        corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()));
+  }
+
+  private void configureAuthorizeHttpRequests(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity.authorizeHttpRequests(
+        auth ->
+            auth.requestMatchers(SWAGGER_PATTERNS)
+                .permitAll()
+                .requestMatchers(STATIC_RESOURCES_PATTERNS)
+                .permitAll()
+                .requestMatchers(PERMIT_ALL_PATTERNS)
+                .permitAll()
+                .requestMatchers(PUBLIC_ENDPOINTS)
+                .permitAll()
+                .anyRequest()
+                .authenticated());
+  }
+
+  private void configurationOAuth2Login(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity.oauth2Login(
+        oauth2 ->
+            oauth2
+                .loginPage(securityProperties.loginUrl())
+                .userInfoEndpoint(userInfo -> userInfo.userService(defaultOAuth2UserService))
+                .successHandler(authenticationSuccessHandler)
+                .failureHandler(authenticationFailureHandler));
   }
 
   private static final String[] SWAGGER_PATTERNS = {
@@ -47,15 +88,11 @@ public class SecurityConfig {
   };
 
   private static final String[] STATIC_RESOURCES_PATTERNS = {
-    "/img/**", "/css/**", "/js/**",
+    "/img/**", "/css/**", "/js/**", "/static/**",
   };
 
   private static final String[] PERMIT_ALL_PATTERNS = {
-    "/error", "/favicon.ico", "/index.html", "/",
-  };
-
-  private static final String[] PUBLIC_ENDPOINTS = {
-    "/api/v1/**",
+    "/error", "/index.html", "/login/**", "/oauth2/**", "/login/oauth2/**",
   };
 
   CorsConfigurationSource corsConfigurationSource() {

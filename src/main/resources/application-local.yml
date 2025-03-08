@@ -1,4 +1,10 @@
 spring:
+  security:
+    login-url: ${LOGIN_URL:/login}
+    redirect-url: ${REDIRECT_URL:/swagger-ui/index.html}
+    cookie:
+      domain: ${COOKIE_DOMAIN:localhost}
+      secure: ${COOKIE_SECURE:false}
   data:
     mongodb:
       uri: mongodb://localhost/onepiece

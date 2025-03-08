@@ -1,5 +1,16 @@
 spring:
   security:
+    login-url: ${LOGIN_URL}
+    redirect-url: ${REDIRECT_URL}
+    cookie:
+      domain: ${COOKIE_DOMAIN}
+      secure: ${COOKIE_SECURE}
+      http-only: ${COOKIE_HTTP_ONLY:false}
+    jwt:
+      secret_key: ${JWT_SECRET_KEY}
+      expiration-time:
+        access-token: ${JWT_EXPIRATION_TIME_ACCESS_TOKEN:3600}
+        refresh-token: ${JWT_EXPIRATION_TIME_REFRESH_TOKEN:86400}
     oauth2:
       client:
         registration:
@@ -7,6 +18,8 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: profile, email
+            redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/login/oauth2/code/google}
+            authorization-grant-type: authorization_code
 
   servlet:
     multipart:
