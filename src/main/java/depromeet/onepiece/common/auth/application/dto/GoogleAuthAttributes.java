@@ -13,10 +13,9 @@ public class GoogleAuthAttributes implements AuthAttributes {
   private final OAuthProviderType provide;
 
   public static GoogleAuthAttributes of(Map<String, Object> attributes) {
-    Map<String, Object> google = (Map<String, Object>) attributes.get("google");
-
-    return new GoogleAuthAttributes(
-        attributes.get("sub").toString(), (String) google.get("email"), OAuthProviderType.GOOGLE);
+    String id = (String) attributes.get("sub");
+    String email = (String) attributes.get("email");
+    return new GoogleAuthAttributes(id, email, OAuthProviderType.GOOGLE);
   }
 
   @Override

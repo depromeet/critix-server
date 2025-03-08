@@ -3,8 +3,6 @@ package depromeet.onepiece.common.config;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import depromeet.onepiece.common.auth.infrastructure.SecurityProperties;
-import depromeet.onepiece.common.auth.presentation.filter.JwtTokenFilter;
-import depromeet.onepiece.common.auth.presentation.filter.RedirectUrlFilter;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +15,6 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -28,8 +25,6 @@ public class SecurityConfig {
   private final DefaultOAuth2UserService defaultOAuth2UserService;
   private final AuthenticationSuccessHandler authenticationSuccessHandler;
   private final AuthenticationFailureHandler authenticationFailureHandler;
-  private final JwtTokenFilter jwtTokenFilter;
-  private final RedirectUrlFilter redirectUrlFilter;
   private final SecurityProperties securityProperties;
 
   private static final String[] PUBLIC_ENDPOINTS = {
@@ -79,9 +74,6 @@ public class SecurityConfig {
   }
 
   private void configurationOAuth2Login(HttpSecurity httpSecurity) throws Exception {
-    // httpSecurity.addFilterBefore(redirectUrlFilter,
-    // OAuth2AuthorizationRequestRedirectFilter.class);
-    httpSecurity.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
     httpSecurity.oauth2Login(
         oauth2 ->
             oauth2
@@ -96,7 +88,7 @@ public class SecurityConfig {
   };
 
   private static final String[] STATIC_RESOURCES_PATTERNS = {
-    "/img/**", "/css/**", "/js/**",
+    "/img/**", "/css/**", "/js/**", "/static/**",
   };
 
   private static final String[] PERMIT_ALL_PATTERNS = {

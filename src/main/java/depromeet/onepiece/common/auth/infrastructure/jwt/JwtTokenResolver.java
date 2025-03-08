@@ -4,7 +4,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 
-import depromeet.onepiece.common.auth.domain.jwt.TokenResolver;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -24,7 +23,7 @@ import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
-public class JwtTokenResolver implements TokenResolver {
+public class JwtTokenResolver {
 
   private static final String REPLACE_BEARER_PATTERN = "^Bearer( )*";
   private static final Pattern BEARER_PATTERN = Pattern.compile("^Bearer .*");
@@ -35,17 +34,14 @@ public class JwtTokenResolver implements TokenResolver {
     this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(tokenProperties.secretKey()));
   }
 
-  @Override
   public Optional<String> resolveTokenFromRequest(HttpServletRequest request) {
     return resolveFromHeader(request).or(() -> resolveFromCookie(request, ACCESS_TOKEN));
   }
 
-  @Override
   public Optional<String> resolveRefreshTokenFromRequest(HttpServletRequest request) {
     return resolveFromCookie(request, REFRESH_TOKEN);
   }
 
-  @Override
   public String getSubjectFromToken(String token) {
     return getClaims(token, secretKey).getPayload().getSubject();
   }

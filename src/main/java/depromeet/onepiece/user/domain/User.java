@@ -45,9 +45,6 @@ public class User extends BaseTimeDocument {
   @Field("external_id")
   private String externalId;
 
-  @Field("authorization_code")
-  private String authorizationCode;
-
   public static User save(AuthAttributes authAttributes) {
     return User.builder()
         .email(authAttributes.getEmail())

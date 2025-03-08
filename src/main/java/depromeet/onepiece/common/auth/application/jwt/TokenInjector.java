@@ -1,9 +1,7 @@
 package depromeet.onepiece.common.auth.application.jwt;
 
-import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 
-import depromeet.onepiece.common.auth.domain.jwt.LoginResult;
 import depromeet.onepiece.common.auth.infrastructure.SecurityProperties;
 import depromeet.onepiece.common.auth.infrastructure.jwt.TokenProperties;
 import jakarta.servlet.http.Cookie;
@@ -14,16 +12,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class TokenInjector {
-
   private final TokenProperties tokenProperties;
   private final SecurityProperties securityProperties;
 
-  public void injectTokensToCookie(LoginResult result, HttpServletResponse response) {
-    int accessTokenMaxAge = (int) tokenProperties.expirationTime().accessToken() + 5;
-    int refreshTokenMaxAge = (int) tokenProperties.expirationTime().refreshToken() + 5;
-
-    addCookie(ACCESS_TOKEN, result.accessToken(), accessTokenMaxAge, response);
-    addCookie(REFRESH_TOKEN, result.refreshToken(), refreshTokenMaxAge, response);
+  public void injectRefreshTokenToCookie(TokenResult result, HttpServletResponse response) {
+    addCookie(
+        REFRESH_TOKEN,
+        result.refreshToken(),
+        (int) tokenProperties.expirationTime().refreshToken(),
+        response);
   }
 
   public void addCookie(String name, String value, int maxAge, HttpServletResponse response) {
@@ -33,8 +30,7 @@ public class TokenInjector {
     cookie.setHttpOnly(securityProperties.cookie().httpOnly());
     cookie.setDomain(securityProperties.cookie().domain());
     cookie.setSecure(securityProperties.cookie().secure());
-    cookie.setAttribute("SameSite", "None");
-
+    cookie.setAttribute("SameSite", "Lax");
     response.addCookie(cookie);
   }
 
@@ -45,8 +41,7 @@ public class TokenInjector {
     cookie.setHttpOnly(securityProperties.cookie().httpOnly());
     cookie.setDomain(securityProperties.cookie().domain());
     cookie.setSecure(securityProperties.cookie().secure());
-    cookie.setAttribute("SameSite", "None");
-
+    cookie.setAttribute("SameSite", "Lax");
     response.addCookie(cookie);
   }
 }

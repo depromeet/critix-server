@@ -14,19 +14,12 @@
         }
 
         .login-box {
-            background: #18171D;
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             text-align: center;
             position: relative;
             top: -100px;
-        }
-
-        .logo {
-            width: 250px;
-            display: block;
-            margin: 30px auto;
         }
 
         .gsi-material-button {
@@ -36,7 +29,7 @@
             -webkit-appearance: none;
             background-color: WHITE;
             background-image: none;
-            border: 1px solid #747775;
+            border: 2px solid grey;
             -webkit-border-radius: 4px;
             border-radius: 4px;
             -webkit-box-sizing: border-box;
@@ -133,17 +126,10 @@
             opacity: 8%;
         }
     </style>
-
-    <script>
-        document.getElementById('login-btn').addEventListener('click', function () {
-            location.href = '/oauth2/authorization/google';
-        });
-    </script>
 </head>
 <body>
     <div>
         <div class="login-box">
-            <img src="./critix-logo.png" alt="critix" class="logo">
             <button id="login-btn" class="gsi-material-button">
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
@@ -167,5 +153,11 @@
             </button>
         </div>
     </div>
+
+    <script>
+        document.getElementById('login-btn').addEventListener('click', function () {
+            location.href = '/oauth2/authorization/google';
+        });
+    </script>
 </body>
 </html>
