@@ -51,10 +51,12 @@ public class FeedbackCommandController {
                 new OverallFeedbackResponse.EvaluationDetail(75, "논리적인 사고력이 돋보입니다."),
                 new OverallFeedbackResponse.EvaluationDetail(85, "글쓰기 표현이 명확합니다."),
                 new OverallFeedbackResponse.EvaluationDetail(90, "레이아웃이 가독성이 높습니다.")),
-            List.of(new OverallFeedbackResponse.FeedbackDetail("데이터 기반의 디자인 사고", "a/b 테스트 설문조사")),
             List.of(
                 new OverallFeedbackResponse.FeedbackDetail(
-                    "UI/UX 디자인 과정을 시각적으로 추가하기", "더 강조할 필요가 있음")));
+                    "데이터 기반의 디자인 사고", List.of("a/b 테스트 설문조사", "단순한 미적감각이 아니라 뛰어남"))),
+            List.of(
+                new OverallFeedbackResponse.FeedbackDetail(
+                    "UI/UX 디자인 과정을 시각적으로 추가하기", List.of("더 강조할 필요가 있음", "더 개선할 여지가 있음. "))));
     FeedbackResponse feedbackResponse =
         new FeedbackResponse(
             overallFeedbackResponse,

@@ -30,5 +30,5 @@ public record OverallFeedbackResponse(
               description = "내용",
               example = "단순한 디자인을 넘어서는 창의적인 아이디어가 돋보입니다.",
               requiredMode = REQUIRED)
-          String content) {}
+          List<String> content) {}
 }

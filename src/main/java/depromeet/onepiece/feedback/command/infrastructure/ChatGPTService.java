@@ -54,8 +54,11 @@ public class ChatGPTService {
             new OverallFeedbackResponse.EvaluationDetail(75, "논리적인 사고력이 돋보입니다."),
             new OverallFeedbackResponse.EvaluationDetail(85, "글쓰기 표현이 명확합니다."),
             new OverallFeedbackResponse.EvaluationDetail(90, "레이아웃이 가독성이 높습니다.")),
-        List.of(new OverallFeedbackResponse.FeedbackDetail("창의적인 디자인", "다양한 시각적 요소 활용이 뛰어남")),
-        List.of(new OverallFeedbackResponse.FeedbackDetail("문장 간결화 필요", "텍스트를 조금 더 다듬으면 좋습니다.")));
+        List.of(
+            new OverallFeedbackResponse.FeedbackDetail("창의적인 디자인", List.of("다양한 시각적 요소 활용이 뛰어남"))),
+        List.of(
+            new OverallFeedbackResponse.FeedbackDetail(
+                "문장 간결화 필요", List.of("텍스트를 조금 더 다듬으면 좋습니다."))));
   }
 
   // TODO: response 수정 후 매핑
