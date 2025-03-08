@@ -1,3 +1,5 @@
 package depromeet.onepiece.feedback.command.presentation.response;
 
-public record FeedbackResponse() {}
+public record FeedbackResponse(
+    OverallFeedbackResponse overallFeedbackResponse,
+    ProjectFeedbackResponse projectFeedbackResponse) {}
