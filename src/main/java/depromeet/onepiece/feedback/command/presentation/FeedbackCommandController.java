@@ -12,6 +12,7 @@ import depromeet.onepiece.feedback.domain.FeedbackDetail;
 import depromeet.onepiece.feedback.domain.FeedbackPerPage;
 import depromeet.onepiece.feedback.domain.FeedbackType;
 import depromeet.onepiece.feedback.domain.OverallEvaluation;
+import depromeet.onepiece.feedback.domain.ProcessType;
 import depromeet.onepiece.feedback.domain.ProjectEvaluation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -77,7 +78,12 @@ public class FeedbackCommandController {
         new ProjectEvaluation(
             "프로젝트 1",
             "https://i.ibb.co/YBd5JC54/25.png",
-            List.of(1, 2, 0, 2, 1),
+            List.of(
+                ProcessType.SOSO,
+                ProcessType.GOOD,
+                ProcessType.BAD,
+                ProcessType.GOOD,
+                ProcessType.GOOD),
             "회고가 빠져있습니다",
             List.of(
                 new FeedbackDetail(
@@ -112,7 +118,7 @@ public class FeedbackCommandController {
             new ObjectId(),
             overallEvaluation,
             new ArrayList<>(),
-            projectEvaluation);
+            List.of(projectEvaluation));
     return CustomResponse.okResponseEntity(feedback);
   }
 
