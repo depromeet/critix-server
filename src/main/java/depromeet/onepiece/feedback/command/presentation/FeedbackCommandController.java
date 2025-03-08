@@ -61,7 +61,7 @@ public class FeedbackCommandController {
             new ProjectFeedbackResponse(
                 new ProjectFeedbackResponse.ProjectEvaluation(
                     "프로젝트 1",
-                    "https://example.com/image.png",
+                    "https://avatars.githubusercontent.com/u/108571492?v=4",
                     List.of(true, false, false, false, false),
                     "프로젝트의 핵심 프로세스 중 일부가 잘 반영되었으며, 개선이 필요한 부분도 존재합니다.",
                     "A/B 테스트와 유저 피드백을 활용한 데이터 중심 디자인이 강점입니다.",
@@ -69,7 +69,7 @@ public class FeedbackCommandController {
                     List.of(
                         new ProjectFeedbackResponse.PageIssue(
                             "1",
-                            "https://example.com/page1.png",
+                            "https://avatars.githubusercontent.com/u/108571492?v=4",
                             List.of(
                                 new ProjectFeedbackResponse.PageContentIssue(
                                     "번역체/어색한 표현",
