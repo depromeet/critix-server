@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  nginx:
+    image: nginx
+    container_name: onepiece-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - onepiece-network
+
   onepiece-api:
     image: ${DOCKER_USERNAME}/onepiece-api:latest
     container_name: onepiece-api

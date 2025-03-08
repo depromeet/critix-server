@@ -61,7 +61,7 @@ jobs:
           username: ${{ secrets.NCP_SERVER_USERNAME }}
           password: ${{ secrets.NCP_SERVER_PASSWORD }}
           port: ${{ secrets.NCP_SERVER_PORT }}
-          source: infra/development/docker-compose.yml
+          source: infra/development/docker/docker-compose.yml
           target: ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}
           strip_components: 2
 
