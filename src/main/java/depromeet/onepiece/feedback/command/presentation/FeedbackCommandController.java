@@ -77,7 +77,7 @@ public class FeedbackCommandController {
         new ProjectEvaluation(
             "프로젝트 1",
             "https://i.ibb.co/YBd5JC54/25.png",
-            List.of(1, 2, 0, 2, 1),
+            List.of("good", "bad", "soso", "good", "bad"),
             "회고가 빠져있습니다",
             List.of(
                 new FeedbackDetail(
@@ -112,7 +112,7 @@ public class FeedbackCommandController {
             new ObjectId(),
             overallEvaluation,
             new ArrayList<>(),
-            projectEvaluation);
+            List.of(projectEvaluation));
     return CustomResponse.okResponseEntity(feedback);
   }
 

@@ -20,7 +20,7 @@ public class ProjectEvaluation {
   private String imageUrl;
 
   @Field("process")
-  private List<Integer> process;
+  private List<String> process;
 
   @Field("process_review")
   private String processReview;

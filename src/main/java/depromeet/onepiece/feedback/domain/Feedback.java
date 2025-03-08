@@ -33,5 +33,5 @@ public class Feedback extends BaseTimeDocument {
   private List<AdditionalChat> additionalChat;
 
   @Field("project_evaluation")
-  private ProjectEvaluation projectEvaluation;
+  private List<ProjectEvaluation> projectEvaluation;
 }
