@@ -87,7 +87,7 @@ public class ObjectStorageFileUploader implements FileUploader {
       try (PDDocument document = PDDocument.load(pdfFile)) {
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         for (int page = 0; page < document.getNumberOfPages(); page++) {
-          BufferedImage image = pdfRenderer.renderImageWithDPI(page, 300);
+          BufferedImage image = pdfRenderer.renderImageWithDPI(page, 30);
           String imageName = (page + 1) + ".png";
           File imageFile = new File(imageName);
           ImageIO.write(image, "png", imageFile);
