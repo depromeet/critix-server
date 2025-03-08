@@ -1,6 +1,11 @@
 package depromeet.onepiece.feedback.command.infrastructure;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import depromeet.onepiece.file.command.infrastructure.PresignedUrlGenerator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,45 +16,36 @@ import org.springframework.stereotype.Service;
 public class FeedbackService {
 
   private final AzureService azureService;
+  private final PresignedUrlGenerator presignedUrlGenerator;
+  private final ObjectMapper objectMapper;
 
-  public void portfolioFeedback(String fileId, String additionalChat) {
-    List<String> fineUrls = getFileUrl(fileId);
-    if (additionalChat != null) {
-      additionalChat = additionalChat;
-    } else {
-      additionalChat = "";
+  public String portfolioFeedback(String fileId, String additionalChat) {
+
+    List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId);
+
+    String overallJsonSchema = ChatGPTConstants.OverallSchema;
+    String projectJsonSchema = ChatGPTConstants.ProjectSchema;
+
+    String overallFeedback =
+        azureService.processChat(
+            imageUrls, ChatGPTConstants.OVERALL_PROMPT, additionalChat, overallJsonSchema);
+    String projectFeedback =
+        azureService.processChat(
+            imageUrls, ChatGPTConstants.PROJECT_PROMPT, additionalChat, projectJsonSchema);
+    try {
+      JsonNode overallJsonNode = objectMapper.readTree(overallFeedback);
+      JsonNode projectJsonNode = objectMapper.readTree(projectFeedback);
+
+      Map<String, JsonNode> mergedResponse = new HashMap<>();
+      mergedResponse.put("overallEvaluation", overallJsonNode);
+      mergedResponse.put("projectEvaluation", projectJsonNode);
+
+      String mergedJson = objectMapper.writeValueAsString(mergedResponse);
+      return mergedJson;
+
+    } catch (Exception e) {
+      log.error("JSON 병합 중 오류 발생", e);
+      return "{\"error\":\"JSON 병합 실패\"}";
     }
-    // overall feedback 호출
-    overallFeedback(fineUrls, additionalChat);
-
-    // project feedback 호출
-    projectFeedback(fineUrls, additionalChat);
-
-    // 응답 합치기
-
-  }
-
-  // overallFeedback 메서드
-  public void overallFeedback(List<String> fineUrls, String additionalChat) {
-
-    // AzureService의 processAssistantRequest 메서드 호출
-    azureService.processChat(fineUrls, ChatGPTConstants.OVERALL_PROMPT, additionalChat);
-  }
-
-  // projectFeedback 메서드
-  public void projectFeedback(List<String> fineUrls, String additionalChat) {
-    // AzureService의 processAssistantRequest 메서드 호출
-    azureService.processChat(fineUrls, ChatGPTConstants.PROJECT_PROMPT, additionalChat);
-  }
-
-  // 응답 합치기
-  public void mergeResponse() {
-    // 응답 합치기
-  }
-
-  // DB에서 파일 Url 가져오는 메서드
-  public List<String> getFileUrl(String fileId) {
-    // DB에서 fileId에 해당하는 파일 URL 가져오기
-    return null;
   }
 }
