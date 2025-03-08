@@ -12,7 +12,7 @@ public class GoogleAuthAttributes implements AuthAttributes {
 
   private final String id;
   private final String email;
-  private final OAuthProviderType provide;
+  private final OAuthProviderType provider;
 
   public static GoogleAuthAttributes of(Map<String, Object> attributes) {
     String externalId = (String) attributes.get(EXTERNAL_ID_KEY);
@@ -32,6 +32,6 @@ public class GoogleAuthAttributes implements AuthAttributes {
 
   @Override
   public OAuthProviderType getProvider() {
-    return this.provide;
+    return this.provider;
   }
 }

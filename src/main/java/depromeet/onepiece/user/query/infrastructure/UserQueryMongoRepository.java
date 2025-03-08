@@ -8,5 +8,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface UserQueryMongoRepository extends MongoRepository<User, ObjectId> {
   Optional<User> findUserByEmailAndExternalId(String email, String externalId);
 
-  User findByExternalId(String externalId);
+  Optional<User> findByExternalId(String externalId);
 }

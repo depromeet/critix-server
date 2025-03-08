@@ -18,6 +18,6 @@ public class UserQueryRepositoryImpl implements UserQueryRepository {
 
   @Override
   public Optional<User> findUserByExternalId(String externalId) {
-    return Optional.ofNullable(userQueryMongoRepository.findByExternalId(externalId));
+    return userQueryMongoRepository.findByExternalId(externalId);
   }
 }
