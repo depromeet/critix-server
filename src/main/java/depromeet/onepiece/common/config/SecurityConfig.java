@@ -100,7 +100,7 @@ public class SecurityConfig {
       CorsConfiguration config = new CorsConfiguration();
       config.setAllowedHeaders(Collections.singletonList("*"));
       config.setAllowedMethods(Collections.singletonList("*"));
-      config.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+      config.setAllowedOriginPatterns(List.of("http://localhost:3000", "https://dev.critix.kr"));
       config.setAllowCredentials(true);
       return config;
     };

@@ -30,7 +30,6 @@ spring:
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
-  server-url: ${SERVER_URL:localhost}
   swagger-ui:
     operations-sorter: alpha
     tags-sorter: alpha
