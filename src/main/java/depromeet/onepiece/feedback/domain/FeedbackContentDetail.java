@@ -10,8 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Getter
 public class FeedbackContentDetail {
   @Field("after_edit")
-  private String beforeEdit;
+  private String afterEdit;
 
   @Field("before_edit")
-  private String afterEdit;
+  private String beforeEdit;
 }
