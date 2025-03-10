@@ -9,7 +9,20 @@ services:
       - "443:443"
     restart: always
     volumes:
-      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/:/etc/nginx/
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    networks:
+      - onepiece-network
+
+  certbot:
+    image: certbot/certbot
+    container_name: onepiece-certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     networks:
       - onepiece-network
 
