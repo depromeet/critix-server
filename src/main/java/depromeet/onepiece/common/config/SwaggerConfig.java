@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springdoc.core.utils.SpringDocUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -32,9 +31,6 @@ public class SwaggerConfig {
   private static final String GITHUB_URL = "https://github.com/depromeet/16th-team1-BE";
   private final Environment environment;
 
-  @Value("${springdoc.server-url}")
-  private String serverUrl;
-
   private final Map<String, String> PROFILE_SERVER_URL_MAP = new HashMap<>();
 
   static {
@@ -44,7 +40,7 @@ public class SwaggerConfig {
   @PostConstruct
   public void init() {
     PROFILE_SERVER_URL_MAP.put("local", "http://localhost:8080");
-    PROFILE_SERVER_URL_MAP.put("dev", "http://" + serverUrl + ":8080");
+    PROFILE_SERVER_URL_MAP.put("dev", "https://dev.critix.kr");
   }
 
   @Bean
