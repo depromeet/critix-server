@@ -1,7 +1,6 @@
 package depromeet.onepiece.common.auth.presentation;
 
 import depromeet.onepiece.common.auth.application.service.AuthService;
-import depromeet.onepiece.common.auth.application.service.RefreshTokenService;
 import depromeet.onepiece.common.auth.presentation.response.AccessTokenResponse;
 import depromeet.onepiece.common.error.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,13 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class AuthController {
   private final AuthService authService;
-  private final RefreshTokenService refreshTokenService;
 
   @PostMapping("/reissue")
   @Operation(summary = "액세스 토큰 재발급 API", description = "액세스 토큰 재발급 API [담당자 : 이한음]")
   public CustomResponse<AccessTokenResponse> reissueAccessToken(
       HttpServletRequest request, HttpServletResponse response) {
-
-    refreshTokenService.reissueBasedOnRefreshToken(request, response);
+    return new CustomResponse<>(authService.reissueToken(request, response));
   }
 }

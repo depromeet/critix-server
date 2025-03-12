@@ -23,14 +23,14 @@ import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
-public class JwtTokenResolver {
+public class TokenResolver {
 
   private static final String REPLACE_BEARER_PATTERN = "^Bearer( )*";
   private static final Pattern BEARER_PATTERN = Pattern.compile("^Bearer .*");
 
   private final SecretKey secretKey;
 
-  public JwtTokenResolver(TokenProperties tokenProperties) {
+  public TokenResolver(TokenProperties tokenProperties) {
     this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(tokenProperties.secretKey()));
   }
 

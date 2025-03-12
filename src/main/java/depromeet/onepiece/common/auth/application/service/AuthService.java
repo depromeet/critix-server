@@ -4,12 +4,15 @@ import depromeet.onepiece.common.auth.application.dto.AuthAttributes;
 import depromeet.onepiece.common.auth.application.jwt.TokenResult;
 import depromeet.onepiece.common.auth.domain.RefreshToken;
 import depromeet.onepiece.common.auth.domain.RefreshTokenRepository;
-import depromeet.onepiece.common.auth.infrastructure.jwt.JwtTokenProvider;
+import depromeet.onepiece.common.auth.infrastructure.jwt.TokenProperties;
+import depromeet.onepiece.common.auth.infrastructure.jwt.TokenProvider;
 import depromeet.onepiece.common.auth.presentation.exception.AlreadyRegisteredUserException;
 import depromeet.onepiece.common.auth.presentation.response.AccessTokenResponse;
 import depromeet.onepiece.user.command.domain.UserCommandRepository;
 import depromeet.onepiece.user.domain.User;
 import depromeet.onepiece.user.query.domain.UserQueryRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +23,9 @@ public class AuthService {
 
   private final UserQueryRepository userQueryRepository;
   private final UserCommandRepository userCommandRepository;
-  private final JwtTokenProvider tokenProvider;
+  private final TokenProvider tokenProvider;
+  private final TokenProperties tokenProperties;
+  private final RefreshTokenService refreshTokenService;
   private final RefreshTokenRepository refreshTokenRepository;
 
   @Transactional
@@ -31,29 +36,25 @@ public class AuthService {
         .orElseGet(() -> handleFirstLogin(attributes));
   }
 
-  public AccessTokenResponse reissueAccessToken(String refreshToken) {
-    RefreshToken savedRefreshToken =
-        refreshTokenRepository
-            .findByToken(refreshToken)
-            .orElseThrow(AuthenticationRequiredException::new);
-    String externalId = savedRefreshToken.getExternalId();
-    String rotatedRefreshToken = savedRefreshToken.rotate();
-    return new AccessTokenResponse(
-        tokenProvider.generateAccessToken(externalId), rotatedRefreshToken);
+  public AccessTokenResponse reissueToken(
+      HttpServletRequest request, HttpServletResponse response) {
+    String reissuedExternalId = refreshTokenService.reissueBasedOnRefreshToken(request, response);
+    return AccessTokenResponse.of(
+        tokenProvider.generateAccessToken(reissuedExternalId), tokenProperties);
   }
 
   private TokenResult handleExistUser(User user, AuthAttributes attributes) {
     if (user.hasDifferentProviderWithEmail(attributes.getEmail(), attributes.getExternalId()))
       throw new AlreadyRegisteredUserException();
-    return generateLoginResult(user, false);
+    return generateLoginResult(user);
   }
 
   private TokenResult handleFirstLogin(AuthAttributes attributes) {
     User newUser = saveNewUser(attributes);
-    return generateLoginResult(newUser, true);
+    return generateLoginResult(newUser);
   }
 
-  private TokenResult generateLoginResult(User user, boolean isFirstLogin) {
+  private TokenResult generateLoginResult(User user) {
     String refreshToken = tokenProvider.generateRefreshToken(user.getExternalId());
     RefreshToken refreshTokenDocument =
         refreshTokenRepository
@@ -61,7 +62,8 @@ public class AuthService {
             .orElse(RefreshToken.of(user.getExternalId(), refreshToken));
     refreshTokenDocument.rotate(refreshToken);
     refreshTokenRepository.save(refreshTokenDocument);
-    return new TokenResult(refreshToken, isFirstLogin, user.getExternalId());
+    System.out.println(refreshTokenDocument);
+    return new TokenResult(refreshToken, user.getExternalId());
   }
 
   private User saveNewUser(AuthAttributes attributes) {
