@@ -10,12 +10,15 @@ import depromeet.onepiece.common.auth.presentation.exception.AuthenticationRequi
 import depromeet.onepiece.common.auth.presentation.exception.RefreshTokenInvalidException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
+@Slf4j
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class RefreshTokenService {
   private final RefreshTokenRepository refreshTokenRepository;
@@ -26,11 +29,16 @@ public class RefreshTokenService {
   @Transactional
   public String reissueBasedOnRefreshToken(
       HttpServletRequest request, HttpServletResponse response) {
-    RefreshToken refreshTokenDocument =
-        getByTokenString(
-            tokenResolver
-                .resolveRefreshTokenFromRequest(request)
-                .orElseThrow(RefreshTokenInvalidException::new));
+    Optional<String> tokenString = tokenResolver.resolveRefreshTokenFromRequest(request);
+
+    if (tokenString.isEmpty()) {
+      log.warn(
+          "Failed to reissue token: No refresh token found in request from IP {}",
+          request.getRemoteAddr());
+      throw new RefreshTokenInvalidException();
+    }
+
+    RefreshToken refreshTokenDocument = getByTokenString(tokenString.get());
     tokenInjector.injectRefreshTokenToCookie(
         new TokenResult(rotate(refreshTokenDocument), refreshTokenDocument.getExternalId()),
         response);

@@ -14,9 +14,11 @@ import depromeet.onepiece.user.query.domain.UserQueryRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -39,8 +41,14 @@ public class AuthService {
   public AccessTokenResponse reissueToken(
       HttpServletRequest request, HttpServletResponse response) {
     String reissuedExternalId = refreshTokenService.reissueBasedOnRefreshToken(request, response);
-    return AccessTokenResponse.of(
-        tokenProvider.generateAccessToken(reissuedExternalId), tokenProperties);
+    AccessTokenResponse tokenResult =
+        AccessTokenResponse.of(
+            tokenProvider.generateAccessToken(reissuedExternalId), tokenProperties);
+    log.info(
+        "User {} accessed from IP {} and successfully reissued a token",
+        maskId(reissuedExternalId),
+        request.getRemoteAddr());
+    return tokenResult;
   }
 
   private TokenResult handleExistUser(User user, AuthAttributes attributes) {
@@ -68,5 +76,9 @@ public class AuthService {
   private User saveNewUser(AuthAttributes attributes) {
     User user = User.save(attributes);
     return userCommandRepository.save(user);
+  }
+
+  private String maskId(String externalId) {
+    return externalId.substring(0, 4) + "****"; // 앞 4자리만 보이게 마스킹
   }
 }
