@@ -9,3 +9,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URL}
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
