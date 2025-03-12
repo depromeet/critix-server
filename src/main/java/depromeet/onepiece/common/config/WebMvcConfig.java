@@ -5,9 +5,11 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import org.bson.types.ObjectId;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +25,8 @@ public class WebMvcConfig {
             new SimpleModule()
                 .addDeserializer(ObjectId.class, objectIdJsonDeserializer())
                 .addSerializer(ObjectId.class, objectIdJsonSerializer()))
+        .addModule(new JavaTimeModule())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         .build();
   }
 

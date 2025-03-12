@@ -3,8 +3,8 @@ spring:
     login-url: ${LOGIN_URL}
     redirect-url: ${REDIRECT_URL}
     cookie:
-      domain: ${COOKIE_DOMAIN}
-      secure: ${COOKIE_SECURE}
+      domain: ${COOKIE_DOMAIN:critix.kr}
+      secure: ${COOKIE_SECURE:true}
       http-only: ${COOKIE_HTTP_ONLY:false}
     jwt:
       secret_key: ${JWT_SECRET_KEY}
@@ -30,7 +30,6 @@ spring:
 springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
-  server-url: ${SERVER_URL:localhost}
   swagger-ui:
     operations-sorter: alpha
     tags-sorter: alpha
