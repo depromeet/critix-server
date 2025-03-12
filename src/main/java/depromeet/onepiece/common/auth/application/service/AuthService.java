@@ -62,7 +62,6 @@ public class AuthService {
             .orElse(RefreshToken.of(user.getExternalId(), refreshToken));
     refreshTokenDocument.rotate(refreshToken);
     refreshTokenRepository.save(refreshTokenDocument);
-    System.out.println(refreshTokenDocument);
     return new TokenResult(refreshToken, user.getExternalId());
   }
 
