@@ -37,6 +37,19 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     networks:
       - onepiece-network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    command: redis-server
+    ports:
+      - "${DOCKER_ONEPIECE_REDIS_PORT}:6379"
+    env_file:
+      - .env
+    networks:
+      - onepiece-network
+
   mongo1:
     image: mongo:8
     container_name: mongo1

@@ -5,13 +5,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Profile("local")
+@Profile("dev")
 @Controller
 @RequestMapping("/login")
-public class LoginController {
-
+public class LoginRedirectController {
   @GetMapping
   public String login() {
-    return "login"; // local
+    return "redirect:http://localhost:3000/login"; // dev
   }
 }

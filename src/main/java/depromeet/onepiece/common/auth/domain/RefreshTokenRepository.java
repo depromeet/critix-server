@@ -1,12 +1,12 @@
 package depromeet.onepiece.common.auth.domain;
 
 import java.util.Optional;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface RefreshTokenRepository {
-
+@Repository
+public interface RefreshTokenRepository extends CrudRepository<RefreshToken, String> {
   Optional<RefreshToken> findByToken(String token);
-
-  void save(RefreshToken refreshToken);
 
   Optional<RefreshToken> findByExternalId(String externalId);
 }

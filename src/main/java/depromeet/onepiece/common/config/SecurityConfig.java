@@ -27,10 +27,6 @@ public class SecurityConfig {
   private final AuthenticationFailureHandler authenticationFailureHandler;
   private final SecurityProperties securityProperties;
 
-  private static final String[] PUBLIC_ENDPOINTS = {
-    "/api/v1/**",
-  };
-
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
     disabledConfigurations(httpSecurity);
@@ -67,8 +63,6 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(PERMIT_ALL_PATTERNS)
                 .permitAll()
-                .requestMatchers(PUBLIC_ENDPOINTS)
-                .permitAll()
                 .anyRequest()
                 .authenticated());
   }
@@ -92,7 +86,7 @@ public class SecurityConfig {
   };
 
   private static final String[] PERMIT_ALL_PATTERNS = {
-    "/error", "/index.html", "/login/**", "/oauth2/**", "/login/oauth2/**",
+    "/error", "/index.html", "/login/**", "/api/v1/reissue"
   };
 
   CorsConfigurationSource corsConfigurationSource() {
