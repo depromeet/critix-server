@@ -86,7 +86,7 @@ public class SecurityConfig {
   };
 
   private static final String[] PERMIT_ALL_PATTERNS = {
-    "/error", "/index.html", "/login/**", "/api/v1/reissue"
+    "/error", "/index.html", "/login/**", "/api/v1/reissue", "/api/v1/**"
   };
 
   CorsConfigurationSource corsConfigurationSource() {
