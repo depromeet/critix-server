@@ -63,7 +63,7 @@ jobs:
           port: ${{ secrets.NCP_SERVER_PORT }}
           source: infra/development/docker/docker-compose.yml
           target: ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}
-          strip_components: 2
+          strip_components: 1
 
       - name: run application server
         uses: appleboy/ssh-action@v1.1.0
