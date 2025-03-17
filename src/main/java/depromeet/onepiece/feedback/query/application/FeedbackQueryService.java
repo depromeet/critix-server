@@ -17,7 +17,7 @@ public class FeedbackQueryService {
   private final FeedbackQueryRepository feedbackQueryRepository;
   private final FileDocumentRepository fileRepository;
 
-  public List<RecentFeedbackListResponse> getFeedbackList(String userId) {
+  public List<RecentFeedbackListResponse> getFeedbackList(ObjectId userId) {
     return feedbackQueryRepository.findByUserId(userId).stream()
         .map(
             feedback -> {
