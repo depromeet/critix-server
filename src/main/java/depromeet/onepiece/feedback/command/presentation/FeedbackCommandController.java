@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FeedbackCommandController {
   private final FeedbackService feedbackService;
 
-  @Operation(summary = "포트폴리오 응답 가져오기", description = "포트폴리오 피드백을 feedback id로 가져오기")
+  @Operation(summary = "포트폴리오 응답 가져오기(Mock)", description = "포트폴리오 피드백을 feedback id로 가져오기")
   @GetMapping("")
   public ResponseEntity<CustomResponse<Feedback>> getFeedbackDetail(
       @Parameter(example = "66e516c2b355355088f07c82")
@@ -120,7 +120,7 @@ public class FeedbackCommandController {
     return CustomResponse.okResponseEntity(feedback);
   }
 
-  @Operation(summary = "최근 포폴 피드백 목록", description = "최근 피드백 목록 기본 날짜정렬 ")
+  @Operation(summary = "최근 포폴 피드백 목록(Mock)", description = "최근 피드백 목록 기본 날짜정렬 ")
   @GetMapping("/recent")
   public ResponseEntity<CustomResponse<List<RecentFeedbackListResponse>>> recentFeedbackList() {
     return CustomResponse.okResponseEntity(
@@ -133,7 +133,7 @@ public class FeedbackCommandController {
                 new ObjectId("66e516c2b355355088f07c82"), LocalDate.now(), "포폴 이름3")));
   }
 
-  @Operation(summary = "남은 피드백 횟수 조회", description = "남은 피드백 횟수 조회")
+  @Operation(summary = "남은 피드백 횟수 조회(Mock)", description = "남은 피드백 횟수 조회")
   @GetMapping("/remain")
   public ResponseEntity<CustomResponse<RemainCountResponse>> getRemainCount() {
     return CustomResponse.okResponseEntity(new RemainCountResponse(5));
