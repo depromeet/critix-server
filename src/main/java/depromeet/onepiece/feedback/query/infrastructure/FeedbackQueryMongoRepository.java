@@ -1,7 +1,10 @@
 package depromeet.onepiece.feedback.query.infrastructure;
 
 import depromeet.onepiece.feedback.domain.Feedback;
+import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface FeedbackMongoRepository extends MongoRepository<Feedback, ObjectId> {}
+public interface FeedbackQueryMongoRepository extends MongoRepository<Feedback, ObjectId> {
+  List<Feedback> findByUserId(String userId);
+}

@@ -23,8 +23,8 @@ public class Feedback extends BaseTimeDocument {
   @Field("user_id")
   private ObjectId userId;
 
-  @Field("portfolio_id")
-  private ObjectId portfolioId;
+  @Field("file_id")
+  private ObjectId fileId;
 
   @Field("overall_evaluation")
   private OverallEvaluation overallEvaluation;
