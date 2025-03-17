@@ -7,5 +7,5 @@ import org.bson.types.ObjectId;
 public interface FeedbackQueryRepository {
   Feedback findById(ObjectId feedbackId);
 
-  List<Feedback> findByUserId(String userId);
+  List<Feedback> findByUserId(ObjectId userId);
 }

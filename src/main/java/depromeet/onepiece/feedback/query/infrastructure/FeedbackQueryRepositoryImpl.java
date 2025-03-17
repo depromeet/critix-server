@@ -21,7 +21,7 @@ public class FeedbackQueryRepositoryImpl implements FeedbackQueryRepository {
   }
 
   @Override
-  public List<Feedback> findByUserId(String userId) {
+  public List<Feedback> findByUserId(ObjectId userId) {
     return feedbackQueryMongoRepository.findByUserId(userId);
   }
 }

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ public class FeedbackQueryController {
   @Operation(summary = "전체 피드백 반환", description = "전체 피드백을 반환하는 API [담당자 : 김수진]")
   @GetMapping(value = "/recent/feedback")
   public ResponseEntity<CustomResponse<List<RecentFeedbackListResponse>>> getRecentFeedback(
-      @RequestParam(value = "userId") String userId) {
+      @RequestParam(value = "userId") ObjectId userId) {
     List<RecentFeedbackListResponse> feedbackList = feedbackQueryService.getFeedbackList(userId);
     return CustomResponse.okResponseEntity(feedbackList);
   }

@@ -6,5 +6,5 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface FeedbackQueryMongoRepository extends MongoRepository<Feedback, ObjectId> {
-  List<Feedback> findByUserId(String userId);
+  List<Feedback> findByUserId(ObjectId userId);
 }
