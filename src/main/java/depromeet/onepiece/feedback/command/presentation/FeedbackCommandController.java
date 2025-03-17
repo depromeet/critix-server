@@ -2,7 +2,6 @@ package depromeet.onepiece.feedback.command.presentation;
 
 import depromeet.onepiece.common.error.CustomResponse;
 import depromeet.onepiece.feedback.command.infrastructure.FeedbackService;
-import depromeet.onepiece.feedback.command.presentation.response.RecentFeedbackListResponse;
 import depromeet.onepiece.feedback.command.presentation.response.RemainCountResponse;
 import depromeet.onepiece.feedback.domain.EvaluationDetail;
 import depromeet.onepiece.feedback.domain.Feedback;
@@ -14,10 +13,11 @@ import depromeet.onepiece.feedback.domain.FeedbackType;
 import depromeet.onepiece.feedback.domain.OverallEvaluation;
 import depromeet.onepiece.feedback.domain.ProcessType;
 import depromeet.onepiece.feedback.domain.ProjectEvaluation;
+import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -126,11 +126,11 @@ public class FeedbackCommandController {
     return CustomResponse.okResponseEntity(
         List.of(
             new RecentFeedbackListResponse(
-                new ObjectId("66e516c2b355355088f07c82"), LocalDateTime.now(), "포폴 이름"),
+                new ObjectId("66e516c2b355355088f07c82"), LocalDate.now(), "포폴 이름"),
             new RecentFeedbackListResponse(
-                new ObjectId("66e516c2b355355088f07c82"), LocalDateTime.now(), "포폴 이름2"),
+                new ObjectId("66e516c2b355355088f07c82"), LocalDate.now(), "포폴 이름2"),
             new RecentFeedbackListResponse(
-                new ObjectId("66e516c2b355355088f07c82"), LocalDateTime.now(), "포폴 이름3")));
+                new ObjectId("66e516c2b355355088f07c82"), LocalDate.now(), "포폴 이름3")));
   }
 
   @Operation(summary = "남은 피드백 횟수 조회", description = "남은 피드백 횟수 조회")

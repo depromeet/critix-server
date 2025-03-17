@@ -1,8 +1,8 @@
 package depromeet.onepiece.feedback.query.presentation;
 
 import depromeet.onepiece.common.error.CustomResponse;
-import depromeet.onepiece.feedback.command.presentation.response.RecentFeedbackListResponse;
 import depromeet.onepiece.feedback.query.application.FeedbackQueryService;
+import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
