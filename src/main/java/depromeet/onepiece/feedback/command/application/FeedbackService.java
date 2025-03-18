@@ -35,7 +35,7 @@ public class FeedbackService {
     String overallFeedback =
         azureService.processChat(
             imageUrls, ChatGPTConstants.OVERALL_PROMPT, additionalChat, overallJsonSchema);
-    try { // 임시로 슬립 1분
+    try { // TODO 임시로 슬립 1분, 이거 나중에 수정해야함
       Thread.sleep(60 * 1000);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
@@ -43,7 +43,7 @@ public class FeedbackService {
     String projectFeedback =
         azureService.processChat(
             imageUrls, ChatGPTConstants.PROJECT_PROMPT, additionalChat, projectJsonSchema);
-    try {
+    try { // TODO 예외 분리 해야됌
       OverallEvaluation overallEvaluation =
           objectMapper.readValue(overallFeedback, OverallEvaluation.class);
       JsonNode projectJsonNode =
