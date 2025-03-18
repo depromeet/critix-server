@@ -1,12 +1,13 @@
 package depromeet.onepiece.feedback.command.presentation;
 
 import depromeet.onepiece.common.error.CustomResponse;
-import depromeet.onepiece.feedback.command.infrastructure.FeedbackService;
+import depromeet.onepiece.feedback.command.application.AzureService;
+import depromeet.onepiece.feedback.command.application.FeedbackService;
+import depromeet.onepiece.feedback.command.presentation.response.RecentFeedbackListResponse;
 import depromeet.onepiece.feedback.command.presentation.response.RemainCountResponse;
 import depromeet.onepiece.feedback.domain.EvaluationDetail;
 import depromeet.onepiece.feedback.domain.Feedback;
 import depromeet.onepiece.feedback.domain.FeedbackContent;
-import depromeet.onepiece.feedback.domain.FeedbackContentDetail;
 import depromeet.onepiece.feedback.domain.FeedbackDetail;
 import depromeet.onepiece.feedback.domain.FeedbackPerPage;
 import depromeet.onepiece.feedback.domain.FeedbackType;
@@ -36,8 +37,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class FeedbackCommandController {
   private final FeedbackService feedbackService;
+  private final AzureService azureService;
 
-  @Operation(summary = "포트폴리오 응답 가져오기(Mock)", description = "포트폴리오 피드백을 feedback id로 가져오기")
+  //  @Operation(summary = "포트폴리오 피드백", description = "포트폴리오 피드백을 반환하는 API [담당자 : 김수진]")
+  //  @PostMapping(value = "")
+  //  public void portfolioFeedback(
+  //      @RequestParam(value = "fileId") String fileId, @RequestBody String additionalChat) {
+  //    feedbackService.portfolioFeedback(fileId, additionalChat);
+  //  }
+
+  @Operation(summary = "포트폴리오 응답 가져오기", description = "포트폴리오 피드백을 feedback id로 가져오기")
   @GetMapping("")
   public ResponseEntity<CustomResponse<Feedback>> getFeedbackDetail(
       @Parameter(example = "66e516c2b355355088f07c82")
@@ -92,10 +101,8 @@ public class FeedbackCommandController {
                         new FeedbackContent(
                             FeedbackType.LOGICAL_LEAP,
                             "논랴적 비약",
-                            List.of(
-                                new FeedbackContentDetail(
-                                    "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
-                                    "새소식의 문제점을 파악하기 위해 사용자를 대상으로 설문을 진행함. 새소식을 1회만 읽은 유저와 4회 이상 읽은 유저로 그룹을 나눠 분석함.")))),
+                            "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
+                            "새소식의 문제점을 파악하기 위해 사용자를 대상으로 설문을 진행함. 새소식을 1회만 읽은 유저와 4회 이상 읽은 유저로 그룹을 나눠 분석함.")),
                     "https://i.ibb.co/YBd5JC54/25.png"),
                 new FeedbackPerPage(
                     "6",
@@ -103,10 +110,8 @@ public class FeedbackCommandController {
                         new FeedbackContent(
                             FeedbackType.LENGTH_OR_READABILITY,
                             "문장 개선",
-                            List.of(
-                                new FeedbackContentDetail(
-                                    "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
-                                    "새소식의 문제점을 파악하기 위해 사용자를 대상으로 설문을 진행함. 새소식을 1회만 읽은 유저와 4회 이상 읽은 유저로 그룹을 나눠 분석함.")))),
+                            "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
+                            "새소식의 문제점을 파악하기 위해 사용자를 대상으로 설문을 진행함. 새소식을 1회만 읽은 유저와 4회 이상 읽은 유저로 그룹을 나눠 분석함.")),
                     "https://i.ibb.co/YBd5JC54/25.png")),
             "데이터 기반 UX 개선과 A/B 테스트를 활용한 성장 전략이 돋보이는 프로젝트! 하지만 CTR 증가의 사업적 의미와 유저 락인 효과를 더욱 명확히 설명하면 설득력이 더 좋아질 것 같아요");
     Feedback feedback =
@@ -141,9 +146,9 @@ public class FeedbackCommandController {
 
   @Operation(summary = "포트폴리오 피드백", description = "포트폴리오 피드백을 반환하는 API [담당자 : 김수진]")
   @PostMapping(value = "")
-  public ResponseEntity<CustomResponse<String>> getTest(
+  public ResponseEntity<CustomResponse<Feedback>> getTest(
       @RequestParam(value = "fileId") String fileId, @RequestBody String additionalChat) {
-    String feedback = feedbackService.portfolioFeedback(fileId, "");
+    Feedback feedback = feedbackService.portfolioFeedback(fileId, "");
     return CustomResponse.okResponseEntity(feedback);
   }
 }

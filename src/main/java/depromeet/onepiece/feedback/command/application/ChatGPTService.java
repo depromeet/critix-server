@@ -1,4 +1,4 @@
-package depromeet.onepiece.feedback.command.infrastructure;
+package depromeet.onepiece.feedback.command.application;
 
 import depromeet.onepiece.feedback.command.presentation.request.ChatGPTRequest;
 import depromeet.onepiece.feedback.command.presentation.response.ChatGPTResponse;

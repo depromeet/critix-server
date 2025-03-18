@@ -1,6 +1,6 @@
-package depromeet.onepiece.feedback.command.infrastructure;
+package depromeet.onepiece.feedback.command.application;
 
-import static depromeet.onepiece.feedback.command.infrastructure.ChatGPTConstants.API_URL;
+import static depromeet.onepiece.feedback.command.application.ChatGPTConstants.*;
 
 import depromeet.onepiece.feedback.command.presentation.request.ChatGPTRequest;
 import depromeet.onepiece.feedback.command.presentation.response.ChatGPTResponse;

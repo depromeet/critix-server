@@ -1,4 +1,4 @@
-package depromeet.onepiece.feedback.command.infrastructure;
+package depromeet.onepiece.feedback.command.application;
 
 import com.azure.ai.openai.OpenAIClient;
 import com.azure.ai.openai.OpenAIClientBuilder;
@@ -58,7 +58,7 @@ public class AzureService {
 
     messageContent.addAll(
         imageUrls.stream()
-            .limit(70)
+            .limit(30)
             .map(url -> new ChatMessageImageContentItem(new ChatMessageImageUrl(url)))
             .collect(Collectors.toList()));
 
@@ -69,13 +69,13 @@ public class AzureService {
             .setResponseFormat(
                 new ChatCompletionsJsonSchemaResponseFormat(
                     new ChatCompletionsJsonSchemaResponseFormatJsonSchema("get_weather")
+                        // .setSchema(BinaryData.fromString(jsonSchema))));
                         .setStrict(true)
                         .setDescription("디자이너의 포트폴리오(이미지 순서대로 1페이지, 2페이지, 3페이지..)")
                         .setSchema(BinaryData.fromString(jsonSchema))));
 
     try {
-      ChatCompletions chatCompletions =
-          client.getChatCompletions("gpt-4o-mini", chatCompletionsOptions);
+      ChatCompletions chatCompletions = client.getChatCompletions("gpt-4o", chatCompletionsOptions);
       Map<String, Object> result = new HashMap<>();
       result.put("id", chatCompletions.getId());
       result.put("choices", chatCompletions.getChoices());

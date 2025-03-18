@@ -2,7 +2,6 @@ package depromeet.onepiece.feedback.domain;
 
 import static lombok.AccessLevel.*;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +18,9 @@ public class FeedbackContent {
   @Field("title")
   private String title;
 
-  @Field("feedback_content_detail_list")
-  private List<FeedbackContentDetail> feedbackContentDetailList;
+  @Field("after_edit")
+  private String afterEdit;
+
+  @Field("before_edit")
+  private String beforeEdit;
 }
