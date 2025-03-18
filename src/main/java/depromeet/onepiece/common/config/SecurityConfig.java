@@ -95,7 +95,8 @@ public class SecurityConfig {
       config.setAllowedHeaders(Collections.singletonList("*"));
       config.setAllowedMethods(Collections.singletonList("*"));
       config.setAllowedOriginPatterns(
-          List.of("http://localhost:3000", "https://dev.critix.kr", "https://critix.kr:3000"));
+          List.of(
+              "http://localhost:3000", "https://dev.critix.kr", "https://onepiece-fe.vercel.app", "https://critix.kr:3000"));
       config.setAllowCredentials(true);
       return config;
     };
