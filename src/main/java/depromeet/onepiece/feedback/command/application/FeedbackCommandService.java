@@ -78,7 +78,6 @@ public class FeedbackCommandService {
     Feedback feedback =
         new Feedback(new ObjectId(), null, fileId, FeedbackStatus.IN_PROGRESS, null, null, null);
     Feedback savedFeedback = feedbackCommandRepository.save(feedback);
-    return new StartFeedbackResponse(
-        savedFeedback.getId().toString(), savedFeedback.getFeedbackStatus());
+    return new StartFeedbackResponse(savedFeedback.getId().toString());
   }
 }
