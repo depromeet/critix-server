@@ -3,7 +3,6 @@ package depromeet.onepiece.feedback.command.presentation;
 import depromeet.onepiece.common.error.CustomResponse;
 import depromeet.onepiece.feedback.command.application.AzureService;
 import depromeet.onepiece.feedback.command.application.FeedbackService;
-import depromeet.onepiece.feedback.command.presentation.response.RecentFeedbackListResponse;
 import depromeet.onepiece.feedback.command.presentation.response.RemainCountResponse;
 import depromeet.onepiece.feedback.domain.EvaluationDetail;
 import depromeet.onepiece.feedback.domain.Feedback;
