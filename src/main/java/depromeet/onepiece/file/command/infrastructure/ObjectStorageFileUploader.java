@@ -104,6 +104,7 @@ public class ObjectStorageFileUploader implements FileUploader {
       }
 
       removeUploadedFile(pdfFile);
+
       return fileRepository.save(
           FileDocument.create(fileId, logicalName, fileType)
               .setPhysicalPath(pdfUploadPath + "," + String.join(",", uploadedFilePaths)));

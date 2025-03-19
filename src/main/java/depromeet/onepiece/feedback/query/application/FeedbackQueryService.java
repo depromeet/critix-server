@@ -1,22 +1,37 @@
 package depromeet.onepiece.feedback.query.application;
 
-import depromeet.onepiece.feedback.domain.Feedback;
 import depromeet.onepiece.feedback.query.domain.FeedbackQueryRepository;
+import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackListResponse;
+import depromeet.onepiece.file.command.domain.FileDocumentRepository;
+import depromeet.onepiece.file.command.exception.FileNotFoundException;
+import depromeet.onepiece.file.domain.FileDocument;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
-/**
- * 도메인 주도 개발 아키텍처에서 application 계층은 도메인 규칙에 핵심 로직 수행을 위임해요. 따라서 QueryService는 조회한 데이터를 DTO로 변환하거나,
- * 여러 도메인 객체를 조합하여 응답 데이터를 만드는 역할을 합니다.
- */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FeedbackQueryService {
   private final FeedbackQueryRepository feedbackQueryRepository;
+  private final FileDocumentRepository fileRepository;
 
-  public Feedback getFeedbackResponse(ObjectId feedbackId) {
+  public List<RecentFeedbackListResponse> getFeedbackList(ObjectId userId) {
+    return feedbackQueryRepository.findByUserId(userId).stream()
+        .map(
+            feedback -> {
+              String title = getFileTitle(feedback.getFileId());
+              return new RecentFeedbackListResponse(
+                  feedback.getId(), feedback.getCreatedAt().toLocalDate(), title);
+            })
+        .toList();
+  }
 
-    return feedbackQueryRepository.findById(feedbackId);
+  private String getFileTitle(ObjectId fileId) {
+    Optional<FileDocument> file = fileRepository.fileById(fileId);
+    return file.map(FileDocument::getLogicalName).orElseThrow(FileNotFoundException::new);
   }
 }

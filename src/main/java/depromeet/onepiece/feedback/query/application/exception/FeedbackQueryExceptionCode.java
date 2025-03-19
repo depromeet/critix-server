@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-/** QueryExceptionCode는 QueryService에서 발생하는 커스텀 예외 코드를 정의해요. */
 @Getter
 @AllArgsConstructor
 public enum FeedbackQueryExceptionCode implements ErrorCode {
