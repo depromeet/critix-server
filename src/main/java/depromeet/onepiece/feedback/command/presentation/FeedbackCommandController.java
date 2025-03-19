@@ -142,14 +142,6 @@ public class FeedbackCommandController {
     return CustomResponse.okResponseEntity(new RemainCountResponse(5));
   }
 
-  //  @Operation(summary = "포트폴리오 피드백", description = "포트폴리오 피드백을 반환하는 API [담당자 : 김수진]")
-  //  @PostMapping(value = "")
-  //  public ResponseEntity<CustomResponse<String>> getTest(
-  //      @RequestParam(value = "fileId") ObjectId fileId, @RequestBody String additionalChat) {
-  //    String feedback = feedbackService.portfolioFeedback(fileId, "");
-  //    return CustomResponse.okResponseEntity(feedback);
-  //  }
-
   @Operation(
       summary = "포트폴리오 피드백 호출",
       description = "fileId 받아 포트폴리오 피드백 API 호출 후 feedbackId 반환하는 API [담당자 : 김수진]")
