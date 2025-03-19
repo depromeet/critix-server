@@ -7,9 +7,13 @@ public interface AuthAttributes {
 
   String getExternalId();
 
+  OAuthProviderType getProvider();
+
   String getEmail();
 
-  OAuthProviderType getProvider();
+  String getName();
+
+  String getProfileImageUrl();
 
   static AuthAttributes of(String providerId, Map<String, Object> attributes) {
     if (OAuthProviderType.GOOGLE.isProviderOf(providerId)) {
