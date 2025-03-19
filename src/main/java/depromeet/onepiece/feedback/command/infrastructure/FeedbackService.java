@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,9 +21,10 @@ public class FeedbackService {
   private final PresignedUrlGenerator presignedUrlGenerator;
   private final ObjectMapper objectMapper;
 
-  public String portfolioFeedback(String fileId, String additionalChat) {
+  @Async
+  public void portfolioFeedback(ObjectId fileId, String additionalChat) {
 
-    List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId);
+    List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
 
     String overallJsonSchema = ChatGPTConstants.OverallSchema;
     String projectJsonSchema = ChatGPTConstants.ProjectSchema;
@@ -41,11 +44,11 @@ public class FeedbackService {
       mergedResponse.put("projectEvaluation", projectJsonNode);
 
       String mergedJson = objectMapper.writeValueAsString(mergedResponse);
-      return mergedJson;
+      // return mergedJson;
 
     } catch (Exception e) {
       log.error("JSON 병합 중 오류 발생", e);
-      return "{\"error\":\"JSON 병합 실패\"}";
+      // return "{\"error\":\"JSON 병합 실패\"}";
     }
   }
 }

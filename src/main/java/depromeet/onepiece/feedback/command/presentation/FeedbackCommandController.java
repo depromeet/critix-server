@@ -1,14 +1,17 @@
 package depromeet.onepiece.feedback.command.presentation;
 
 import depromeet.onepiece.common.error.CustomResponse;
+import depromeet.onepiece.feedback.command.application.FeedbackCommandService;
 import depromeet.onepiece.feedback.command.infrastructure.FeedbackService;
 import depromeet.onepiece.feedback.command.presentation.response.RemainCountResponse;
+import depromeet.onepiece.feedback.command.presentation.response.StartFeedbackResponse;
 import depromeet.onepiece.feedback.domain.EvaluationDetail;
 import depromeet.onepiece.feedback.domain.Feedback;
 import depromeet.onepiece.feedback.domain.FeedbackContent;
 import depromeet.onepiece.feedback.domain.FeedbackContentDetail;
 import depromeet.onepiece.feedback.domain.FeedbackDetail;
 import depromeet.onepiece.feedback.domain.FeedbackPerPage;
+import depromeet.onepiece.feedback.domain.FeedbackStatus;
 import depromeet.onepiece.feedback.domain.FeedbackType;
 import depromeet.onepiece.feedback.domain.OverallEvaluation;
 import depromeet.onepiece.feedback.domain.ProcessType;
@@ -24,8 +27,6 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class FeedbackCommandController {
   private final FeedbackService feedbackService;
+  private final FeedbackCommandService feedbackCommandService;
 
   @Operation(summary = "포트폴리오 응답 가져오기(Mock)", description = "포트폴리오 피드백을 feedback id로 가져오기")
   @GetMapping("")
@@ -114,6 +116,7 @@ public class FeedbackCommandController {
             new ObjectId(),
             new ObjectId(),
             new ObjectId(),
+            FeedbackStatus.IN_PROGRESS,
             overallEvaluation,
             new ArrayList<>(),
             List.of(projectEvaluation));
@@ -139,11 +142,21 @@ public class FeedbackCommandController {
     return CustomResponse.okResponseEntity(new RemainCountResponse(5));
   }
 
-  @Operation(summary = "포트폴리오 피드백", description = "포트폴리오 피드백을 반환하는 API [담당자 : 김수진]")
-  @PostMapping(value = "")
-  public ResponseEntity<CustomResponse<String>> getTest(
-      @RequestParam(value = "fileId") String fileId, @RequestBody String additionalChat) {
-    String feedback = feedbackService.portfolioFeedback(fileId, "");
-    return CustomResponse.okResponseEntity(feedback);
+  //  @Operation(summary = "포트폴리오 피드백", description = "포트폴리오 피드백을 반환하는 API [담당자 : 김수진]")
+  //  @PostMapping(value = "")
+  //  public ResponseEntity<CustomResponse<String>> getTest(
+  //      @RequestParam(value = "fileId") ObjectId fileId, @RequestBody String additionalChat) {
+  //    String feedback = feedbackService.portfolioFeedback(fileId, "");
+  //    return CustomResponse.okResponseEntity(feedback);
+  //  }
+
+  @Operation(
+      summary = "포트폴리오 피드백 호출",
+      description = "fileId 받아 포트폴리오 피드백 API 호출 후 feedbackId 반환하는 API [담당자 : 김수진]")
+  @GetMapping(value = "/start")
+  public ResponseEntity<CustomResponse<StartFeedbackResponse>> startFeedback(
+      @RequestParam(value = "fileId") ObjectId fileId) {
+    StartFeedbackResponse response = feedbackCommandService.startFeedback(fileId);
+    return CustomResponse.okResponseEntity(response);
   }
 }
