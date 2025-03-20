@@ -2,11 +2,18 @@ package depromeet.onepiece.common.auth.infrastructure.jwt;
 
 import static io.jsonwebtoken.io.Decoders.BASE64;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -40,5 +47,38 @@ public class TokenProvider {
         .issuedAt(now)
         .signWith(secretKey)
         .compact();
+  }
+
+  public boolean validateToken(String token) {
+    try {
+      Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public Authentication getAuthentication(String token) {
+    Claims claims = getClaims(token);
+    Set<SimpleGrantedAuthority> authorities =
+        Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+    return new UsernamePasswordAuthenticationToken(
+        new org.springframework.security.core.userdetails.User(
+            claims.getSubject(), "", authorities),
+        token,
+        authorities);
+  }
+
+  private Claims getClaims(String token) {
+    return Jwts.parser()
+        .verifyWith(this.getSigningKey())
+        .build()
+        .parseSignedClaims(token)
+        .getPayload();
+  }
+
+  private SecretKey getSigningKey() {
+    byte[] keyBytes = Decoders.BASE64.decode(tokenProperties.secretKey());
+    return Keys.hmacShaKeyFor(keyBytes);
   }
 }

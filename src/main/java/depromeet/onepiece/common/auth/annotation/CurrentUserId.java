@@ -8,9 +8,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * @CurrentUser 어노테이션은 현재 로그인한 사용자의 정보를 주입받음
+ * @CurrentUserId 어노테이션은 현재 로그인한 사용자의 식별자를 주입 받음
  */
 @Parameter(hidden = true)
 @Retention(RUNTIME)
 @Target(PARAMETER)
-public @interface CurrentUser {}
+public @interface CurrentUserId {}
