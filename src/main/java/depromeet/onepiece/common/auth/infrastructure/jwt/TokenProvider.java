@@ -1,7 +1,5 @@
 package depromeet.onepiece.common.auth.infrastructure.jwt;
 
-import static io.jsonwebtoken.io.Decoders.BASE64;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class TokenProvider {
-
   private final TokenProperties tokenProperties;
 
   public String generateAccessToken(String externalId) {
@@ -27,7 +24,7 @@ public class TokenProvider {
     Date now = new Date(currentTimeMillis);
     Date expiration =
         new Date(currentTimeMillis + tokenProperties.expirationTime().accessToken() * 1000);
-    SecretKey secretKey = Keys.hmacShaKeyFor(BASE64.decode(tokenProperties.secretKey()));
+    SecretKey secretKey = getSigningKey();
 
     return Jwts.builder()
         .subject(String.valueOf(externalId))
@@ -40,7 +37,7 @@ public class TokenProvider {
   public String generateRefreshToken(String externalId) {
     long currentTimeMillis = System.currentTimeMillis();
     Date now = new Date(currentTimeMillis);
-    SecretKey secretKey = Keys.hmacShaKeyFor(BASE64.decode(tokenProperties.secretKey()));
+    SecretKey secretKey = getSigningKey();
 
     return Jwts.builder()
         .subject(String.valueOf(externalId))
