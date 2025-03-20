@@ -9,7 +9,6 @@ import com.azure.ai.openai.models.ChatCompletionsOptions;
 import com.azure.ai.openai.models.ChatMessageContentItem;
 import com.azure.ai.openai.models.ChatMessageImageContentItem;
 import com.azure.ai.openai.models.ChatMessageImageUrl;
-import com.azure.ai.openai.models.ChatMessageTextContentItem;
 import com.azure.ai.openai.models.ChatRequestMessage;
 import com.azure.ai.openai.models.ChatRequestSystemMessage;
 import com.azure.ai.openai.models.ChatRequestUserMessage;
@@ -47,14 +46,12 @@ public class AzureService {
             .buildClient();
   }
 
-  public String processChat(
-      List<String> imageUrls, String prompt, String additionalChat, String jsonSchema) {
+  public String processChat(List<String> imageUrls, String prompt, String jsonSchema) {
     List<ChatRequestMessage> chatMessages = new ArrayList<>();
 
     chatMessages.add(new ChatRequestSystemMessage(prompt));
 
     List<ChatMessageContentItem> messageContent = new ArrayList<>();
-    messageContent.add(new ChatMessageTextContentItem(additionalChat));
 
     messageContent.addAll(
         imageUrls.stream()
@@ -69,7 +66,6 @@ public class AzureService {
             .setResponseFormat(
                 new ChatCompletionsJsonSchemaResponseFormat(
                     new ChatCompletionsJsonSchemaResponseFormatJsonSchema("get_weather")
-                        // .setSchema(BinaryData.fromString(jsonSchema))));
                         .setStrict(true)
                         .setDescription("디자이너의 포트폴리오(이미지 순서대로 1페이지, 2페이지, 3페이지..)")
                         .setSchema(BinaryData.fromString(jsonSchema))));

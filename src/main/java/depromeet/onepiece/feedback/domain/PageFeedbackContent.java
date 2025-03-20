@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
-public class FeedbackContent {
+public class PageFeedbackContent {
 
   @Field("type")
   private FeedbackType type;

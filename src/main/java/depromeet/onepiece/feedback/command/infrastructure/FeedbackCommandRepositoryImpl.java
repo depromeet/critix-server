@@ -1,6 +1,5 @@
 package depromeet.onepiece.feedback.command.infrastructure;
 
-import depromeet.onepiece.feedback.command.domain.FeedbackCommandRepository;
 import depromeet.onepiece.feedback.domain.Feedback;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

@@ -1,0 +1,36 @@
+@startuml
+participant Kafka
+participant "Spring Server" as server
+participant "API Key Pool" as ApiPool
+participant ChatGPT
+participant MongoDB
+participant Scheduler
+loop Every 1 minutes
+    Scheduler -> server : 메시지 수신
+end loop
+
+server -> ApiPool : API Key 풀에 가능한 키 요청
+ApiPool -> server : API Key 반환
+
+server -> ChatGPT : 현재 사용 가능한 상태인지 요청
+
+alt ChatGPT가 사용 가능한 경우
+    server -> ChatGPT : 종합 평가에 대해서 AI 요청을 보냄
+    ChatGPT --> server : AI 응답 반환
+    server -> MongoDB : 현재 작업 상태에 대해서 업데이트
+    server -> ApiPool : API Key 반환
+
+
+    server -> ChatGPT : 프로젝트 별 평가 요청
+    ChatGPT --> server : 프로젝트 별 평가 응답
+    server -> MongoDB : 현재 작업 상태에 대해서 업데이트
+    server -> ApiPool : API 키 반환
+
+
+    server -> Kafka : 오프셋 커밋
+
+else ChatGPT Rate Limiter 요청 초과 했을 경우
+    server -> server : 프로세스 종료
+end alt
+
+@enduml

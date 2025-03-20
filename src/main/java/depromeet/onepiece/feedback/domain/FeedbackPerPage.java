@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-/** 확장을 고려해서 일단 document로 저장 */
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
@@ -18,7 +17,7 @@ public class FeedbackPerPage {
   private String pageNumber;
 
   @Field("contents")
-  private List<FeedbackContent> contents;
+  private List<PageFeedbackContent> contents;
 
   @Field("image_url")
   private String imageUrl;

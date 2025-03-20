@@ -1,4 +1,4 @@
-package depromeet.onepiece.feedback.query.domain;
+package depromeet.onepiece.feedback.query.infrastructure;
 
 import depromeet.onepiece.feedback.domain.Feedback;
 import java.util.List;

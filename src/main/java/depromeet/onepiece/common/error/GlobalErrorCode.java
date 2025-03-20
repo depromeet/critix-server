@@ -10,6 +10,7 @@ public enum GlobalErrorCode implements ErrorCode {
   // 공통
   SUCCESS(HttpStatus.OK, "G000", "요청에 성공했습니다."),
   OTHER(HttpStatus.INTERNAL_SERVER_ERROR, "G100", "서버에 오류가 발생했습니다"),
+  JSON_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G101", "JSON 파싱에 실패했습니다"),
 
   // 전체
   METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "GLOBAL_200", "허용되지 않은 메서드입니다"),
