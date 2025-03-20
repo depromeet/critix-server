@@ -20,7 +20,7 @@ public record UserResponse(
     return UserResponse.builder()
         .email(user.getEmail())
         .name(user.getName())
-        // .profileImageUrl(user.getProfileImageUrl()) TODO: 프로필 이미지 URL 주석 제거
+        .profileImageUrl(user.getProfileImageUrl())
         .build();
   }
 }
