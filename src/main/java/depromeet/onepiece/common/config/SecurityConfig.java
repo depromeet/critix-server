@@ -2,6 +2,7 @@ package depromeet.onepiece.common.config;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+import depromeet.onepiece.common.auth.application.jwt.TokenFilter;
 import depromeet.onepiece.common.auth.infrastructure.SecurityProperties;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -26,6 +28,7 @@ public class SecurityConfig {
   private final AuthenticationSuccessHandler authenticationSuccessHandler;
   private final AuthenticationFailureHandler authenticationFailureHandler;
   private final SecurityProperties securityProperties;
+  private final TokenFilter tokenFilter;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -68,6 +71,7 @@ public class SecurityConfig {
   }
 
   private void configurationOAuth2Login(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
     httpSecurity.oauth2Login(
         oauth2 ->
             oauth2
