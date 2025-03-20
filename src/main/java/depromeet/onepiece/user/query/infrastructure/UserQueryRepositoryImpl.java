@@ -4,6 +4,7 @@ import depromeet.onepiece.user.domain.User;
 import depromeet.onepiece.user.query.domain.UserQueryRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -14,6 +15,11 @@ public class UserQueryRepositoryImpl implements UserQueryRepository {
   @Override
   public Optional<User> findUserByEmailAndExternalId(String email, String externalId) {
     return userQueryMongoRepository.findUserByEmailAndExternalId(email, externalId);
+  }
+
+  @Override
+  public Optional<User> findUserById(ObjectId id) {
+    return userQueryMongoRepository.findById(id);
   }
 
   @Override

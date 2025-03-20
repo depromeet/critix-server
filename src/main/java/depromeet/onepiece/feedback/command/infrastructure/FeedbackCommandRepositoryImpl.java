@@ -1,7 +1,10 @@
 package depromeet.onepiece.feedback.command.infrastructure;
 
+import depromeet.onepiece.feedback.command.domain.FeedbackCommandRepository;
 import depromeet.onepiece.feedback.domain.Feedback;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -10,7 +13,12 @@ public class FeedbackCommandRepositoryImpl implements FeedbackCommandRepository 
   private final FeedbackCommandMongoRepository feedbackCommandMongoRepository;
 
   @Override
-  public void save(Feedback feedback) {
-    feedbackCommandMongoRepository.save(feedback);
+  public Feedback save(Feedback feedback) {
+    return feedbackCommandMongoRepository.save(feedback);
+  }
+
+  @Override
+  public Optional<Feedback> findById(ObjectId id) {
+    return feedbackCommandMongoRepository.findById(id);
   }
 }
