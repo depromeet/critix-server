@@ -39,6 +39,10 @@ public class User extends BaseTimeDocument {
   @Email(message = "올바른 이메일 형식이 아닙니다")
   private String email;
 
+  @Field("profile_image_url")
+  @NotBlank(message = "프로필 이미지 URL은 필수 입력값입니다")
+  private String profileImageUrl;
+
   @Field("provider")
   @NotNull(message = "인증 제공자는 필수 입력값입니다") private OAuthProviderType provider;
 
@@ -50,6 +54,8 @@ public class User extends BaseTimeDocument {
         .email(authAttributes.getEmail())
         .provider(authAttributes.getProvider())
         .externalId(authAttributes.getExternalId())
+        .name(authAttributes.getName())
+        .profileImageUrl(authAttributes.getProfileImageUrl())
         .build();
   }
 
