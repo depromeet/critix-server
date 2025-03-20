@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import depromeet.onepiece.file.command.application.FileUploader;
-import depromeet.onepiece.file.command.domain.FileDocumentRepository;
 import depromeet.onepiece.file.command.exception.FileConvertErrorException;
 import depromeet.onepiece.file.command.exception.FileUploadFailedException;
 import depromeet.onepiece.file.domain.FileDocument;

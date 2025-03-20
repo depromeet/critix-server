@@ -1,4 +1,4 @@
-package depromeet.onepiece.file.command.domain;
+package depromeet.onepiece.file.command.infrastructure;
 
 import depromeet.onepiece.file.domain.FileDocument;
 import java.util.Optional;

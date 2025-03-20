@@ -1,6 +1,6 @@
 package depromeet.onepiece.common.config;
 
-import depromeet.onepiece.feedback.command.infrastructure.ChatGPTConstants;
+import depromeet.onepiece.feedback.command.application.ChatGPTConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;

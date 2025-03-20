@@ -1,4 +1,4 @@
-package depromeet.onepiece.feedback.command.infrastructure;
+package depromeet.onepiece.feedback.command.application;
 
 import com.azure.ai.openai.OpenAIClient;
 import com.azure.ai.openai.OpenAIClientBuilder;
@@ -9,7 +9,6 @@ import com.azure.ai.openai.models.ChatCompletionsOptions;
 import com.azure.ai.openai.models.ChatMessageContentItem;
 import com.azure.ai.openai.models.ChatMessageImageContentItem;
 import com.azure.ai.openai.models.ChatMessageImageUrl;
-import com.azure.ai.openai.models.ChatMessageTextContentItem;
 import com.azure.ai.openai.models.ChatRequestMessage;
 import com.azure.ai.openai.models.ChatRequestSystemMessage;
 import com.azure.ai.openai.models.ChatRequestUserMessage;
@@ -47,18 +46,16 @@ public class AzureService {
             .buildClient();
   }
 
-  public String processChat(
-      List<String> imageUrls, String prompt, String additionalChat, String jsonSchema) {
+  public String processChat(List<String> imageUrls, String prompt, String jsonSchema) {
     List<ChatRequestMessage> chatMessages = new ArrayList<>();
 
     chatMessages.add(new ChatRequestSystemMessage(prompt));
 
     List<ChatMessageContentItem> messageContent = new ArrayList<>();
-    messageContent.add(new ChatMessageTextContentItem(additionalChat));
 
     messageContent.addAll(
         imageUrls.stream()
-            .limit(70)
+            .limit(30)
             .map(url -> new ChatMessageImageContentItem(new ChatMessageImageUrl(url)))
             .collect(Collectors.toList()));
 
@@ -74,8 +71,7 @@ public class AzureService {
                         .setSchema(BinaryData.fromString(jsonSchema))));
 
     try {
-      ChatCompletions chatCompletions =
-          client.getChatCompletions("gpt-4o-mini", chatCompletionsOptions);
+      ChatCompletions chatCompletions = client.getChatCompletions("gpt-4o", chatCompletionsOptions);
       Map<String, Object> result = new HashMap<>();
       result.put("id", chatCompletions.getId());
       result.put("choices", chatCompletions.getChoices());

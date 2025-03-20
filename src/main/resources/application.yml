@@ -43,7 +43,7 @@ springdoc:
 
 chatgpt:
   api-key: ${CHATGPT_API_KEY}
-  model: "gpt-4-mini"
+  model: "gpt-4"
   temperature: 0.7
   maxTokens: 4096
   overall-assistant-id: ${OVERALL_ASSISTANT_ID}

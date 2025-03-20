@@ -1,6 +1,5 @@
 package depromeet.onepiece.file.command.infrastructure;
 
-import depromeet.onepiece.file.command.domain.FileDocumentRepository;
 import depromeet.onepiece.file.domain.FileDocument;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
