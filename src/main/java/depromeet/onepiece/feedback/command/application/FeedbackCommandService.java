@@ -1,17 +1,28 @@
 package depromeet.onepiece.feedback.command.application;
 
+import depromeet.onepiece.feedback.command.domain.FeedbackCommandRepository;
 import depromeet.onepiece.feedback.command.infrastructure.ChatGPTService;
+import depromeet.onepiece.feedback.command.infrastructure.FeedbackService;
 import depromeet.onepiece.feedback.command.presentation.request.ChatGPTRequest;
 import depromeet.onepiece.feedback.command.presentation.response.OverallFeedbackResponse;
 import depromeet.onepiece.feedback.command.presentation.response.ProjectFeedbackResponse;
+import depromeet.onepiece.feedback.command.presentation.response.StartFeedbackResponse;
+import depromeet.onepiece.feedback.domain.Feedback;
+import depromeet.onepiece.feedback.domain.FeedbackStatus;
+import depromeet.onepiece.file.command.domain.FileDocumentRepository;
+import depromeet.onepiece.file.command.exception.FileNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class FeedbackCommandService {
   private final ChatGPTService chatGPTService;
+  private final FileDocumentRepository fileRepository;
+  private final FeedbackService feedbackService;
+  private final FeedbackCommandRepository feedbackCommandRepository;
 
   public OverallFeedbackResponse overallFeedback(String portfolioId) {
     // portfolioId 검증
@@ -57,5 +68,16 @@ public class FeedbackCommandService {
         1.0,
         0,
         0);
+  }
+
+  public StartFeedbackResponse startFeedback(ObjectId fileId) {
+    fileId = fileRepository.fileById(fileId).orElseThrow(FileNotFoundException::new).getId();
+
+    feedbackService.portfolioFeedback(fileId, "");
+
+    Feedback feedback =
+        new Feedback(new ObjectId(), null, fileId, FeedbackStatus.IN_PROGRESS, null, null, null);
+    Feedback savedFeedback = feedbackCommandRepository.save(feedback);
+    return new StartFeedbackResponse(savedFeedback.getId().toString());
   }
 }
