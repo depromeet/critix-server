@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+  # Attach these extra labels to all timeseries collected by this Prometheus instance.
+  external_labels:
+    monitor: 'codelab-monitor'
+
+rule_files:
+  - 'prometheus.rules.yml'
+
+
+scrape_configs:
+  - job_name: 'prometheus'
+    metrics_path: '/actuator/prometheus'
+
+    static_configs:
+      - targets: ['host.docker.internal:8080', 'host.docker.internal:8081', 'host.docker.internal:8082']
+        labels:
+          group: 'prometheus'
+
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 30s

@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: onepiece-prometheus
+    user: "$UID:$GID"
+    ports:
+      - "9090:9090"
+    volumes:
+      - /monitoring/prometheus:/etc/prometheus
+    command:
+      - '--web.enable-lifecycle'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - monitoring-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: onepiece-grafana
+    user: "$UID:$GID"
+    ports:
+      - "3000:3000"
+    volumes:
+      - 'grafana_storage:/var/lib/grafana'
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring-network
+
+networks:
+  monitoring-network:
+    driver: bridge
+
+volumes:
+  grafana_storage: {}
