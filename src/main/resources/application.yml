@@ -51,7 +51,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages:
+        spring.json.trusted.packages: depromeet.onepiece.common.eventsourcing.dto
     listener:
       concurrency: 3
       ack-mode: record
