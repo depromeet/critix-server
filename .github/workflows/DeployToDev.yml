@@ -75,3 +75,26 @@ jobs:
           script: |
             docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/docker-compose.yml pull
             docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/docker-compose.yml --env-file ${{ secrets.ENV_FILE_PATH }} up -d
+
+  check:
+    needs: deploy
+    runs-on: ubuntu-22.04
+    environment: development
+
+    steps:
+      - name: health check
+        uses: jtalk/url-health-check-action@v3
+        with:
+          url: ${{ secrets.HEALTH_CHECK_ENDPOINT }}
+          max-attempts: 3
+          retry-delay: 1s
+
+      - name: action-slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: Github Action Health Check
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEB_HOOK_URL }}
+        if: always()
