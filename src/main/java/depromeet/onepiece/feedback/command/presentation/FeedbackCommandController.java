@@ -26,9 +26,8 @@ public class FeedbackCommandController {
       description = "fileId 받아 포트폴리오 피드백 API 호출 후 feedbackId 반환하는 API [담당자 : 김수진]")
   @GetMapping(value = "/start")
   public ResponseEntity<CustomResponse<StartFeedbackResponse>> startFeedback(
-      @RequestParam(value = "fileId") ObjectId fileId, @CurrentUserId String userId) {
-    StartFeedbackResponse response =
-        feedbackCommandFacadeService.startFeedback(new ObjectId(userId), fileId);
+      @RequestParam(value = "fileId") ObjectId fileId, @CurrentUserId ObjectId userId) {
+    StartFeedbackResponse response = feedbackCommandFacadeService.startFeedback(userId, fileId);
     return CustomResponse.okResponseEntity(response);
   }
 }

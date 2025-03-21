@@ -55,6 +55,7 @@ spring:
     listener:
       concurrency: 3
       ack-mode: record
+    intercept-uri: ${KAFKA_INTERCEPT_URI:/api/v1/feedback/start}
 
 springdoc:
   default-consumes-media-type: application/json
