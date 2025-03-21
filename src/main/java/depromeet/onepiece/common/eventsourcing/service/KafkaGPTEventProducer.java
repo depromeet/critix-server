@@ -1,6 +1,6 @@
 package depromeet.onepiece.common.eventsourcing.service;
 
-import depromeet.onepiece.common.eventsourcing.dto.GptFeedbackStatusTopic;
+import depromeet.onepiece.common.eventsourcing.dto.GPTFeedbackStatusTopic;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KafkaGptEventProducer {
+public class KafkaGPTEventProducer {
   private final KafkaTemplate<String, Object> kafkaTemplate;
 
   @Value("${spring.kafka.template.default-topic}")
   private String topic;
 
-  public void produceTopic(final GptFeedbackStatusTopic topicDto) {
+  public void produceTopic(final GPTFeedbackStatusTopic topicDto) {
     kafkaTemplate
         .send(topic, topicDto.id(), topicDto)
         .whenComplete(

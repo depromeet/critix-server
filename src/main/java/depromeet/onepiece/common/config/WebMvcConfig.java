@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import depromeet.onepiece.common.auth.resolver.CurrentUserArgumentResolver;
-import depromeet.onepiece.common.eventsourcing.interceptor.GptEventInterceptor;
+import depromeet.onepiece.common.eventsourcing.interceptor.GPTEventInterceptor;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
   private final CurrentUserArgumentResolver currentUserArgumentResolver;
-  private final GptEventInterceptor gptEventInterceptor;
+  private final GPTEventInterceptor gptEventInterceptor;
 
   @Bean
   public JsonMapper objectMapper() {

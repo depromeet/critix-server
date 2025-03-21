@@ -6,20 +6,20 @@ import lombok.Builder;
 import org.bson.types.ObjectId;
 
 @Builder
-public record GptFeedbackStatusTopic(
+public record GPTFeedbackStatusTopic(
     String id,
     ObjectId userId,
     ObjectId portfolioFileId,
     FeedbackStatus feedbackStatus,
     FeedbackStatus projectStatus,
     int retryCount) {
-  public static GptFeedbackStatusTopic of(
+  public static GPTFeedbackStatusTopic of(
       ObjectId userId,
       ObjectId portfolioFileId,
       FeedbackStatus feedbackStatus,
       FeedbackStatus projectStatus,
       int retryCount) {
-    return GptFeedbackStatusTopic.builder()
+    return GPTFeedbackStatusTopic.builder()
         .id(UUID.randomUUID().toString())
         .userId(userId)
         .portfolioFileId(portfolioFileId)
@@ -29,8 +29,8 @@ public record GptFeedbackStatusTopic(
         .build();
   }
 
-  public static GptFeedbackStatusTopic increaseRetryCount(GptFeedbackStatusTopic topic) {
-    return GptFeedbackStatusTopic.builder()
+  public static GPTFeedbackStatusTopic increaseRetryCount(GPTFeedbackStatusTopic topic) {
+    return GPTFeedbackStatusTopic.builder()
         .id(topic.id())
         .userId(topic.userId())
         .portfolioFileId(topic.portfolioFileId())

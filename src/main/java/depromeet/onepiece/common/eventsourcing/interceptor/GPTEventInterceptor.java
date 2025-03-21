@@ -2,8 +2,8 @@ package depromeet.onepiece.common.eventsourcing.interceptor;
 
 import static depromeet.onepiece.feedback.domain.FeedbackStatus.PENDING;
 
-import depromeet.onepiece.common.eventsourcing.dto.GptFeedbackStatusTopic;
-import depromeet.onepiece.common.eventsourcing.service.KafkaGptEventProducer;
+import depromeet.onepiece.common.eventsourcing.dto.GPTFeedbackStatusTopic;
+import depromeet.onepiece.common.eventsourcing.service.KafkaGPTEventProducer;
 import depromeet.onepiece.user.query.application.CurrentUserIdService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,9 +18,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 @RequiredArgsConstructor
-public class GptEventInterceptor implements HandlerInterceptor {
+public class GPTEventInterceptor implements HandlerInterceptor {
   private final CurrentUserIdService currentUserIdService;
-  private final KafkaGptEventProducer kafkaGptEventProducer;
+  private final KafkaGPTEventProducer kafkaGptEventProducer;
 
   @Value("${spring.kafka.intercept-uri}")
   private String interceptUri;
@@ -43,7 +43,7 @@ public class GptEventInterceptor implements HandlerInterceptor {
       ObjectId fileId = new ObjectId(fileIdParam);
 
       kafkaGptEventProducer.produceTopic(
-          GptFeedbackStatusTopic.of(
+          GPTFeedbackStatusTopic.of(
               userId, fileId, PENDING, PENDING, 0)); // TODO: retry count 받아오기 필요함
     }
     return true;
