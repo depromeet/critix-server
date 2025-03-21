@@ -6,7 +6,7 @@ services:
     container_name: onepiece-prometheus
     user: "$UID:$GID"
     ports:
-      - "9090:9090"
+      - "${PROMETHEUS_PORT}:9090"
     volumes:
       - /monitoring/prometheus:/etc/prometheus
     command:
@@ -20,7 +20,7 @@ services:
     container_name: onepiece-grafana
     user: "$UID:$GID"
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT}:3000"
     volumes:
       - 'grafana_storage:/var/lib/grafana'
     depends_on:
