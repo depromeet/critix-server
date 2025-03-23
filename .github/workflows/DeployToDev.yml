@@ -61,7 +61,7 @@ jobs:
           username: ${{ secrets.NCP_SERVER_USERNAME }}
           password: ${{ secrets.NCP_SERVER_PASSWORD }}
           port: ${{ secrets.NCP_SERVER_PORT }}
-          source: infra/development/docker/docker-compose.yml
+          source: "infra/development/docker/docker-compose.yml, infra/development/docker/monitoring-docker-compose.yml"
           target: ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}
           strip_components: 3
 
@@ -75,6 +75,8 @@ jobs:
           script: |
             docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/docker-compose.yml pull
             docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/docker-compose.yml --env-file ${{ secrets.ENV_FILE_PATH }} up -d
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/monitoring-docker-compose.yml pull
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/monitoring-docker-compose.yml --env-file ${{ secrets.ENV_FILE_PATH }} up -d
 
   check:
     needs: deploy
