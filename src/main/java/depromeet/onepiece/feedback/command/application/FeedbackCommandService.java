@@ -21,14 +21,7 @@ public class FeedbackCommandService {
   public Feedback saveEmpty(ObjectId userId, ObjectId fileId) {
     Feedback feedback =
         new Feedback(
-            new ObjectId(),
-            userId,
-            fileId,
-            FeedbackStatus.PENDING,
-            FeedbackStatus.PENDING,
-            null,
-            null,
-            null);
+            null, userId, fileId, FeedbackStatus.PENDING, FeedbackStatus.PENDING, null, null, null);
 
     return feedbackCommandRepository.save(feedback);
   }

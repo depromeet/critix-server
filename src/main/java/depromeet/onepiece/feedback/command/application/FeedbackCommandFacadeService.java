@@ -8,7 +8,7 @@ import depromeet.onepiece.feedback.domain.Feedback;
 import depromeet.onepiece.feedback.domain.FeedbackStatus;
 import depromeet.onepiece.feedback.domain.OverallEvaluation;
 import depromeet.onepiece.feedback.domain.ProjectEvaluation;
-import depromeet.onepiece.file.command.infrastructure.PresignedUrlGenerator;
+import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,7 @@ public class FeedbackCommandFacadeService {
 
     Feedback feedback =
         new Feedback(
-            new ObjectId(),
+            null,
             userId,
             fileId,
             FeedbackStatus.PENDING,

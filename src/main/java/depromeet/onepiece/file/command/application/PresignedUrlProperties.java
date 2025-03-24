@@ -1,4 +1,4 @@
-package depromeet.onepiece.file.command.infrastructure;
+package depromeet.onepiece.file.command.application;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
