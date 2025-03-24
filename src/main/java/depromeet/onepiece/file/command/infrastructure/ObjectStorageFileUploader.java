@@ -103,12 +103,30 @@ public class ObjectStorageFileUploader implements FileUploader {
       }
 
       removeUploadedFile(pdfFile);
-
+      uploadCompletedFile(fileId);
       return fileRepository.save(
           FileDocument.create(fileId, logicalName, fileType)
               .setPhysicalPath(pdfUploadPath + "," + String.join(",", uploadedFilePaths)));
     } catch (IOException e) {
       throw new FileUploadFailedException();
     }
+  }
+
+  private void uploadCompletedFile(ObjectId fileId) {
+    File completedFile = new File("completed.txt");
+    try {
+      if (!completedFile.exists()) {
+        completedFile.createNewFile();
+      }
+    } catch (IOException e) {
+      log.error("Failed to create completed.txt file", e);
+      throw new FileUploadFailedException();
+    }
+    String completedFilePath = Path.of(fileId.toString(), "processed", "completed.txt").toString();
+    amazonS3.putObject(
+        new PutObjectRequest(bucketName, completedFilePath, completedFile)
+            .withCannedAcl(CannedAccessControlList.Private));
+    log.info("Completed file uploaded to S3: " + completedFilePath);
+    removeUploadedFile(completedFile);
   }
 }
