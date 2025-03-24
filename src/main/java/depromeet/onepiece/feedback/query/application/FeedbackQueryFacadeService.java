@@ -62,12 +62,15 @@ public class FeedbackQueryFacadeService {
 
     return feedbackList.stream()
         .map(
-            feedback ->
-                new RecentFeedbackListResponse(
-                    feedback.getId(),
-                    feedback.getCreatedAt().toLocalDate(),
-                    EncryptionUtil.decrypt(
-                        fileMapByFeedback.get(feedback.getFileId()).getLogicalName())))
+            feedback -> {
+              String logicalName =
+                  Optional.ofNullable(fileMapByFeedback.get(feedback.getFileId()).getLogicalName())
+                      .orElse("");
+              return new RecentFeedbackListResponse(
+                  feedback.getId(),
+                  feedback.getCreatedAt().toLocalDate(),
+                  EncryptionUtil.decrypt(logicalName));
+            })
         .toList();
   }
 }
