@@ -8,13 +8,13 @@ import boto3
 
 # S3 기본 설정
 endpoint_url = "https://kr.object.ncloudstorage.com"
-bucket_name = os.env("BUCKET_NAME")
-access_key = os.env("ACCESS_KEY")
-secret_key = os.env("SECRET_KEY")
+bucket_name = os.getenv("BUCKET_NAME")
+access_key = os.getenv("ACCESS_KEY")
+secret_key = os.getenv("SECRET_KEY")
 
 # OCR API 설정
-ocr_api_url = os.env("OCR_API_URL")
-ocr_secret = os.env("OCR_SECRET")
+ocr_api_url = os.getenv("OCR_API_URL")
+ocr_secret = os.getenv("OCR_SECRET")
 headers = {
     "Content-Type": "application/json",
     "X-OCR-SECRET": ocr_secret
