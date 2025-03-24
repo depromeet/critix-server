@@ -35,10 +35,8 @@ services:
       - ./promtail:/etc/promtail
       - ./logs:/var/log/app/logs
     command: -config.file=/etc/promtail/promtail.yml
-    depends_on:
-      - loki
     networks:
-      - monitoring-network
+      - onepiece-network
 
   onepiece-api:
     image: ${DOCKER_USERNAME}/onepiece-api:latest
