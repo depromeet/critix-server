@@ -15,7 +15,7 @@ scrape_configs:
         labels:
           job: "spring-boot"
           host: "local"
-          __path__: "./promtail/info.log"
+          __path__: "/var/log/app/logs/info.log"
 
   - job_name: "error-logs"
     static_configs:
@@ -24,7 +24,7 @@ scrape_configs:
         labels:
           job: "spring-boot-error"
           host: "local"
-          __path__: "./promtail/info.log"
+          __path__: "/var/log/app/logs/error.log"
 
   - job_name: "warn-logs"
     static_configs:
@@ -33,4 +33,4 @@ scrape_configs:
         labels:
           job: "spring-boot-warn"
           host: "local"
-          __path__: "./promtail/info.log"
+          __path__: "/var/log/app/logs/warn.log"

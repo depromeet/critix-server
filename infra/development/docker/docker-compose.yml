@@ -26,6 +26,20 @@ services:
     networks:
       - onepiece-network
 
+  promtail:
+    image: grafana/promtail:latest
+    ports:
+      - "${PROMTAIL_PORT}:9080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./promtail:/etc/promtail
+      - ./logs:/var/log/app/logs
+    command: -config.file=/etc/promtail/promtail.yml
+    depends_on:
+      - loki
+    networks:
+      - monitoring-network
+
   onepiece-api:
     image: ${DOCKER_USERNAME}/onepiece-api:latest
     container_name: onepiece-api
