@@ -99,11 +99,11 @@ public class FeedbackQueryController {
                     List.of(
                         new PageFeedbackContent(
                             FeedbackType.LOGICAL_LEAP,
-                            "논랴적 비약",
+                            "논리적 비약",
                             List.of(
                                 new EditPair(
-                                    "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
-                                    "새소식의 문제점을 파악하기 위해 사용자를 대상으로 설문을 진행함. 새소식을 1회만 읽은 유저와 4회 이상 읽은 유저로 그룹을 나눠 분석함."),
+                                    "푸시 의존도가 높은 점이 문제. 오가닉 유입을 늘리기 위해 홈탭에서 새소식을 더 잘 보이게 노출하기로 결정함.",
+                                    "푸시 의존도가 높은 것이 문제임. 오가닉 유입을 늘리기 위해 홈 탭에서 새소식 노출 빈도를 높이기로 결정함"),
                                 new EditPair(
                                     "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
                                     "새소식의 문제점을 파악하기 위해 사용자를 대상으로 설문을 진행함. 새소식을 1회만 읽은 유저와 4회 이상 읽은 유저로 그룹을 나눠 분석함.")))),
@@ -112,8 +112,8 @@ public class FeedbackQueryController {
                     "6",
                     List.of(
                         new PageFeedbackContent(
-                            FeedbackType.LOGICAL_LEAP,
-                            "논랴적 비약",
+                            FeedbackType.LENGTH_OR_READABILITY,
+                            "문장이 길거나 가독성이 떨어지는 표현 수정",
                             List.of(
                                 new EditPair(
                                     "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
