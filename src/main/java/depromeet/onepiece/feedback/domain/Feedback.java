@@ -26,6 +26,9 @@ public class Feedback extends BaseTimeDocument {
   @Field("file_id")
   private ObjectId fileId;
 
+  @Field("title")
+  private String title;
+
   @Field("overall_status")
   private FeedbackStatus overallStatus;
 

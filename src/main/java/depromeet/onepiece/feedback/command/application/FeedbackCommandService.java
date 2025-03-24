@@ -24,6 +24,7 @@ public class FeedbackCommandService {
             new ObjectId(),
             userId,
             fileId,
+            null,
             FeedbackStatus.PENDING,
             FeedbackStatus.PENDING,
             null,
