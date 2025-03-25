@@ -59,15 +59,17 @@ public class Feedback extends BaseTimeDocument {
   }
 
   public void updateStatusInProgress() {
-    this.overallStatus = IN_PROGRESS;
-    this.projectStatus = IN_PROGRESS;
+    if (overallStatus != COMPLETE) this.overallStatus = IN_PROGRESS;
+    if (projectStatus != COMPLETE) this.projectStatus = IN_PROGRESS;
   }
 
-  public void completeEvaluation(
-      OverallEvaluation overallEvaluation, List<ProjectEvaluation> projectEvaluation) {
+  public void completeOverallEvaluation(OverallEvaluation overallEvaluation) {
     this.overallStatus = COMPLETE;
-    this.projectStatus = COMPLETE;
     this.overallEvaluation = overallEvaluation;
+  }
+
+  public void completeProjectEvaluation(List<ProjectEvaluation> projectEvaluation) {
+    this.projectStatus = COMPLETE;
     this.projectEvaluation = projectEvaluation;
   }
 }

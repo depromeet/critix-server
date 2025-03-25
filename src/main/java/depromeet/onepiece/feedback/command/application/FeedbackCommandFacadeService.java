@@ -2,6 +2,7 @@ package depromeet.onepiece.feedback.command.application;
 
 import static depromeet.onepiece.feedback.command.application.ChatGPTConstants.OverallSchema;
 import static depromeet.onepiece.feedback.command.application.ChatGPTConstants.ProjectSchema;
+import static depromeet.onepiece.feedback.domain.FeedbackStatus.COMPLETE;
 import static depromeet.onepiece.feedback.domain.FeedbackStatus.PENDING;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -42,24 +43,26 @@ public class FeedbackCommandFacadeService {
 
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
 
-    OverallEvaluation overallEvaluation = requestOverallEvaluation(imageUrls);
-    List<ProjectEvaluation> projectEvaluations = requestProjectEvaluation(imageUrls);
-
-    feedback.completeEvaluation(overallEvaluation, projectEvaluations);
+    requestOverallEvaluation(imageUrls, feedback);
+    requestProjectEvaluation(imageUrls, feedback);
   }
 
-  private List<ProjectEvaluation> requestProjectEvaluation(List<String> imageUrls) {
+  private void requestProjectEvaluation(List<String> imageUrls, Feedback feedback) {
+    if (feedback.getProjectStatus() == COMPLETE) return;
     String projectFeedback =
         azureService.processChat(imageUrls, ChatGPTConstants.PROJECT_PROMPT, ProjectSchema);
     JsonNode projectJsonNode = ConvertService.readTree(projectFeedback, "projectEvaluation");
-    return ConvertService.convertValue(
-        projectJsonNode, new TypeReference<List<ProjectEvaluation>>() {});
+    feedback.completeProjectEvaluation(
+        ConvertService.convertValue(
+            projectJsonNode, new TypeReference<List<ProjectEvaluation>>() {}));
   }
 
-  private OverallEvaluation requestOverallEvaluation(List<String> imageUrls) {
+  private void requestOverallEvaluation(List<String> imageUrls, Feedback feedback) {
+    if (feedback.getProjectStatus() == COMPLETE) return;
     String overallFeedback =
         azureService.processChat(imageUrls, ChatGPTConstants.OVERALL_PROMPT, OverallSchema);
-    return ConvertService.readValue(overallFeedback, OverallEvaluation.class);
+    feedback.completeOverallEvaluation(
+        ConvertService.readValue(overallFeedback, OverallEvaluation.class));
   }
 
   public StartFeedbackResponse startFeedback(ObjectId userId, ObjectId fileId) {
