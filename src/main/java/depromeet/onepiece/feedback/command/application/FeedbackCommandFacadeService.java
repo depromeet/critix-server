@@ -1,7 +1,11 @@
 package depromeet.onepiece.feedback.command.application;
 
+import static depromeet.onepiece.feedback.domain.FeedbackStatus.PENDING;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import depromeet.onepiece.common.eventsourcing.dto.GPTFeedbackStatusTopic;
+import depromeet.onepiece.common.eventsourcing.producer.KafkaGPTEventProducer;
 import depromeet.onepiece.common.utils.ConvertService;
 import depromeet.onepiece.feedback.command.presentation.response.StartFeedbackResponse;
 import depromeet.onepiece.feedback.domain.Feedback;
@@ -22,6 +26,7 @@ public class FeedbackCommandFacadeService {
   private final AzureService azureService;
   private final PresignedUrlGenerator presignedUrlGenerator;
   private final FeedbackCommandService feedbackCommandService;
+  private final KafkaGPTEventProducer kafkaGptEventProducer;
 
   /**
    * TODO 카프카 연동하기 , 이 메서드 호출해서 ai 요청하기, 추후 수정 여지가 매우 많음 .일단 이러한 형태로 진행이 될거고 중간중간 에러 핸들링이나 상태 저장등
@@ -68,6 +73,8 @@ public class FeedbackCommandFacadeService {
 
   public StartFeedbackResponse startFeedback(ObjectId userId, ObjectId fileId) {
     Feedback feedback = feedbackCommandService.saveEmpty(userId, fileId);
+    kafkaGptEventProducer.produceTopic(
+        GPTFeedbackStatusTopic.of(userId, fileId, PENDING, PENDING, 0));
     return new StartFeedbackResponse(feedback.getId().toString());
   }
 }

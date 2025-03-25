@@ -1,4 +1,4 @@
-package depromeet.onepiece.common.eventsourcing.service;
+package depromeet.onepiece.common.eventsourcing.producer;
 
 import depromeet.onepiece.common.eventsourcing.dto.GPTFeedbackStatusTopic;
 import lombok.RequiredArgsConstructor;
