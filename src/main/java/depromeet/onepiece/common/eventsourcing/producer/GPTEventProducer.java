@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KafkaGPTEventProducer {
+public class GPTEventProducer {
   private final KafkaTemplate<String, Object> kafkaTemplate;
 
   @Value("${spring.kafka.template.default-topic}")

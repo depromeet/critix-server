@@ -42,18 +42,18 @@ spring:
       client-id: kafka-consumer
       group-id: gpt-limiter-group
       auto-offset-reset: earliest
+      max-poll-records: 10
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "depromeet.onepiece.common.eventsourcing.dto"
     producer:
       client-id: kafka-producer
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.trusted.packages: depromeet.onepiece.common.eventsourcing.dto
     listener:
       concurrency: 3
       ack-mode: record
-    intercept-uri: ${KAFKA_INTERCEPT_URI:/api/v1/feedback/start}
 
 springdoc:
   default-consumes-media-type: application/json

@@ -1,23 +1,27 @@
 package depromeet.onepiece.feedback.command.application;
 
+import static depromeet.onepiece.feedback.command.application.ChatGPTConstants.OverallSchema;
+import static depromeet.onepiece.feedback.command.application.ChatGPTConstants.ProjectSchema;
 import static depromeet.onepiece.feedback.domain.FeedbackStatus.PENDING;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import depromeet.onepiece.common.eventsourcing.dto.GPTFeedbackStatusTopic;
-import depromeet.onepiece.common.eventsourcing.producer.KafkaGPTEventProducer;
+import depromeet.onepiece.common.eventsourcing.producer.GPTEventProducer;
 import depromeet.onepiece.common.utils.ConvertService;
 import depromeet.onepiece.feedback.command.presentation.response.StartFeedbackResponse;
 import depromeet.onepiece.feedback.domain.Feedback;
 import depromeet.onepiece.feedback.domain.FeedbackStatus;
 import depromeet.onepiece.feedback.domain.OverallEvaluation;
 import depromeet.onepiece.feedback.domain.ProjectEvaluation;
+import depromeet.onepiece.feedback.query.infrastructure.FeedbackQueryRepository;
 import depromeet.onepiece.file.command.infrastructure.PresignedUrlGenerator;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +30,42 @@ public class FeedbackCommandFacadeService {
   private final AzureService azureService;
   private final PresignedUrlGenerator presignedUrlGenerator;
   private final FeedbackCommandService feedbackCommandService;
-  private final KafkaGPTEventProducer kafkaGptEventProducer;
+  private final FeedbackQueryRepository feedbackQueryRepository;
+  private final GPTEventProducer gptEventProducer;
+
+  @Transactional
+  public void requestEvaluation(final ObjectId feedbackId, final ObjectId fileId) {
+    Feedback feedback = feedbackQueryRepository.findById(feedbackId);
+    feedback.updateStatusInProgress();
+
+    List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
+
+    OverallEvaluation overallEvaluation = requestOverallEvaluation(imageUrls);
+    List<ProjectEvaluation> projectEvaluations = requestProjectEvaluation(imageUrls);
+
+    feedback.completeEvaluation(overallEvaluation, projectEvaluations);
+  }
+
+  private List<ProjectEvaluation> requestProjectEvaluation(List<String> imageUrls) {
+    String projectFeedback =
+        azureService.processChat(imageUrls, ChatGPTConstants.PROJECT_PROMPT, ProjectSchema);
+    JsonNode projectJsonNode = ConvertService.readTree(projectFeedback, "projectEvaluation");
+    return ConvertService.convertValue(
+        projectJsonNode, new TypeReference<List<ProjectEvaluation>>() {});
+  }
+
+  private OverallEvaluation requestOverallEvaluation(List<String> imageUrls) {
+    String overallFeedback =
+        azureService.processChat(imageUrls, ChatGPTConstants.OVERALL_PROMPT, OverallSchema);
+    return ConvertService.readValue(overallFeedback, OverallEvaluation.class);
+  }
+
+  public StartFeedbackResponse startFeedback(ObjectId userId, ObjectId fileId) {
+    Feedback feedback = feedbackCommandService.saveEmpty(userId, fileId);
+    gptEventProducer.produceTopic(
+        GPTFeedbackStatusTopic.of(userId, fileId, feedback.getId(), PENDING, PENDING, 0));
+    return new StartFeedbackResponse(feedback.getId().toString());
+  }
 
   /**
    * TODO 카프카 연동하기 , 이 메서드 호출해서 ai 요청하기, 추후 수정 여지가 매우 많음 .일단 이러한 형태로 진행이 될거고 중간중간 에러 핸들링이나 상태 저장등
@@ -40,8 +79,8 @@ public class FeedbackCommandFacadeService {
 
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
 
-    String overallJsonSchema = ChatGPTConstants.OverallSchema;
-    String projectJsonSchema = ChatGPTConstants.ProjectSchema;
+    String overallJsonSchema = OverallSchema;
+    String projectJsonSchema = ProjectSchema;
 
     String overallFeedback =
         azureService.processChat(imageUrls, ChatGPTConstants.OVERALL_PROMPT, overallJsonSchema);
@@ -69,12 +108,5 @@ public class FeedbackCommandFacadeService {
 
     feedbackCommandService.save(feedback);
     return feedback;
-  }
-
-  public StartFeedbackResponse startFeedback(ObjectId userId, ObjectId fileId) {
-    Feedback feedback = feedbackCommandService.saveEmpty(userId, fileId);
-    kafkaGptEventProducer.produceTopic(
-        GPTFeedbackStatusTopic.of(userId, fileId, PENDING, PENDING, 0));
-    return new StartFeedbackResponse(feedback.getId().toString());
   }
 }

@@ -1,4 +1,4 @@
-package depromeet.onepiece.common.config;
+package depromeet.onepiece.common.eventsourcing.config;
 
 import static org.apache.kafka.common.requests.CreateTopicsRequest.NO_REPLICATION_FACTOR;
 

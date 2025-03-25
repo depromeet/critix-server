@@ -1,5 +1,7 @@
 package depromeet.onepiece.feedback.domain;
 
+import static depromeet.onepiece.feedback.domain.FeedbackStatus.COMPLETE;
+import static depromeet.onepiece.feedback.domain.FeedbackStatus.IN_PROGRESS;
 import static lombok.AccessLevel.*;
 
 import depromeet.onepiece.common.domain.BaseTimeDocument;
@@ -43,4 +45,17 @@ public class Feedback extends BaseTimeDocument {
 
   @Field("project_evaluation")
   private List<ProjectEvaluation> projectEvaluation;
+
+  public void updateStatusInProgress() {
+    this.overallStatus = IN_PROGRESS;
+    this.projectStatus = IN_PROGRESS;
+  }
+
+  public void completeEvaluation(
+      OverallEvaluation overallEvaluation, List<ProjectEvaluation> projectEvaluation) {
+    this.overallStatus = COMPLETE;
+    this.projectStatus = COMPLETE;
+    this.overallEvaluation = overallEvaluation;
+    this.projectEvaluation = projectEvaluation;
+  }
 }

@@ -9,20 +9,23 @@ import org.bson.types.ObjectId;
 public record GPTFeedbackStatusTopic(
     String id,
     ObjectId userId,
-    ObjectId portfolioFileId,
+    ObjectId fileId,
+    ObjectId feedbackId,
     FeedbackStatus feedbackStatus,
     FeedbackStatus projectStatus,
     int retryCount) {
   public static GPTFeedbackStatusTopic of(
       ObjectId userId,
-      ObjectId portfolioFileId,
+      ObjectId fileId,
+      ObjectId feedbackId,
       FeedbackStatus feedbackStatus,
       FeedbackStatus projectStatus,
       int retryCount) {
     return GPTFeedbackStatusTopic.builder()
         .id(UUID.randomUUID().toString())
         .userId(userId)
-        .portfolioFileId(portfolioFileId)
+        .fileId(fileId)
+        .feedbackId(feedbackId)
         .feedbackStatus(feedbackStatus)
         .projectStatus(projectStatus)
         .retryCount(retryCount)
@@ -33,7 +36,8 @@ public record GPTFeedbackStatusTopic(
     return GPTFeedbackStatusTopic.builder()
         .id(topic.id())
         .userId(topic.userId())
-        .portfolioFileId(topic.portfolioFileId())
+        .fileId(topic.fileId())
+        .feedbackId(topic.feedbackId())
         .feedbackStatus(topic.feedbackStatus())
         .projectStatus(topic.projectStatus())
         .retryCount(topic.retryCount() + 1)
