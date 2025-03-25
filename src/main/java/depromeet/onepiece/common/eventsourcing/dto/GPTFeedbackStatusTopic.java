@@ -8,9 +8,9 @@ import org.bson.types.ObjectId;
 @Builder
 public record GPTFeedbackStatusTopic(
     String id,
-    ObjectId userId,
-    ObjectId fileId,
-    ObjectId feedbackId,
+    String userId,
+    String fileId,
+    String feedbackId,
     FeedbackStatus feedbackStatus,
     FeedbackStatus projectStatus,
     int retryCount) {
@@ -23,9 +23,9 @@ public record GPTFeedbackStatusTopic(
       int retryCount) {
     return GPTFeedbackStatusTopic.builder()
         .id(UUID.randomUUID().toString())
-        .userId(userId)
-        .fileId(fileId)
-        .feedbackId(feedbackId)
+        .userId(userId.toString())
+        .fileId(fileId.toString())
+        .feedbackId(feedbackId.toString())
         .feedbackStatus(feedbackStatus)
         .projectStatus(projectStatus)
         .retryCount(retryCount)

@@ -14,15 +14,17 @@ import depromeet.onepiece.feedback.domain.Feedback;
 import depromeet.onepiece.feedback.domain.FeedbackStatus;
 import depromeet.onepiece.feedback.domain.OverallEvaluation;
 import depromeet.onepiece.feedback.domain.ProjectEvaluation;
-import depromeet.onepiece.feedback.query.infrastructure.FeedbackQueryRepository;
+import depromeet.onepiece.feedback.query.application.FeedbackQueryService;
 import depromeet.onepiece.file.command.infrastructure.PresignedUrlGenerator;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FeedbackCommandFacadeService {
@@ -30,12 +32,12 @@ public class FeedbackCommandFacadeService {
   private final AzureService azureService;
   private final PresignedUrlGenerator presignedUrlGenerator;
   private final FeedbackCommandService feedbackCommandService;
-  private final FeedbackQueryRepository feedbackQueryRepository;
+  private final FeedbackQueryService feedbackQueryService;
   private final GPTEventProducer gptEventProducer;
 
   @Transactional
   public void requestEvaluation(final ObjectId feedbackId, final ObjectId fileId) {
-    Feedback feedback = feedbackQueryRepository.findById(feedbackId);
+    Feedback feedback = feedbackQueryService.getById(feedbackId);
     feedback.updateStatusInProgress();
 
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
@@ -61,10 +63,14 @@ public class FeedbackCommandFacadeService {
   }
 
   public StartFeedbackResponse startFeedback(ObjectId userId, ObjectId fileId) {
-    Feedback feedback = feedbackCommandService.saveEmpty(userId, fileId);
-    gptEventProducer.produceTopic(
-        GPTFeedbackStatusTopic.of(userId, fileId, feedback.getId(), PENDING, PENDING, 0));
-    return new StartFeedbackResponse(feedback.getId().toString());
+    ObjectId feedbackId = feedbackCommandService.saveEmpty(userId, fileId);
+    log.info("feedbackId: {}", feedbackId);
+    GPTFeedbackStatusTopic gptFeedbackStatusTopic =
+        GPTFeedbackStatusTopic.of(userId, fileId, feedbackId, PENDING, PENDING, 0);
+    log.info("gptFeedbackStatusTopic: {}", gptFeedbackStatusTopic);
+    gptEventProducer.produceTopic(gptFeedbackStatusTopic);
+
+    return new StartFeedbackResponse(feedbackId.toString());
   }
 
   /**
