@@ -1,0 +1,21 @@
+groups:
+  - name: cpu-node
+    rules:
+      - record: job_instance_mode:node_cpu_seconds:avg_rate5m
+        expr: avg by (job, instance, mode) (rate(node_cpu_seconds_total[5m]))
+
+  - name: system-monitor
+    rules:
+    - alert: ApplicationDown
+      expr: up == 0
+      for: 5m
+      annotations:
+        summary: "Instance {{ $labels.instance }} down"
+        description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes."
+
+    - alert: HighRequestLatency
+      expr: histogram_quantile(0.5, rate(api_http_request_duration_seconds_bucket[5m])) > 1
+      for: 5m
+      annotations:
+        summary: "High request latency on {{ $labels.instance }}"
+        description: "{{ $labels.instance }} has a median request latency above 1s (current value: {{ $value }}s)"

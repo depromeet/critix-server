@@ -86,3 +86,9 @@ cloud:
 encryption:
   secret-key: ${ENCRYPTION_SECRET_KEY}
   algorithm: ${ENCRYPTION_ALGORITHM}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
