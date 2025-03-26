@@ -67,12 +67,12 @@ public class FeedbackCommandFacadeService {
 
   public StartFeedbackResponse startFeedback(ObjectId userId, ObjectId fileId) {
     ObjectId feedbackId = feedbackCommandService.saveEmpty(userId, fileId);
-    log.info("feedbackId: {}", feedbackId);
+
     GPTFeedbackStatusTopic gptFeedbackStatusTopic =
         GPTFeedbackStatusTopic.of(userId, fileId, feedbackId, PENDING, PENDING, 0);
-    log.info("gptFeedbackStatusTopic: {}", gptFeedbackStatusTopic);
-    gptEventProducer.produceTopic(gptFeedbackStatusTopic);
+    log.info("topic: {}", gptFeedbackStatusTopic);
 
+    gptEventProducer.produceTopic(gptFeedbackStatusTopic);
     return new StartFeedbackResponse(feedbackId.toString());
   }
 
