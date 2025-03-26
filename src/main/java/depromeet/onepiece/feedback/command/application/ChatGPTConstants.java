@@ -465,278 +465,329 @@ public final class ChatGPTConstants {
 			""";
   public static final String COMBINED_FEEDBACK_PROMPT =
       """
-        다음 이미지는 디자이너의 포트폴리오입니다. 하나의 포트폴리오에 여러 개의 프로젝트가 포함되어 있을 수 있습니다.
+		   다음 이미지는 디자이너의 포트폴리오입니다. 하나의 포트폴리오에 여러 개의 프로젝트가 포함되어 있을 수 있습니다.
 
-        각 프로젝트를 **구분해서 감지**한 후, 각 프로젝트마다 다음 두 가지 피드백을 모두 작성해 주세요:
+		   각 프로젝트를 **구분해서 감지**한 후, 각 프로젝트마다 다음 두 가지 피드백을 모두 작성해 주세요:
 
-        ---
+		          ---
 
-        1. **프로젝트 전체 피드백 (projectEvaluation)**
-        아래 항목들을 포함해 주세요:
-        - `projectName`: 프로젝트 제목
-        - `process`: ["개요", "문제정의", "가설", "결과", "회고"] 각각에 대해 `"GOOD"`, `"SOSO"`, `"BAD"` 중 하나로 평가
-        - `processReview`: 위 평가에 대한 이유를 2~3문장으로 설명
-        - `positiveFeedback`: 긍정적인 피드백 3~4개 (각 항목은 `title`, `content` 리스트 형태)
-        - `negativeFeedback`: 개선이 필요한 피드백 3~4개 (각 항목은 `title`, `content` 리스트 형태)
-        - `projectSummary`: 전체 총평
+		          1. **프로젝트 전체 피드백 (projectEvaluation)**
+		          아래 항목들을 포함해 주세요:
+		          - `projectName`: 프로젝트 제목
+		          - `process`: ["개요", "문제정의", "가설", "결과", "회고"] 각각에 대해 `"GOOD"`, `"SOSO"`, `"BAD"` 중 하나로 평가
+		          - `processReview`: 위 평가에 대한 이유를 2~3문장으로 설명
+		          - `positiveFeedback`: 긍정적인 피드백 3~4개 (각 항목은 `title`, `content` 리스트 형태)
+		          - `negativeFeedback`: 개선이 필요한 피드백 3~4개 (각 항목은 `title`, `content` 리스트 형태)
+		          - `projectSummary`: 전체 총평
 
-        ---
+		          ---
 
-        2. **페이지 별 피드백 (pageFeedback)**
-        각 프로젝트의 이미지 내 페이지 번호를 기준으로 다음 항목을 포함해 주세요:
-        - `페이지`: 페이지 번호
-        - `피드백_수`: 해당 페이지에 작성된 피드백 개수
-        - `항목`: 다음 형식으로 구성
-            - `카테고리`: 문제 유형 번호 (1~5)
-                - 1: 번역체/어색한 표현
-                - 2: 문장이 길거나 가독성이 떨어지는 표현
-                - 3: 가독성 개선
-                - 4: 논리적 비약
-                - 5: 불필요한 반복 및 의미 명확화
-            - `기존_문장`: 원래 문장
-            - `수정_문장`: 제안된 자연스러운 문장
-        ---
-        3. 예시 응답 (참고용 예시)
-			{
-			  "projects": [
-			    {
-			      "projectName": "토스 새소식 프로젝트",
-			      "projectEvaluation": {
-			        "process": ["GOOD", "GOOD", "GOOD", "GOOD", "SOSO"],
-			        "processReview": "문제 정의부터 실험과 결과까지 논리적으로 잘 구성되어 있습니다. 회고 부분은 조금 더 구체적인 인사이트가 담겼으면 좋았을 것 같습니다.",
-			        "positiveFeedback": [
-			          {
-			            "title": "정량 데이터 활용",
-			            "content": [
-			              "리텐션, CTW 등 정량 데이터를 기반으로 문제를 분석한 점이 좋았습니다.",
-			              "사용자 행동을 수치로 분석하여 신뢰도를 높였습니다."
-			            ]
-			          },
-			          {
-			            "title": "그로스 전략 구성",
-			            "content": [
-			              "시즌성을 활용한 전략이 효과적이었습니다.",
-			              "이벤트와 혜택 구성이 사용자 몰입도를 높였습니다."
-			            ]
-			          },
-			          {
-			            "title": "포트폴리오 구성력",
-			            "content": [
-			              "카드 UI와 강조 포인트가 가독성을 높였습니다.",
-			              "섹션 분할이 명확해 흐름을 쉽게 따라갈 수 있었습니다."
-			            ]
-			          }
-			        ],
-			        "negativeFeedback": [
-			          {
-			            "title": "회고 부족",
-			            "content": [
-			              "표면적인 회고에 머무르고, 다음 프로젝트에 대한 연결점이 부족했습니다.",
-			              "디자이너로서의 성장 인사이트가 드러나지 않았습니다."
-			            ]
-			          },
-			          {
-			            "title": "비교 시각화 부족",
-			            "content": [
-			              "디자인 변경 전/후의 비교 자료가 더 있었다면 설득력이 높았을 것입니다.",
-			              "변경 이유에 대한 시각적 증거가 부족합니다."
-			            ]
-			          }
-			        ],
-			        "projectSummary": "문제 정의와 분석, 실험 설계까지 탄탄하게 구성된 프로젝트입니다. 다만 회고와 시각 자료 면에서 조금 아쉬움이 남습니다."
-			      },
-			      "pageFeedback": [
-			        {
-			          "페이지": 3,
-			          "피드백_수": 1,
-			          "항목": [
-			            {
-			              "카테고리": 1,
-			              "기존_문장": "본 기능은 사용자에게 보다 직관적인 경험을 제공하고자 설계되었습니다.",
-			              "수정_문장": "이 기능은 사용자가 더 쉽게 이해할 수 있도록 설계했습니다."
-			            }
-			          ]
-			        },
-			        {
-			          "페이지": 5,
-			          "피드백_수": 1,
-			          "항목": [
-			            {
-			              "카테고리": 2,
-			              "기존_문장": "사용자는 설정 페이지에서 알림 수신 여부를 직접 조정할 수 있는 기능을 사용할 수 있습니다.",
-			              "수정_문장": "사용자는 설정 페이지에서 알림 수신 여부를 직접 설정할 수 있습니다."
-			            }
-			          ]
-			        }
-			      ]
-			    },
-			    {
-			      "projectName": "배달앱 리디자인",
-			      "projectEvaluation": {
-			        "process": ["GOOD", "SOSO", "SOSO", "GOOD", "GOOD"],
-			        "processReview": "개요와 결과, 회고는 안정적으로 작성되었으나, 문제 정의와 가설이 다소 추상적으로 표현되어 아쉬움이 있습니다.",
-			        "positiveFeedback": [
-			          {
-			            "title": "UI 개선의 명확성",
-			            "content": [
-			              "사용자 플로우 개선이 명확하게 드러났습니다.",
-			              "리디자인 전후 흐름을 통해 UX 향상을 잘 설명했습니다."
-			            ]
-			          },
-			          {
-			            "title": "사용자 중심 설계",
-			            "content": [
-			              "페르소나 기반으로 기능 우선순위를 설정한 점이 인상적이었습니다.",
-			              "사용자 불편 요소를 잘 캐치해 개선 포인트로 삼았습니다."
-			            ]
-			          }
-			        ],
-			        "negativeFeedback": [
-			          {
-			            "title": "가설의 구체성 부족",
-			            "content": [
-			              "가설이 너무 포괄적이고, 실험과의 연결성이 부족합니다.",
-			              "어떤 지표를 통해 검증하는지 명확하지 않았습니다."
-			            ]
-			          },
-			          {
-			            "title": "데이터 활용 부족",
-			            "content": [
-			              "정량 지표나 사용자 피드백 등 데이터 기반 분석이 미흡했습니다.",
-			              "개선 효과를 수치로 보여주었으면 설득력이 높아졌을 것입니다."
-			            ]
-			          }
-			        ],
-			        "projectSummary": "사용자 중심의 UI 개선과 명확한 결과 표현이 돋보인 프로젝트입니다. 다만 가설과 문제 정의의 설득력이 약하고, 정량적 분석이 부족한 점은 개선이 필요합니다."
-			      },
-			      "pageFeedback": [
-			        {
-			          "페이지": 2,
-			          "피드백_수": 1,
-			          "항목": [
-			            {
-			              "카테고리": 5,
-			              "기존_문장": "이 앱은 사용자에게 빠르고 편리한 경험을 제공하기 위해 만들어졌습니다.",
-			              "수정_문장": "앱은 빠르고 편리한 사용자 경험을 제공하도록 설계되었습니다."
-			            }
-			          ]
-			        },
-			        {
-			          "페이지": 4,
-			          "피드백_수": 1,
-			          "항목": [
-			            {
-			              "카테고리": 3,
-			              "기존_문장": "주요 기능을 정리한 다음, 사용자의 니즈를 바탕으로 개선 방향을 도출하였습니다.",
-			              "수정_문장": "주요 기능을 정리하고 사용자의 니즈를 반_
-
+		          2. **페이지 별 피드백 (feedbackPerPage)**
+		          각 프로젝트의 이미지 내 페이지 번호를 기준으로 다음 항목을 포함해 주세요:
+		          - `feedbackPerPage`: 페이지 번호
+		          - `contents`: 다음 형식으로 구성
+		              - `type`: 문제 유형 번호 (1~5)
+		                  - 1: 번역체/어색한 표현
+		                  - 2: 문장이 길거나 가독성이 떨어지는 표현
+		                  - 3: 가독성 개선
+		                  - 4: 논리적 비약
+		                  - 5: 불필요한 반복 및 의미 명확화
+		              - `beforeEdit`: 원래 문장
+		              - `afterEdit`: 제안된 자연스러운 문장
+		          ---
+		          3. 예시 응답 (참고용 예시)
+		  			{
+		  			  "projects": [
+		  			    {
+		  			      "projectName": "토스 새소식 프로젝트",
+		  			      "projectEvaluation": {
+		  			        "process": ["GOOD", "GOOD", "GOOD", "GOOD", "SOSO"],
+		  			        "processReview": "문제 정의부터 실험과 결과까지 논리적으로 잘 구성되어 있습니다. 회고 부분은 조금 더 구체적인 인사이트가 담겼으면 좋았을 것 같습니다.",
+		  			        "positiveFeedback": [
+		  			          {
+		  			            "title": "정량 데이터 활용",
+		  			            "content": [
+		  			              "리텐션, CTW 등 정량 데이터를 기반으로 문제를 분석한 점이 좋았습니다.",
+		  			              "사용자 행동을 수치로 분석하여 신뢰도를 높였습니다."
+		  			            ]
+		  			          },
+		  			          {
+		  			            "title": "그로스 전략 구성",
+		  			            "content": [
+		  			              "시즌성을 활용한 전략이 효과적이었습니다.",
+		  			              "이벤트와 혜택 구성이 사용자 몰입도를 높였습니다."
+		  			            ]
+		  			          },
+		  			          {
+		  			            "title": "포트폴리오 구성력",
+		  			            "content": [
+		  			              "카드 UI와 강조 포인트가 가독성을 높였습니다.",
+		  			              "섹션 분할이 명확해 흐름을 쉽게 따라갈 수 있었습니다."
+		  			            ]
+		  			          }
+		  			        ],
+		  			        "negativeFeedback": [
+		  			          {
+		  			            "title": "회고 부족",
+		  			            "content": [
+		  			              "표면적인 회고에 머무르고, 다음 프로젝트에 대한 연결점이 부족했습니다.",
+		  			              "디자이너로서의 성장 인사이트가 드러나지 않았습니다."
+		  			            ]
+		  			          },
+		  			          {
+		  			            "title": "비교 시각화 부족",
+		  			            "content": [
+		  			              "디자인 변경 전/후의 비교 자료가 더 있었다면 설득력이 높았을 것입니다.",
+		  			              "변경 이유에 대한 시각적 증거가 부족합니다."
+		  			            ]
+		  			          }
+		  			        ],
+		  			        "projectSummary": "문제 정의와 분석, 실험 설계까지 탄탄하게 구성된 프로젝트입니다. 다만 회고와 시각 자료 면에서 조금 아쉬움이 남습니다."
+		  			      },
+		  			      "feedbackPerPage": [
+		  			        {
+		  			          "pageNumber": 3,
+		  			          "contents": [
+		  			            {
+		  			              "type": 1,
+		  			              "beforeEdit": "본 기능은 사용자에게 보다 직관적인 경험을 제공하고자 설계되었습니다.",
+		  			              "afterEdit": "이 기능은 사용자가 더 쉽게 이해할 수 있도록 설계했습니다."
+		  			            }
+		  			          ]
+		  			        },
+		  			        {
+		  			          "pageNumber": 5,
+		  			          "contents": [
+		  			            {
+		  			              "type": 2,
+		  			              "beforeEdit": "사용자는 설정 페이지에서 알림 수신 여부를 직접 조정할 수 있는 기능을 사용할 수 있습니다.",
+		  			              "afterEdit": "사용자는 설정 페이지에서 알림 수신 여부를 직접 설정할 수 있습니다."
+		  			            }
+		  			          ]
+		  			        }
+		  			      ]
+		  			    },
+		  			    {
+		  			      "projectName": "배달앱 리디자인",
+		  			      "projectEvaluation": {
+		  			        "process": ["GOOD", "SOSO", "SOSO", "GOOD", "GOOD"],
+		  			        "processReview": "개요와 결과, 회고는 안정적으로 작성되었으나, 문제 정의와 가설이 다소 추상적으로 표현되어 아쉬움이 있습니다.",
+		  			        "positiveFeedback": [
+		  			          {
+		  			            "title": "UI 개선의 명확성",
+		  			            "content": [
+		  			              "사용자 플로우 개선이 명확하게 드러났습니다.",
+		  			              "리디자인 전후 흐름을 통해 UX 향상을 잘 설명했습니다."
+		  			            ]
+		  			          },
+		  			          {
+		  			            "title": "사용자 중심 설계",
+		  			            "content": [
+		  			              "페르소나 기반으로 기능 우선순위를 설정한 점이 인상적이었습니다.",
+		  			              "사용자 불편 요소를 잘 캐치해 개선 포인트로 삼았습니다."
+		  			            ]
+		  			          }
+		  			        ],
+		  			        "negativeFeedback": [
+		  			          {
+		  			            "title": "가설의 구체성 부족",
+		  			            "content": [
+		  			              "가설이 너무 포괄적이고, 실험과의 연결성이 부족합니다.",
+		  			              "어떤 지표를 통해 검증하는지 명확하지 않았습니다."
+		  			            ]
+		  			          },
+		  			          {
+		  			            "title": "데이터 활용 부족",
+		  			            "content": [
+		  			              "정량 지표나 사용자 피드백 등 데이터 기반 분석이 미흡했습니다.",
+		  			              "개선 효과를 수치로 보여주었으면 설득력이 높아졌을 것입니다."
+		  			            ]
+		  			          }
+		  			        ],
+		  			        "projectSummary": "사용자 중심의 UI 개선과 명확한 결과 표현이 돋보인 프로젝트입니다. 다만 가설과 문제 정의의 설득력이 약하고, 정량적 분석이 부족한 점은 개선이 필요합니다."
+		  			      },
+		  			      "pageFeedback": [
+		  			        {
+		  			          "page": 2,
+		  			          "content": [
+		  			            {
+		  			              "type": 5,
+		  			              "beforeEdit": "이 앱은 사용자에게 빠르고 편리한 경험을 제공하기 위해 만들어졌습니다.",
+		  			              "afterEdit": "앱은 빠르고 편리한 사용자 경험을 제공하도록 설계되었습니다."
+		  			            }
+		  			          ]
+		  			        },
+		  			        {
+		  			          "page": 4,
+		  			          "content": [
+		  			            {
+		  			              "type": 3,
+		  			              "beforeEdit": "주요 기능을 정리한 다음, 사용자의 니즈를 바탕으로 개선 방향을 도출하였습니다.",
+		  			              "afterEdit": "주요 기능을 정리하고 사용자의 니즈를 반영해 개선 방향을 도출했습니다."
+		  			              }
+		            ]
+		          }
+		        ]
+		      }
+		    ]
+		  }
         """;
   public static final String COMBINED_FEEDBACK_SCHEMA =
       """
-        {
-          "name": "combined_project_feedback",
-          "strict": true,
-          "schema": {
-            "type": "object",
-            "properties": {
-              "projects": {
-                "type": "array",
-                "description": "List of project evaluations and page-level feedbacks.",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "projectName": {
-                      "type": "string",
-                      "description": "프로젝트 제목"
-                    },
-                    "projectEvaluation": {
-                      "type": "object",
-                      "properties": {
-                        "process": {
-                          "type": "array",
-                          "items": {
-                            "type": "string",
-                            "enum": ["GOOD", "SOSO", "BAD"]
-                          }
-                        },
-                        "processReview": {
-                          "type": "string"
-                        },
-                        "positiveFeedback": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "title": { "type": "string" },
-                              "content": {
-                                "type": "array",
-                                "items": { "type": "string" }
-                              }
-                            },
-                            "required": ["title", "content"]
-                          }
-                        },
-                        "negativeFeedback": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "title": { "type": "string" },
-                              "content": {
-                                "type": "array",
-                                "items": { "type": "string" }
-                              }
-                            },
-                            "required": ["title", "content"]
-                          }
-                        },
-                        "projectSummary": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "process",
-                        "processReview",
-                        "positiveFeedback",
-                        "negativeFeedback",
-                        "projectSummary"
-                      ]
-                    },
-                    "pageFeedback": {
-                      "type": "array",
-                      "description": "A collection of page-level feedback for this project.",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "페이지": {
-                            "type": "number"
-                          },
-                          "피드백_수": {
-                            "type": "number"
-                          },
-                          "항목": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "카테고리": { "type": "number" },
-                                "기존_문장": { "type": "string" },
-                                "수정_문장": { "type": "string" }
-                              },
-                              "required": ["카테고리", "기존_문장", "수정_문장"]
-                            }
-                          }
-                        },
-                        "required": ["페이지", "피드백_수", "항목"]
-                      }
-                    }
-                  },
-                  "required": ["projectName", "projectEvaluation", "pageFeedback"]
-                }
-              }
-            },
-            "required": ["projects"]
-          }
-        }
+		  {
+		       "name": "projects_schema",
+		       "schema": {
+		         "type": "object",
+		         "properties": {
+		           "projects": {
+		             "type": "array",
+		             "description": "A collection of project objects.",
+		             "items": {
+		               "type": "object",
+		               "properties": {
+		                 "projectName": {
+		                   "type": "string",
+		                   "description": "The name of the project."
+		                 },
+		                 "projectEvaluation": {
+		                   "type": "object",
+		                   "properties": {
+		                     "process": {
+		                       "type": "array",
+		                       "description": "An array of evaluations during the project process.",
+		                       "items": {
+		                         "type": "string"
+		                       }
+		                     },
+		                     "processReview": {
+		                       "type": "string",
+		                       "description": "Review of the project process."
+		                     },
+		                     "positiveFeedback": {
+		                       "type": "array",
+		                       "description": "List of positive feedback received for the project.",
+		                       "items": {
+		                         "type": "object",
+		                         "properties": {
+		                           "title": {
+		                             "type": "string",
+		                             "description": "The title of the positive feedback."
+		                           },
+		                           "content": {
+		                             "type": "array",
+		                             "description": "Details of the positive feedback.",
+		                             "items": {
+		                               "type": "string"
+		                             }
+		                           }
+		                         },
+		                         "required": [
+		                           "title",
+		                           "content"
+		                         ],
+		                         "additionalProperties": false
+		                       }
+		                     },
+		                     "negativeFeedback": {
+		                       "type": "array",
+		                       "description": "List of negative feedback received for the project.",
+		                       "items": {
+		                         "type": "object",
+		                         "properties": {
+		                           "title": {
+		                             "type": "string",
+		                             "description": "The title of the negative feedback."
+		                           },
+		                           "content": {
+		                             "type": "array",
+		                             "description": "Details of the negative feedback.",
+		                             "items": {
+		                               "type": "string"
+		                             }
+		                           }
+		                         },
+		                         "required": [
+		                           "title",
+		                           "content"
+		                         ],
+		                         "additionalProperties": false
+		                       }
+		                     },
+		                     "projectSummary": {
+		                       "type": "string",
+		                       "description": "Summary of the project evaluation."
+		                     }
+		                   },
+		                   "required": [
+		                     "process",
+		                     "processReview",
+		                     "positiveFeedback",
+		                     "negativeFeedback",
+		                     "projectSummary"
+		                   ],
+		                   "additionalProperties": false
+		                 },
+		                 "feedbackPerPage": {
+		                   "type": "array",
+		                   "description": "Feedback organized by pages.",
+		                   "items": {
+		                     "type": "object",
+		                     "properties": {
+		                       "pageNumber": {
+		                         "type": "number",
+		                         "description": "The page number for which feedback is provided."
+		                       },
+		                       "contents": {
+		                         "type": "array",
+		                         "description": "Content feedback for the specific page.",
+		                         "items": {
+		                           "type": "object",
+		                           "properties": {
+		                             "type": {
+		                               "type": "number",
+		                               "description": "Type of feedback."
+		                             },
+		                             "beforeEdit": {
+		                               "type": "string",
+		                               "description": "Content before editing."
+		                             },
+		                             "afterEdit": {
+		                               "type": "string",
+		                               "description": "Content after editing."
+		                             }
+		                           },
+		                           "required": [
+		                             "type",
+		                             "beforeEdit",
+		                             "afterEdit"
+		                           ],
+		                           "additionalProperties": false
+		                         }
+		                       }
+		                     },
+		                     "required": [
+		                       "pageNumber",
+		                       "contents"
+		                     ],
+		                     "additionalProperties": false
+		                   }
+		                 }
+		               },
+		               "required": [
+		                 "projectName",
+		                 "projectEvaluation",
+		                 "feedbackPerPage"
+		               ],
+		               "additionalProperties": false
+		             }
+		           }
+		         },
+		         "required": [
+		           "projects"
+		         ],
+		         "additionalProperties": false
+		       },
+		       "strict": true
+		     }
         """;
 }
