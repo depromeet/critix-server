@@ -17,7 +17,123 @@ public final class ChatGPTConstants {
 		   글의 명확성은 문장 구성이 이해가 되고 앞뒤가 맞는지 입니다. 레이아웃 가독성은 포트폴로오에서 얼마나 시각적으로 이해가 잘 되고,가독성이 뛰어난지 입니다.
 		   단점 분석은 프로젝트 내에서 포트폴리오가 어떠한 강점이 있는지 입니다. 평가를 하는데 있어서 불분명 하다면 불분명하다고 대답해도 됩니다.
 		  """;
-  public static final String PROJECT_PROMPT = "프로젝트 별 피드백";
+  public static final String PROJECT_PROMPT =
+      """
+	  다음 이미지는 디자이너의 포트폴리오입니다. 하나의 포트폴리오에 여러 개의 프로젝트가 포함되어 있을 수 있습니다. \s
+	  이미지에서 **프로젝트별로 구분**하여 감지하고, 각 프로젝트에 대해 아래와 같은 형식으로 구조화된 피드백을 JSON 형태로 작성해 주세요.
+
+	  다음 기준을 따라 주세요:
+
+	  ---
+
+	  1. 각 프로젝트마다 다음 정보를 포함해 주세요:
+	    - `projectName`: 프로젝트 제목
+	    - `process`: ["개요", "문제정의", "가설", "결과", "회고"] 5단계를 각각 `"GOOD"`, `"SOSO"`, `"BAD"` 중 하나로 평가
+	    - `processReview`: 위 5단계에 대한 평가 이유를 2~3문장으로 서술
+	    - `positiveFeedback`: 긍정적인 피드백 항목 3~4개 (각 항목은 `title`, `content` 리스트 형태로 구성)
+	    - `negativeFeedback`: 개선이 필요한 피드백 항목 3~4개 (각 항목은 `title`, `content` 리스트 형태로 구성)
+	    - `projectSummary`: 전체 총평
+
+	  ---
+
+	  2. 출력 형식은 다음 JSON 구조를 따라 주세요:
+
+	  ```json
+	  {
+	    "projectEvaluation": [
+	      {
+	        "projectName": "",
+	        "process": ["GOOD", "SOSO", "GOOD", "GOOD", "SOSO"],
+	        "processReview": "",
+	        "positiveFeedback": [
+	          {
+	            "title": "",
+	            "content": ["", ""]
+	          }
+	        ],
+	        "negativeFeedback": [
+	          {
+	            "title": "",
+	            "content": ["", ""]
+	          }
+	        ],
+	        "projectSummary": ""
+	      }
+	    ]
+	  }
+
+	  3. 예시 (예시는 참고만 해주세요.)
+	  {
+	    "projectEvaluation": [
+	      {
+	        "projectName": "토스 새소식 프로젝트",
+	        "process": ["GOOD", "GOOD", "GOOD", "GOOD", "SOSO"],
+	        "processReview": "전체적으로 문제 정의와 가설 설정이 명확하며, 실험과 결과 분석도 논리적으로 잘 구성되어 있습니다. 다만 회고 부분이 조금 더 구체적이고 깊이 있었으면 좋았겠다는 아쉬움이 있습니다.",
+	        "positiveFeedback": [
+	          {
+	            "title": "데이터 기반의 문제 해결 접근",
+	            "content": [
+	              "리텐션 지표, CTW 분석 등을 통해 실제 사용자 행동을 기반으로 문제를 진단한 점이 매우 인상적임",
+	              "문제 정의가 정량 데이터와 사용자 분석을 토대로 명확히 설정되어 신뢰도를 높였음"
+	            ]
+	          },
+	          {
+	            "title": "시즌성과 그로스 해킹 전략의 활용",
+	            "content": [
+	              "이벤트, 혜택 등을 시즌별로 전략적으로 활용하여 사용자 관심도를 높인 점이 돋보임",
+	              "단기 퍼포먼스와 장기적 사용자 리텐션 두 측면을 균형 있게 고려함"
+	            ]
+	          },
+	          {
+	            "title": "실험과 결과 분석이 체계적임",
+	            "content": [
+	              "정량 지표를 기반으로 실험 결과를 비교 분석하여 가설을 검증한 방식이 체계적임",
+	              "실험 설계에 있어서 명확한 기준이 있었고, 결과 해석도 논리적으로 설득력 있음"
+	            ]
+	          },
+	          {
+	            "title": "깔끔한 포트폴리오 구성",
+	            "content": [
+	              "카드 형식의 섹션 나눔과 정보 전달 구조가 명확함",
+	              "강조 포인트(아이콘, 텍스트 강조 등)가 적절하게 사용되어 가독성이 높음"
+	            ]
+	          }
+	        ],
+	        "negativeFeedback": [
+	          {
+	            "title": "회고의 깊이 부족",
+	            "content": [
+	              "회고 항목이 다소 표면적인 내용에 그침",
+	              "디자이너로서의 인사이트나 다음 프로젝트에 대한 연결점이 구체적으로 드러나지 않음"
+	            ]
+	          },
+	          {
+	            "title": "UI 개선 사례의 비교 시각화 부족",
+	            "content": [
+	              "리디자인 전/후의 명확한 비교 자료가 더 있었으면 효과가 더욱 명확했을 것",
+	              "기존 문제를 해결한 UI 변화가 어떻게 반영되었는지 시각적 근거가 아쉬움"
+	            ]
+	          },
+	          {
+	            "title": "툴 및 협업 방식 설명 부족",
+	            "content": [
+	              "디자인 과정에서 어떤 툴을 썼는지, 협업 방식(Figma, Notion, Jira 등)에 대한 정보가 부족함",
+	              "타 직군과의 협업 경험이 더 명확히 드러났으면 좋았을 것"
+	            ]
+	          },
+	          {
+	            "title": "사용자 인터뷰 등의 정성 데이터 부족",
+	            "content": [
+	              "정량 데이터는 잘 활용했으나, 정성적 피드백(사용자 인터뷰 등)이 보강되면 더 풍부한 분석이 가능했을 것",
+	              "사용자의 실제 불편함이 어떻게 수집되고 반영되었는지에 대한 맥락이 약함"
+	            ]
+	          }
+	        ],
+	        "projectSummary": "문제 정의와 가설 설정부터 실험, 결과 분석까지 전체적으로 매우 탄탄한 구성의 프로젝트입니다. 특히 데이터 기반의 설계와 시즌성 전략 활용이 뛰어났으며, 포트폴리오 구성도 깔끔했습니다. 다만 회고와 비교 시각화, 협업 툴 활용 등은 조금 더 보완된다면 훨씬 더 완성도 높은 결과물이 될 것입니다."
+	      }
+	    ]
+	  }
+	  """;
 
   public static final String OverallSchema =
       """
@@ -167,161 +283,113 @@ public final class ChatGPTConstants {
   public static final String ProjectSchema =
       """
 		  {
-		    "type": "object",
-		    "properties": {
-		  	"projectEvaluation": {
-		  	  "type": "array",
-		  	  "description": "List of project evaluations.",
-		  	  "items": {
-		  		"type": "object",
-		  		"properties": {
-		  		  "projectName": {
-		  			"type": "string",
-		  			"description": "프로젝트 이름"
-		  		  },
-		  		  "process": {
-		  			"type": "array",
-		  			"items": {
-		  			  "type": "string",
-		  			  "description": "각 프로세스별 평가입니다.",
-		  			  "enum": [
-		  				"BAD",
-		  				"SOSO",
-		  				"GOOD"
-		  			  ]
-		  			},
-		  			"description": "프로젝트 진행 과정의 단계별 평가"
-		  		  },
-		  		  "processReview": {
-		  			"type": "string",
-		  			"description": "프로젝트 진행 과정에 대한 리뷰"
-		  		  },
-		  		  "positiveFeedback":  {
-		  			"type": "array",
-		  			"items" : {
-		  				"type" : "object",
-		  				"properties" : {
-		  					"title" : {
-		  					"type" : "string",
-		  					"description" : "긍정적이고 강점인 피드백 제목"
-		  					},
-		  					"content" : {
-		  						"type": "array",
-		  						"items" : {
-		  							"type": "string",
-		  							"description" : "피드백 세부 내용"
-		  						},
-		  						"description" : "긍정적이고 강점인 피드백 세부 내용"
-		  					}
-		  				},
-		  				"required" : ["title","content"],
-		  				"additionalProperties" : false
-		  			},
-		  			"description": "프로젝트내에서 강점인 부분"
-		  		  },
-		  		  "negativeFeedback": {
-		  			"type": "array",
-		  			"items" : {
-		  				"type" : "object",
-		  				"properties" : {
-		  					"title" : {
-		  					"type" : "string",
-		  					"description" : "부정적인 피드백 제목"
-		  					},
-		  					"content" : {
-		  						"type": "array",
-		  						"items" : {
-		  							"type": "string",
-		  							"description" : "피드백 세부 내용"
-		  						},
-		  						"description" : "긍정적이고 강점인 피드백 세부 내용"
-		  					}
-		  				},
-		  				"required" : ["title","content"],
-		  				"additionalProperties" : false
-		  			},
-		  			"description": "개선이 필요한 부분"
-		  		  },
-		  		  "feedbackPerPage": {
-		  			"type": "array",
-		  			"items": {
-		  			  "type": "object",
-		  			  "properties": {
-		  				"pageNumber": {
-		  				  "type": "string",
-		  				  "description": "피드백이 제공된 페이지 번호"
-		  				},
-		  				"contents": {
-		  				  "type": "array",
-		  				  "items": {
-		  					"type": "object",
-		  					"properties": {
-		  					  "type": {
-		  						"type": "string",
-		  						"enum": [
-		  						  "TRANSLATION_OR_AWKWARD",
-		  						  "LENGTH_OR_READABILITY",
-		  						  "READABILITY_IMPROVEMENT",
-		  						  "LOGICAL_LEAP",
-		  						  "REDUNDANCY_OR_CLARITY"
-		  						],
-		  						"description": "피드백 유형"
-		  					  },
-		  					  "title" : {
-		  					  	"type": "string",
-		  					  	"description" :"피드백 제목"
-		  					  },
-		  					  "beforeEdit": {
-		  						"type": "string",
-		  						"description": "수정 전 텍스트"
-		  					  },
-		  					  "afterEdit": {
-		  						"type": "string",
-		  						"description": "수정 후 텍스트"
-		  					  }
-		  					},
-		  					"required": [
-		  					  "type",
-		  					  "title",
-		  					  "beforeEdit",
-		  					  "afterEdit"
-		  					],
-		  					"additionalProperties": false
-		  				  },
-		  				  "description": "페이지별 피드백 내용"
-		  				}
-		  			  },
-		  			  "required": [
-		  				"pageNumber",
-		  				"contents"
-		  			  ],
-		  			  "additionalProperties": false
-		  			},
-		  			"description": "페이지별 피드백 리스트"
-		  		  },
-		  		  "projectSummary": {
-		  			"type": "string",
-		  			"description": "프로젝트 전체 피드백 요약"
-		  		  }
-		  		},
-		  		"required": [
-		  		  "projectName",
-		  		  "process",
-		  		  "processReview",
-		  		  "positiveFeedback",
-		  		  "negativeFeedback",
-		  		  "feedbackPerPage",
-		  		  "projectSummary"
-		  		],
-		  		"additionalProperties": false
-		  	  }
-		  	}
-		    },
-		    "required": [
-		  	"projectEvaluation"
-		    ],
-		    "additionalProperties": false
-		  }
+		         "name": "project_evaluation",
+		         "strict": true,
+		         "schema": {
+		           "type": "object",
+		           "properties": {
+		             "projectEvaluation": {
+		               "type": "array",
+		               "description": "List of project evaluations.",
+		               "items": {
+		                 "type": "object",
+		                 "properties": {
+		                   "projectName": {
+		                     "type": "string",
+		                     "description": "프로젝트 이름"
+		                   },
+		                   "process": {
+		                     "type": "array",
+		                     "items": {
+		                       "type": "string",
+		                       "description": "각 프로세스별 평가입니다.",
+		                       "enum": [
+		                         "BAD",
+		                         "SOSO",
+		                         "GOOD"
+		                       ]
+		                     },
+		                     "description": "프로젝트 진행 과정의 단계별 평가"
+		                   },
+		                   "processReview": {
+		                     "type": "string",
+		                     "description": "프로젝트 진행 과정에 대한 리뷰"
+		                   },
+		                   "positiveFeedback": {
+		                     "type": "array",
+		                     "items": {
+		                       "type": "object",
+		                       "properties": {
+		                         "title": {
+		                           "type": "string",
+		                           "description": "긍정적이고 강점인 피드백 제목"
+		                         },
+		                         "content": {
+		                           "type": "array",
+		                           "items": {
+		                             "type": "string",
+		                             "description": "피드백 세부 내용"
+		                           },
+		                           "description": "긍정적이고 강점인 피드백 세부 내용"
+		                         }
+		                       },
+		                       "required": [
+		                         "title",
+		                         "content"
+		                       ],
+		                       "additionalProperties": false
+		                     },
+		                     "description": "프로젝트내에서 강점인 부분"
+		                   },
+		                   "negativeFeedback": {
+		                     "type": "array",
+		                     "items": {
+		                       "type": "object",
+		                       "properties": {
+		                         "title": {
+		                           "type": "string",
+		                           "description": "부정적인 피드백 제목"
+		                         },
+		                         "content": {
+		                           "type": "array",
+		                           "items": {
+		                             "type": "string",
+		                             "description": "피드백 세부 내용"
+		                           },
+		                           "description": "개선이 필요한 부분"
+		                         }
+		                       },
+		                       "required": [
+		                         "title",
+		                         "content"
+		                       ],
+		                       "additionalProperties": false
+		                     },
+		                     "description": "개선이 필요한 부분"
+		                   },
+		                   "projectSummary": {
+		                     "type": "string",
+		                     "description": "프로젝트 전체 피드백 요약"
+		                   }
+		                 },
+		                 "required": [
+		                   "projectName",
+		                   "process",
+		                   "processReview",
+		                   "positiveFeedback",
+		                   "negativeFeedback",
+		                   "projectSummary"
+		                 ],
+		                 "additionalProperties": false
+		               }
+		             }
+		           },
+		           "required": [
+		             "projectEvaluation"
+		           ],
+		           "additionalProperties": false
+		         }
+		       }
 		  """;
   public static final String PAGE_FEEDBACK_PROMPT =
       """
