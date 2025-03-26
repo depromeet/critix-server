@@ -1,5 +1,6 @@
 package depromeet.onepiece.feedback.query.presentation;
 
+import depromeet.onepiece.common.auth.annotation.CurrentUserId;
 import depromeet.onepiece.common.error.CustomResponse;
 import depromeet.onepiece.feedback.command.presentation.response.RemainCountResponse;
 import depromeet.onepiece.feedback.domain.EditPair;
@@ -150,7 +151,10 @@ public class FeedbackQueryController {
 
   @Operation(summary = "남은 피드백 횟수 조회(Mock)", description = "남은 피드백 횟수 조회")
   @GetMapping("/remain")
-  public ResponseEntity<CustomResponse<RemainCountResponse>> getRemainCount() {
-    return CustomResponse.okResponseEntity(new RemainCountResponse(5));
+  public ResponseEntity<CustomResponse<RemainCountResponse>> getRemainCount(
+      @CurrentUserId ObjectId userId) {
+    Long remainCount = feedbackQueryFacadeService.getRemainCount(userId);
+    RemainCountResponse remainCountResponse = new RemainCountResponse(remainCount.intValue());
+    return CustomResponse.okResponseEntity(remainCountResponse);
   }
 }

@@ -10,20 +10,28 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import depromeet.onepiece.common.auth.infrastructure.jwt.TokenProvider;
 import depromeet.onepiece.common.auth.resolver.CurrentUserArgumentResolver;
+import depromeet.onepiece.common.utils.UserRateLimiter;
+import depromeet.onepiece.user.query.application.CurrentUserIdService;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
   private final CurrentUserArgumentResolver currentUserArgumentResolver;
+  private final RedisTemplate<String, String> redisTemplate;
+  private final TokenProvider tokenProvider;
+  private final CurrentUserIdService currentUserIdService;
 
   @Bean
   public JsonMapper objectMapper() {
@@ -61,5 +69,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
     resolvers.add(currentUserArgumentResolver);
+  }
+
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry
+        .addInterceptor(new UserRateLimiter(redisTemplate, tokenProvider, currentUserIdService))
+        .addPathPatterns("/api/v1/feedback/start");
   }
 }
