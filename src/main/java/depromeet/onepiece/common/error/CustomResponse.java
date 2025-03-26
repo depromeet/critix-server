@@ -42,6 +42,10 @@ public class CustomResponse<T> {
     return ResponseEntity.ok(new CustomResponse<>());
   }
 
+  public static <T> CustomResponse<T> ok() {
+    return new CustomResponse<>();
+  }
+
   public static CustomResponse<Void> error(ErrorCode errorCode) {
     return new CustomResponse<>(errorCode);
   }
