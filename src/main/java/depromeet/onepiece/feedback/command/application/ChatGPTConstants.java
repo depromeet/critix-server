@@ -323,4 +323,75 @@ public final class ChatGPTConstants {
 		    "additionalProperties": false
 		  }
 		  """;
+  public static final String PAGE_FEEDBACK_PROMPT =
+      """
+			[피드백 기준] -1. 번역체/어색한 표현 - 2. 문장이 길거나 가독성이 떨어지는 표현 - 3. 가독성 개선 - 4. 논리적 비약 - 5. 불필요한 반복 및 의미 명확화 / [작성 방식] - 각 페이지 번호를 기준으로 문제 있는 피드백 항목만 작성합니다. - 피드백 항목이 있는 페이지 수는 명확히 명시합니다. - 각 항목은 다음 형식으로 작성합니다: 페이지 번호: X / 카테고리: (1~5 중 하나) / 기존 문장: (문제 있는 원래 문장) / 수정 문장: (더 자연스럽고 명확한 문장) / 페이지 번호: X / 카테고리: 4 / 기존 문장: (문제 문장 전체 인용) / 수정 문장: (수정 문장) / 총 10개 정도의 ㅣ피드백을 해줘 / 데이터는 형식은 왼쪽이 페이지 번호, 오른쪽이 해당 페이지의 글자야. (2:안녕하세요.는 2페이지에 안녕하세요가 있는 거야.) [예시 출력] 페이지 번호: 3 / 카테고리: 1  기존 문장: 본 기능은 사용자에게 보다 직관적인 경험을 제공하고자 설계되었습니다.  수정 문장: 이 기능은 사용자가 더 쉽게 이해할 수 있도록 설계했습니다. 페이지 번호: 5 / 카테고리: 2 \s
+			기존 문장: 사용자는 설정 페이지에서 알림 수신 여부를 직접 조정할 수 있는 기능을 사용할 수 있습니다.  수정 문장: 사용자는 설정 페이지에서 알림 수신 여부를 직접 설정할 수 있습니다.
+			""";
+  public static final String PAGE_FEEDBACK_SCHEMA =
+      """
+			{
+			  "name": "page_feedback",
+			  "strict": true,
+			  "schema": {
+			    "type": "object",
+			    "properties": {
+			      "피드백": {
+			        "type": "array",
+			        "description": "A collection of feedback entries.",
+			        "items": {
+			          "type": "object",
+			          "properties": {
+			            "페이지": {
+			              "type": "number",
+			              "description": "The page number related to the feedback."
+			            },
+			            "피드백_수": {
+			              "type": "number",
+			              "description": "The count of feedback entries for the page."
+			            },
+			            "항목": {
+			              "type": "array",
+			              "description": "A list of feedback items related to the page.",
+			              "items": {
+			                "type": "object",
+			                "properties": {
+			                  "카테고리": {
+			                    "type": "number",
+			                    "description": "The category of the feedback."
+			                  },
+			                  "기존_문장": {
+			                    "type": "string",
+			                    "description": "The original sentence that is being reviewed."
+			                  },
+			                  "수정_문장": {
+			                    "type": "string",
+			                    "description": "The suggested revised sentence."
+			                  }
+			                },
+			                "required": [
+			                  "카테고리",
+			                  "기존_문장",
+			                  "수정_문장"
+			                ],
+			                "additionalProperties": false
+			              }
+			            }
+			          },
+			          "required": [
+			            "페이지",
+			            "피드백_수",
+			            "항목"
+			          ],
+			          "additionalProperties": false
+			        }
+			      }
+			    },
+			    "required": [
+			      "피드백"
+			    ],
+			    "additionalProperties": false
+			  }
+			}
+			""";
 }
