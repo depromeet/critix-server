@@ -71,6 +71,7 @@ services:
     command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
     networks:
       - onepiece-network
+
   mongo3:
     image: mongo:8
     container_name: mongo3
@@ -81,6 +82,7 @@ services:
     command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
     networks:
       - onepiece-network
+
 networks:
   onepiece-network:
     driver: bridge
