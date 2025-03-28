@@ -1,5 +1,7 @@
 package depromeet.onepiece.common.auth.application.service;
 
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
+
 import depromeet.onepiece.common.auth.application.jwt.TokenInjector;
 import depromeet.onepiece.common.auth.application.jwt.TokenResult;
 import depromeet.onepiece.common.auth.domain.RefreshToken;
@@ -31,18 +33,29 @@ public class RefreshTokenService {
       HttpServletRequest request, HttpServletResponse response) {
     Optional<String> tokenString = tokenResolver.resolveRefreshTokenFromRequest(request);
 
-    if (tokenString.isEmpty()) {
-      log.warn(
-          "Failed to reissue token: No refresh token found in request from IP {}",
-          request.getRemoteAddr());
-      throw new RefreshTokenInvalidException();
-    }
+    isvalidRefreshToken(request, tokenString);
 
     RefreshToken refreshTokenDocument = getByTokenString(tokenString.get());
     tokenInjector.injectRefreshTokenToCookie(
         new TokenResult(rotate(refreshTokenDocument), refreshTokenDocument.getExternalId()),
         response);
     return refreshTokenDocument.getExternalId();
+  }
+
+  public void invalidateRefreshToken(HttpServletRequest request, HttpServletResponse response) {
+    Optional<String> tokenString = tokenResolver.resolveRefreshTokenFromRequest(request);
+    isvalidRefreshToken(request, tokenString);
+    tokenInjector.invalidateCookie(REFRESH_TOKEN, response);
+  }
+
+  private static void isvalidRefreshToken(
+      HttpServletRequest request, Optional<String> tokenString) {
+    if (tokenString.isEmpty()) {
+      log.warn(
+          "Failed to reissue token: No refresh token found in request from IP {}",
+          request.getRemoteAddr());
+      throw new RefreshTokenInvalidException();
+    }
   }
 
   public RefreshToken getByTokenString(String token) {

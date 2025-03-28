@@ -51,6 +51,11 @@ public class AuthService {
     return tokenResult;
   }
 
+  public void logout(HttpServletRequest request, HttpServletResponse response) {
+    refreshTokenService.invalidateRefreshToken(request, response);
+    log.info("User {} logged out", maskId(request.getRemoteAddr()));
+  }
+
   private TokenResult handleExistUser(User user, AuthAttributes attributes) {
     if (user.hasDifferentProviderWithEmail(attributes.getEmail(), attributes.getExternalId()))
       throw new AlreadyRegisteredUserException();
