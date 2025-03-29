@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    volumes:
+      - ./nginx/:/etc/nginx/
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    networks:
+      - critix-network
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - critix-network
+
+  application:
+    image: ${DOCKER_USERNAME}/critix-server:latest
+    container_name: application
+    ports:
+      - "${APPLICATION_PORT}:8080"
+    env_file:
+      - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - critix-network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    command: redis-server
+    ports:
+      - "${REDIS_PORT}:6379"
+    env_file:
+      - .env
+    networks:
+      - critix
+
+  mongo1:
+    image: mongo:8
+    container_name: mongo1
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo1data:/data/db
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+    networks:
+      - critix
+
+  mongo2:
+    image: mongo:8
+    container_name: mongo2
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./mongo2data:/data/db
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+    networks:
+      - critix
+
+  mongo3:
+    image: mongo:8
+    container_name: mongo3
+    ports:
+      - "27019:27017"
+    volumes:
+      - ./mongo3data:/data/db
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
+    networks:
+      - critix
+
+networks:
+  critix:
+    external: true
