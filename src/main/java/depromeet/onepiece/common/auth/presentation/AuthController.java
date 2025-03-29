@@ -25,4 +25,11 @@ public class AuthController {
       HttpServletRequest request, HttpServletResponse response) {
     return new CustomResponse<>(authService.reissueToken(request, response));
   }
+
+  @PostMapping("/logout")
+  @Operation(summary = "로그아웃 API", description = "로그아웃 API [담당자 : 이한음]")
+  public CustomResponse<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+    authService.logout(request, response);
+    return CustomResponse.ok();
+  }
 }

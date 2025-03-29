@@ -1,18 +1,21 @@
 package depromeet.onepiece.feedback.query.application;
 
 import depromeet.onepiece.common.utils.EncryptionUtil;
+import depromeet.onepiece.common.utils.RedisPrefix;
 import depromeet.onepiece.feedback.domain.Feedback;
 import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackListResponse;
 import depromeet.onepiece.file.domain.FileDocument;
 import depromeet.onepiece.file.query.application.FileQueryService;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 public class FeedbackQueryFacadeService {
   private final FeedbackQueryService feedbackQueryService;
   private final FileQueryService fileQueryService;
+  private final RedisTemplate<String, String> redisTemplate;
 
   public List<RecentFeedbackListResponse> getFeedbackList(ObjectId userId) {
     List<Feedback> feedbackList = feedbackQueryService.findByUserId(userId);
@@ -42,5 +46,15 @@ public class FeedbackQueryFacadeService {
     return Optional.ofNullable(fileMap.get(fileId))
         .map(fileDocument -> EncryptionUtil.decrypt(fileDocument.getLogicalName()))
         .orElse("");
+  }
+
+  public Long getRemainCount(ObjectId userId) {
+    long size =
+        Optional.ofNullable(
+                redisTemplate.opsForZSet().size(RedisPrefix.RATE_LIMIT_KEY + userId.toString()))
+            .orElse(0L);
+    redisTemplate.opsForValue().setIfAbsent(RedisPrefix.RATE_LIMIT_MAX_REQUEST, "10");
+    String maxRequest = redisTemplate.opsForValue().get(RedisPrefix.RATE_LIMIT_MAX_REQUEST);
+    return Long.parseLong(Objects.requireNonNull(maxRequest)) - size;
   }
 }

@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 public class FeedbackQueryService {
   private final FeedbackQueryRepository feedbackQueryRepository;
 
+  public Feedback getById(ObjectId id) {
+    return feedbackQueryRepository.findById(id);
+  }
+
   public List<Feedback> findByUserId(ObjectId id) {
     return feedbackQueryRepository.findByUserId(id);
   }

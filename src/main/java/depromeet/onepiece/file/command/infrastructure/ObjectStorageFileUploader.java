@@ -49,9 +49,9 @@ public class ObjectStorageFileUploader implements FileUploader {
 
   private void removeUploadedFile(File targetFile) {
     if (targetFile.delete()) {
-      log.info("File deleted successfully");
+      log.info("파일 삭제 성공");
     } else {
-      log.warn("Failed to delete the file");
+      log.warn("파일 삭제 실패");
     }
   }
 
@@ -81,7 +81,7 @@ public class ObjectStorageFileUploader implements FileUploader {
       amazonS3.putObject(
           new PutObjectRequest(bucketName, pdfUploadPath, pdfFile)
               .withCannedAcl(CannedAccessControlList.Private));
-      log.info("PDF uploaded to S3: " + pdfUploadPath);
+      log.info("PDF 업로드: " + pdfUploadPath);
 
       try (PDDocument document = PDDocument.load(pdfFile)) {
         PDFRenderer pdfRenderer = new PDFRenderer(document);
@@ -95,7 +95,7 @@ public class ObjectStorageFileUploader implements FileUploader {
           amazonS3.putObject(
               new PutObjectRequest(bucketName, processedPath, imageFile)
                   .withCannedAcl(CannedAccessControlList.Private));
-          log.info("Image uploaded to S3: " + processedPath);
+          log.info("이미지 업로드: " + processedPath);
 
           uploadedFilePaths.add(processedPath);
           removeUploadedFile(imageFile);
@@ -103,12 +103,37 @@ public class ObjectStorageFileUploader implements FileUploader {
       }
 
       removeUploadedFile(pdfFile);
-
+      uploadCompletedFile(fileId);
       return fileRepository.save(
           FileDocument.create(fileId, logicalName, fileType)
               .setPhysicalPath(pdfUploadPath + "," + String.join(",", uploadedFilePaths)));
     } catch (IOException e) {
       throw new FileUploadFailedException();
+    }
+  }
+
+  private void uploadCompletedFile(ObjectId fileId) {
+    File completedFile = null;
+    try {
+      completedFile = File.createTempFile("completed-" + fileId, ".txt");
+      String completedFilePath =
+          Path.of(fileId.toString(), "processed", "completed.txt").toString();
+      amazonS3.putObject(
+          new PutObjectRequest(bucketName, completedFilePath, completedFile)
+              .withCannedAcl(CannedAccessControlList.Private));
+
+      log.info("트리거 파일 업로드: " + completedFilePath);
+
+    } catch (IOException e) {
+      log.error("임시 파일 에러", e);
+      throw new FileUploadFailedException();
+    } finally {
+      if (completedFile != null && completedFile.exists()) {
+        boolean deleted = completedFile.delete();
+        if (!deleted) {
+          log.warn("임시 파일 삭제 실패 : " + completedFile.getAbsolutePath());
+        }
+      }
     }
   }
 }

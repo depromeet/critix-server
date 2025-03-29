@@ -2,7 +2,6 @@ package depromeet.onepiece.feedback.command.application;
 
 import depromeet.onepiece.feedback.command.infrastructure.FeedbackCommandRepository;
 import depromeet.onepiece.feedback.domain.Feedback;
-import depromeet.onepiece.feedback.domain.FeedbackStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -18,18 +17,8 @@ public class FeedbackCommandService {
     return feedbackCommandRepository.save(feedback);
   }
 
-  public Feedback saveEmpty(ObjectId userId, ObjectId fileId) {
-    Feedback feedback =
-        new Feedback(
-            new ObjectId(),
-            userId,
-            fileId,
-            FeedbackStatus.PENDING,
-            FeedbackStatus.PENDING,
-            null,
-            null,
-            null);
-
-    return feedbackCommandRepository.save(feedback);
+  public ObjectId saveEmpty(ObjectId userId, ObjectId fileId) {
+    Feedback feedback = Feedback.saveEmptyFeedback(userId, fileId);
+    return feedbackCommandRepository.save(feedback).getId();
   }
 }
