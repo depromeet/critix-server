@@ -76,7 +76,7 @@ jobs:
           password: ${{ secrets.NCP_SERVER_PASSWORD }}
           port: ${{ secrets.NCP_SERVER_PORT }}
           source: "infra/production/docker/docker-compose.yml, infra/production/docker/kafka-docker-compose.yml"
-          target: ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}
+          target: ${{ secrets.COMPOSE_PATH }}
           strip_components: 3
 
       - name: "애플리케이션 서버를 구동한다."
