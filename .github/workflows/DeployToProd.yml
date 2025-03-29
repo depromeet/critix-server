@@ -107,10 +107,10 @@ jobs:
       - name: "최근 3개 이미지를 제외한 도커 이미지를 삭제한다."
         uses: appleboy/ssh-action@v1.1.0
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          port: ${{ secrets.SERVER_PORT }}
+          host: ${{ secrets.NCP_SERVER_HOST }}
+          username: ${{ secrets.NCP_SERVER_USERNAME }}
+          password: ${{ secrets.NCP_SERVER_PASSWORD }}
+          port: ${{ secrets.NCP_SERVER_PORT }}
           script: |
             docker images --format "{{.Repository}}:{{.Tag}} {{.ID}}" | \
               grep '${{ secrets.DOCKER_USERNAME }}/critix-server' | \
