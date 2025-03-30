@@ -55,7 +55,8 @@ public class AzureService {
 
     messageContent.addAll(
         imageUrls.stream()
-            .limit(30)
+            .limit(50)
+            .filter(image -> image.endsWith(".png"))
             .map(url -> new ChatMessageImageContentItem(new ChatMessageImageUrl(url)))
             .collect(Collectors.toList()));
 

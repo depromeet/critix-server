@@ -1,7 +1,6 @@
 package depromeet.onepiece.feedback.command.application;
 
-import static depromeet.onepiece.feedback.domain.FeedbackStatus.COMPLETE;
-import static depromeet.onepiece.feedback.domain.FeedbackStatus.PENDING;
+import static depromeet.onepiece.feedback.command.application.ChatGPTConstants.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,7 +12,6 @@ import depromeet.onepiece.feedback.domain.Feedback;
 import depromeet.onepiece.feedback.domain.FeedbackStatus;
 import depromeet.onepiece.feedback.domain.OverallEvaluation;
 import depromeet.onepiece.feedback.domain.ProjectEvaluation;
-import depromeet.onepiece.feedback.query.application.ChatGPTConstantsProvider;
 import depromeet.onepiece.feedback.query.application.FeedbackQueryService;
 import depromeet.onepiece.file.command.infrastructure.PresignedUrlGenerator;
 import java.util.Collections;
@@ -22,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -34,24 +31,28 @@ public class FeedbackCommandFacadeService {
   private final FeedbackCommandService feedbackCommandService;
   private final FeedbackQueryService feedbackQueryService;
   private final GPTEventProducer gptEventProducer;
-  private final ChatGPTConstantsProvider constantsProvider;
 
-  @Transactional
+  // @Transactional
   public void requestEvaluation(final ObjectId feedbackId, final ObjectId fileId) {
     Feedback feedback = feedbackQueryService.getById(feedbackId);
-    feedback.updateStatusInProgress();
 
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
 
     requestOverallEvaluation(imageUrls, feedback);
+    feedbackCommandService.updateOverallStatus(feedbackId, FeedbackStatus.ERROR);
+
     requestProjectEvaluation(imageUrls, feedback);
   }
 
   private void requestProjectEvaluation(List<String> imageUrls, Feedback feedback) {
-    if (feedback.getProjectStatus() == COMPLETE) return;
+    if (feedback.getProjectStatus() == FeedbackStatus.COMPLETE) {
+      return;
+    }
+    feedbackCommandService.updateProjectStatus(feedback.getId(), FeedbackStatus.IN_PROGRESS);
     String projectFeedback =
-        azureService.processChat(
-            imageUrls, constantsProvider.getProjectPrompt(), constantsProvider.getProjectSchema());
+        azureService.processChat(imageUrls, ChatGPTConstants.PROJECT_PROMPT, ProjectSchema);
+    feedbackCommandService.updateProjectStatus(feedback.getId(), FeedbackStatus.COMPLETE);
+
     JsonNode projectJsonNode = ConvertService.readTree(projectFeedback, "projectEvaluation");
     feedback.completeProjectEvaluation(
         ConvertService.convertValue(
@@ -59,10 +60,13 @@ public class FeedbackCommandFacadeService {
   }
 
   private void requestOverallEvaluation(List<String> imageUrls, Feedback feedback) {
-    if (feedback.getProjectStatus() == COMPLETE) return;
+    if (feedback.getProjectStatus() == FeedbackStatus.COMPLETE) {
+      return;
+    }
+    feedbackCommandService.updateOverallStatus(feedback.getId(), FeedbackStatus.IN_PROGRESS);
     String overallFeedback =
-        azureService.processChat(
-            imageUrls, constantsProvider.getOverallPrompt(), constantsProvider.getOverallSchema());
+        azureService.processChat(imageUrls, ChatGPTConstants.OVERALL_PROMPT, OverallSchema);
+    feedbackCommandService.updateOverallStatus(feedback.getId(), FeedbackStatus.COMPLETE);
     feedback.completeOverallEvaluation(
         ConvertService.readValue(overallFeedback, OverallEvaluation.class));
   }
@@ -71,7 +75,8 @@ public class FeedbackCommandFacadeService {
     ObjectId feedbackId = feedbackCommandService.saveEmpty(userId, fileId);
 
     GPTFeedbackStatusTopic gptFeedbackStatusTopic =
-        GPTFeedbackStatusTopic.of(userId, fileId, feedbackId, PENDING, PENDING, 0);
+        GPTFeedbackStatusTopic.of(
+            userId, fileId, feedbackId, FeedbackStatus.PENDING, FeedbackStatus.PENDING, 0);
     log.info("topic: {}", gptFeedbackStatusTopic);
 
     gptEventProducer.produceTopic(gptFeedbackStatusTopic);
@@ -90,15 +95,13 @@ public class FeedbackCommandFacadeService {
 
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
 
-    String overallJsonSchema = constantsProvider.getOverallSchema();
-    String projectJsonSchema = constantsProvider.getProjectSchema();
+    String overallJsonSchema = OverallSchema;
+    String projectJsonSchema = ProjectSchema;
 
     String overallFeedback =
-        azureService.processChat(
-            imageUrls, constantsProvider.getOverallPrompt(), overallJsonSchema);
+        azureService.processChat(imageUrls, ChatGPTConstants.OVERALL_PROMPT, overallJsonSchema);
     String projectFeedback =
-        azureService.processChat(
-            imageUrls, constantsProvider.getProjectPrompt(), projectJsonSchema);
+        azureService.processChat(imageUrls, ChatGPTConstants.PROJECT_PROMPT, projectJsonSchema);
 
     OverallEvaluation overallEvaluation =
         ConvertService.readValue(overallFeedback, OverallEvaluation.class);

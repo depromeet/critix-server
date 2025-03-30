@@ -2,6 +2,7 @@ package depromeet.onepiece.file.command.infrastructure;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import depromeet.onepiece.file.command.application.FileUploader;
 import depromeet.onepiece.file.command.exception.FileConvertErrorException;
@@ -9,6 +10,8 @@ import depromeet.onepiece.file.command.exception.FileUploadFailedException;
 import depromeet.onepiece.file.domain.FileDocument;
 import depromeet.onepiece.file.domain.FileType;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,6 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class ObjectStorageFileUploader implements FileUploader {
+
+  public static final String PNG = ".png";
 
   @Value("${cloud.ncp.object-storage.credentials.bucket}")
   private String bucketName;
@@ -57,21 +62,18 @@ public class ObjectStorageFileUploader implements FileUploader {
 
   private Optional<File> convert(MultipartFile file) {
     File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-    try {
-      if (convertFile.createNewFile()) {
-        try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-          fos.write(file.getBytes());
-        }
-        return Optional.of(convertFile);
-      }
+
+    try (FileOutputStream fos = new FileOutputStream(convertFile)) {
+      fos.write(file.getBytes());
+      return Optional.of(convertFile);
+
     } catch (IOException e) {
       throw new FileConvertErrorException();
     }
-    return Optional.empty();
   }
 
-  private FileDocument uploadPdf(
-      MultipartFile multipartFile, String logicalName, FileType fileType) {
+  private FileDocument uploadPdf(MultipartFile multipartFile, String logicalName, FileType fileType)
+      throws IOException {
     try {
       File pdfFile = convert(multipartFile).orElseThrow(FileConvertErrorException::new);
       List<String> uploadedFilePaths = new ArrayList<>();
@@ -83,25 +85,26 @@ public class ObjectStorageFileUploader implements FileUploader {
               .withCannedAcl(CannedAccessControlList.Private));
       log.info("PDF 업로드: " + pdfUploadPath);
 
-      try (PDDocument document = PDDocument.load(pdfFile)) {
+      try (PDDocument document = PDDocument.load(pdfFile);
+          ByteArrayOutputStream bos = new ByteArrayOutputStream(); ) {
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         for (int page = 0; page < document.getNumberOfPages(); page++) {
-          BufferedImage image = pdfRenderer.renderImageWithDPI(page, 30);
-          String imageName = (page + 1) + ".png";
-          File imageFile = new File(imageName);
-          ImageIO.write(image, "png", imageFile);
+          BufferedImage image = pdfRenderer.renderImageWithDPI(page, 72);
+          String imageName = (page + 1) + PNG;
+          ImageIO.write(image, "png", bos);
 
           String processedPath = Path.of(fileId.toString(), "processed", imageName).toString();
-          amazonS3.putObject(
-              new PutObjectRequest(bucketName, processedPath, imageFile)
-                  .withCannedAcl(CannedAccessControlList.Private));
-          log.info("이미지 업로드: " + processedPath);
-
-          uploadedFilePaths.add(processedPath);
-          removeUploadedFile(imageFile);
+          try (ByteArrayInputStream input = new ByteArrayInputStream(bos.toByteArray()); ) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(bos.toByteArray().length);
+            amazonS3.putObject(
+                new PutObjectRequest(bucketName, processedPath, input, metadata)
+                    .withCannedAcl(CannedAccessControlList.Private));
+            log.info("이미지 업로드: " + processedPath);
+            uploadedFilePaths.add(processedPath);
+          }
         }
       }
-
       removeUploadedFile(pdfFile);
       uploadCompletedFile(fileId);
       return fileRepository.save(

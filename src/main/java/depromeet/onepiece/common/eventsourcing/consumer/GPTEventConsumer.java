@@ -16,7 +16,7 @@ public class GPTEventConsumer {
   private final FeedbackCommandFacadeService feedbackCommandFacadeService;
 
   @KafkaListener(
-      topics = "#{'${spring.kafka.template.default-topic}'}",
+      topics = "gpt-limiter",
       clientIdPrefix = "topic-listener",
       groupId = "${spring.kafka.consumer.group-id}")
   public void consumeFeedbackEvent(

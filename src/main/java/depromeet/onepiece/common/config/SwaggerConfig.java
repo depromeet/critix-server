@@ -56,7 +56,7 @@ public class SwaggerConfig {
 
   private List<Server> initializeServers() {
     return PROFILE_SERVER_URL_MAP.entrySet().stream()
-        .filter(entry -> environment.matchesProfiles(entry.getKey()))
+        // .filter(entry -> environment.matchesProfiles(entry.getKey()))
         .map(entry -> newOpenApiServer(entry.getValue(), SERVER_NAME + " " + entry.getKey()))
         .collect(Collectors.toList());
   }
