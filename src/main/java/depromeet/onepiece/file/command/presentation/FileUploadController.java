@@ -1,10 +1,10 @@
 package depromeet.onepiece.file.command.presentation;
 
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import static org.springframework.http.MediaType.*;
 
 import depromeet.onepiece.common.error.CustomResponse;
 import depromeet.onepiece.file.command.application.FileUploadService;
-import depromeet.onepiece.file.command.infrastructure.PresignedUrlGenerator;
+import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
 import depromeet.onepiece.file.command.presentation.response.FileUploadResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

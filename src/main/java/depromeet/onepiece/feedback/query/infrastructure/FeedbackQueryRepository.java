@@ -8,4 +8,6 @@ public interface FeedbackQueryRepository {
   Feedback findById(ObjectId feedbackId);
 
   List<Feedback> findByUserId(ObjectId userId);
+
+  List<Feedback> findRecentFeedback(ObjectId userId);
 }

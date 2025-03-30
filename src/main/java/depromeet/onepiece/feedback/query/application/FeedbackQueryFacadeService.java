@@ -25,6 +25,7 @@ public class FeedbackQueryFacadeService {
   private final FeedbackQueryService feedbackQueryService;
   private final FileQueryService fileQueryService;
   private final RedisTemplate<String, String> redisTemplate;
+  private final PresignedUrlGenerator presignedUrlGenerator;
 
   public List<RecentFeedbackListResponse> getFeedbackList(ObjectId userId) {
     List<Feedback> feedbackList = feedbackQueryService.findByUserId(userId);
@@ -56,5 +57,32 @@ public class FeedbackQueryFacadeService {
     redisTemplate.opsForValue().setIfAbsent(RedisPrefix.RATE_LIMIT_MAX_REQUEST, "10");
     String maxRequest = redisTemplate.opsForValue().get(RedisPrefix.RATE_LIMIT_MAX_REQUEST);
     return Long.parseLong(Objects.requireNonNull(maxRequest)) - size;
+  }
+
+  public FeedbackDetailResponse getFeedback(ObjectId feedbackId) {
+    Feedback feedback = feedbackQueryService.findById(feedbackId);
+    List<String> imageList =
+        presignedUrlGenerator.generatePresignedUrl(feedback.getFileId().toString());
+
+    return new FeedbackDetailResponse(feedback, imageList);
+  }
+
+  public List<RecentFeedbackListResponse> getRecentFeedback(ObjectId userId) {
+    List<Feedback> feedbackList = feedbackQueryService.getRecentFeedback(userId);
+    Map<ObjectId, FileDocument> fileMapByFeedback =
+        fileQueryService.getFileMapByFeedback(feedbackList);
+
+    return feedbackList.stream()
+        .map(
+            feedback -> {
+              String logicalName =
+                  Optional.ofNullable(fileMapByFeedback.get(feedback.getFileId()).getLogicalName())
+                      .orElse("");
+              return new RecentFeedbackListResponse(
+                  feedback.getId(),
+                  feedback.getCreatedAt().toLocalDate(),
+                  EncryptionUtil.decrypt(logicalName));
+            })
+        .toList();
   }
 }
