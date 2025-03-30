@@ -1,5 +1,7 @@
 package depromeet.onepiece.common.eventsourcing.config;
 
+import static org.apache.kafka.common.requests.CreateTopicsRequest.*;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +22,7 @@ public class KafkaConfig {
 
   @Bean
   public NewTopic topic1() {
-    return new NewTopic(topic, 1, (short) 1);
+    return new NewTopic(topic, 3, NO_REPLICATION_FACTOR);
   }
 
   @Bean
