@@ -3,7 +3,9 @@ package depromeet.onepiece.feedback.query.application;
 import depromeet.onepiece.common.utils.EncryptionUtil;
 import depromeet.onepiece.common.utils.RedisPrefix;
 import depromeet.onepiece.feedback.domain.Feedback;
+import depromeet.onepiece.feedback.query.presentation.response.FeedbackDetailResponse;
 import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackListResponse;
+import depromeet.onepiece.file.command.infrastructure.PresignedUrlGenerator;
 import depromeet.onepiece.file.domain.FileDocument;
 import depromeet.onepiece.file.query.application.FileQueryService;
 import java.util.List;
@@ -65,24 +67,5 @@ public class FeedbackQueryFacadeService {
         presignedUrlGenerator.generatePresignedUrl(feedback.getFileId().toString());
 
     return new FeedbackDetailResponse(feedback, imageList);
-  }
-
-  public List<RecentFeedbackListResponse> getRecentFeedback(ObjectId userId) {
-    List<Feedback> feedbackList = feedbackQueryService.getRecentFeedback(userId);
-    Map<ObjectId, FileDocument> fileMapByFeedback =
-        fileQueryService.getFileMapByFeedback(feedbackList);
-
-    return feedbackList.stream()
-        .map(
-            feedback -> {
-              String logicalName =
-                  Optional.ofNullable(fileMapByFeedback.get(feedback.getFileId()).getLogicalName())
-                      .orElse("");
-              return new RecentFeedbackListResponse(
-                  feedback.getId(),
-                  feedback.getCreatedAt().toLocalDate(),
-                  EncryptionUtil.decrypt(logicalName));
-            })
-        .toList();
   }
 }

@@ -41,14 +41,7 @@ public class FeedbackQueryController {
     return CustomResponse.okResponseEntity(feedbackQueryFacadeService.getFeedback(feedbackId));
   }
 
-  @Operation(summary = "최근 포폴 피드백 목록", description = "최근 피드백 목록 기본 날짜정렬 ")
-  @GetMapping("/recent")
-  public ResponseEntity<CustomResponse<List<RecentFeedbackListResponse>>> recentFeedbackList(
-      @CurrentUserId ObjectId userId) {
-    return CustomResponse.okResponseEntity(feedbackQueryFacadeService.getRecentFeedback(userId));
-  }
-
-  @Operation(summary = "남은 피드백 횟수 조회(Mock)", description = "남은 피드백 횟수 조회")
+  @Operation(summary = "남은 피드백 횟수 조회", description = "남은 피드백 횟수 조회")
   @GetMapping("/remain")
   public ResponseEntity<CustomResponse<RemainCountResponse>> getRemainCount(
       @CurrentUserId ObjectId userId) {
