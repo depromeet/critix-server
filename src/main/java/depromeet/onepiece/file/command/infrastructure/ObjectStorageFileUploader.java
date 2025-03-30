@@ -99,7 +99,7 @@ public class ObjectStorageFileUploader implements FileUploader {
             metadata.setContentLength(bos.toByteArray().length);
             amazonS3.putObject(
                 new PutObjectRequest(bucketName, processedPath, input, metadata)
-                    .withCannedAcl(CannedAccessControlList.Private));
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
             log.info("이미지 업로드: " + processedPath);
             uploadedFilePaths.add(processedPath);
           }

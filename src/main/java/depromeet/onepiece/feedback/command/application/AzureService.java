@@ -11,12 +11,12 @@ import com.azure.ai.openai.models.ChatMessageImageContentItem;
 import com.azure.ai.openai.models.ChatMessageImageUrl;
 import com.azure.ai.openai.models.ChatRequestMessage;
 import com.azure.ai.openai.models.ChatRequestSystemMessage;
-import com.azure.ai.openai.models.ChatRequestUserMessage;
 import com.azure.core.credential.KeyCredential;
 import com.azure.core.http.netty.NettyAsyncHttpClientBuilder;
 import com.azure.core.util.BinaryData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +41,8 @@ public class AzureService {
             .credential(new KeyCredential(apiKey))
             .httpClient(
                 new NettyAsyncHttpClientBuilder()
-                    .readTimeout(java.time.Duration.ofSeconds(200))
+                    .connectTimeout(Duration.ofMillis(600000))
+                    .readTimeout(java.time.Duration.ofSeconds(500))
                     .build())
             .buildClient();
   }
@@ -51,16 +52,15 @@ public class AzureService {
 
     chatMessages.add(new ChatRequestSystemMessage(prompt));
 
-    List<ChatMessageContentItem> messageContent = new ArrayList<>();
+    List<ChatMessageContentItem> messageContent =
+        new ArrayList<>(
+            imageUrls.stream()
+                .limit(50)
+                .map(url -> new ChatMessageImageContentItem(new ChatMessageImageUrl(url)))
+                .toList());
 
-    messageContent.addAll(
-        imageUrls.stream()
-            .limit(50)
-            .filter(image -> image.endsWith(".png"))
-            .map(url -> new ChatMessageImageContentItem(new ChatMessageImageUrl(url)))
-            .collect(Collectors.toList()));
-
-    chatMessages.add(new ChatRequestUserMessage(messageContent));
+    // TODO 커넥션 타임아웃 해결해야됌
+    // chatMessages.add(new ChatRequestUserMessage(messageContent));
 
     ChatCompletionsOptions chatCompletionsOptions =
         new ChatCompletionsOptions(chatMessages)
