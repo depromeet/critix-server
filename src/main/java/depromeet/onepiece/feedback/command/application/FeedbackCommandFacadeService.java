@@ -39,8 +39,6 @@ public class FeedbackCommandFacadeService {
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
 
     requestOverallEvaluation(imageUrls, feedback);
-    feedbackCommandService.updateOverallStatus(feedbackId, FeedbackStatus.ERROR);
-
     requestProjectEvaluation(imageUrls, feedback);
   }
 
