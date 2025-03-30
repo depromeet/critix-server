@@ -24,13 +24,12 @@ public class PresignedUrlGenerator {
   public List<String> generatePresignedUrl(String folderPath) {
     List<S3ObjectSummary> objectSummaries =
         amazonS3.listObjects(bucketName, folderPath + "/processed").getObjectSummaries();
-
     objectSummaries.sort(Comparator.comparing(o -> extractSortableKey(o.getKey())));
 
     List<String> presignedUrls = new ArrayList<>();
     for (S3ObjectSummary objectSummary : objectSummaries) {
       String objectKey = objectSummary.getKey();
-      URL presignedUrl = generatePresignedUrlForObject(objectKey, 30);
+      URL presignedUrl = generatePresignedUrlForObject(objectKey, 60);
       presignedUrls.add(presignedUrl.toString());
     }
 

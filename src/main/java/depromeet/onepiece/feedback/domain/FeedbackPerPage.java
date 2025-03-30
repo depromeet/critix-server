@@ -18,7 +18,4 @@ public class FeedbackPerPage {
 
   @Field("contents")
   private List<PageFeedbackContent> contents;
-
-  @Field("image_url")
-  private String imageUrl;
 }

@@ -19,7 +19,6 @@ import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackLis
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -136,20 +135,7 @@ public class FeedbackQueryController {
     return CustomResponse.okResponseEntity(feedback);
   }
 
-  @Operation(summary = "최근 포폴 피드백 목록(Mock)", description = "최근 피드백 목록 기본 날짜정렬 ")
-  @GetMapping("/recent")
-  public ResponseEntity<CustomResponse<List<RecentFeedbackListResponse>>> recentFeedbackList() {
-    return CustomResponse.okResponseEntity(
-        List.of(
-            new RecentFeedbackListResponse(
-                new ObjectId("66e516c2b355355088f07c82"), LocalDate.now(), "포폴 이름"),
-            new RecentFeedbackListResponse(
-                new ObjectId("66e516c2b355355088f07c82"), LocalDate.now(), "포폴 이름2"),
-            new RecentFeedbackListResponse(
-                new ObjectId("66e516c2b355355088f07c82"), LocalDate.now(), "포폴 이름3")));
-  }
-
-  @Operation(summary = "남은 피드백 횟수 조회(Mock)", description = "남은 피드백 횟수 조회")
+  @Operation(summary = "남은 피드백 횟수 조회", description = "남은 피드백 횟수 조회")
   @GetMapping("/remain")
   public ResponseEntity<CustomResponse<RemainCountResponse>> getRemainCount(
       @CurrentUserId ObjectId userId) {
