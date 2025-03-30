@@ -77,7 +77,7 @@ public class FeedbackQueryController {
     ProjectEvaluation projectEvaluation =
         new ProjectEvaluation(
             "프로젝트 1",
-            "https://i.ibb.co/YBd5JC54/25.png",
+            "25.png",
             List.of(
                 ProcessType.SOSO,
                 ProcessType.GOOD,
@@ -95,30 +95,21 @@ public class FeedbackQueryController {
                 new FeedbackDetail("문장이 길고 가독성이 낮음", List.of("설명이 너무 상세하여 핵심을 빠르게 파악하기 어려움"))),
             List.of(
                 new FeedbackPerPage(
-                    "1",
+                    "1.png",
                     List.of(
                         new PageFeedbackContent(
                             FeedbackType.LOGICAL_LEAP,
                             "논리적 비약",
                             List.of(
-                                new EditPair(
-                                    "푸시 의존도가 높은 점이 문제. 오가닉 유입을 늘리기 위해 홈탭에서 새소식을 더 잘 보이게 노출하기로 결정함.",
-                                    "푸시 의존도가 높은 것이 문제임. 오가닉 유입을 늘리기 위해 홈 탭에서 새소식 노출 빈도를 높이기로 결정함"),
-                                new EditPair(
-                                    "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
-                                    "새소식의 문제점을 파악하기 위해 사용자를 대상으로 설문을 진행함. 새소식을 1회만 읽은 유저와 4회 이상 읽은 유저로 그룹을 나눠 분석함.")))),
-                    "https://i.ibb.co/YBd5JC54/25.png"),
+                                new EditPair("푸시 의존도가 높은 점이 문제...", "푸시 의존도가 높은 것이 문제임..."),
+                                new EditPair("새소식 문제점 파악을 위해...", "새소식의 문제점을 파악하기 위해..."))))),
                 new FeedbackPerPage(
-                    "6",
+                    "6.png",
                     List.of(
                         new PageFeedbackContent(
                             FeedbackType.LENGTH_OR_READABILITY,
                             "문장이 길거나 가독성이 떨어지는 표현 수정",
-                            List.of(
-                                new EditPair(
-                                    "새소식 문제점 파악을 위해 새소식 사용 유저 대상으로 설문을 했어요. 새소식 1번 읽은 유저, 4번 이상 읽은 유저 등등",
-                                    "새소식의 문제점을 파악하기 위해 사용자를 대상으로 설문을 진행함. 새소식을 1회만 읽은 유저와 4회 이상 읽은 유저로 그룹을 나눠 분석함.")))),
-                    "https://i.ibb.co/YBd5JC54/25.png")),
+                            List.of(new EditPair("새소식 문제점 파악을 위해...", "새소식의 문제점을 파악하기 위해...")))))),
             "데이터 기반 UX 개선과 A/B 테스트를 활용한 성장 전략이 돋보이는 프로젝트! 하지만 CTR 증가의 사업적 의미와 유저 락인 효과를 더욱 명확히 설명하면 설득력이 더 좋아질 것 같아요");
 
     Feedback feedback =
