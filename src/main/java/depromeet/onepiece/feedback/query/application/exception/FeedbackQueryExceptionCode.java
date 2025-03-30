@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum FeedbackQueryExceptionCode implements ErrorCode {
   FEEDBACK_NOT_FOUND(HttpStatus.NOT_FOUND, "FEEDBACK_NOT_FOUND", "FB001"),
-  ;
+  CHAT_GPT_CONSTANT_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT_GPT_CONSTANT_NOT_FOUND", "FB002");
 
   private final HttpStatus status;
   private final String message;

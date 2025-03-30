@@ -1,7 +1,5 @@
 package depromeet.onepiece.feedback.command.application;
 
-import static depromeet.onepiece.feedback.command.application.ChatGPTConstants.OverallSchema;
-import static depromeet.onepiece.feedback.command.application.ChatGPTConstants.ProjectSchema;
 import static depromeet.onepiece.feedback.domain.FeedbackStatus.COMPLETE;
 import static depromeet.onepiece.feedback.domain.FeedbackStatus.PENDING;
 
@@ -15,6 +13,7 @@ import depromeet.onepiece.feedback.domain.Feedback;
 import depromeet.onepiece.feedback.domain.FeedbackStatus;
 import depromeet.onepiece.feedback.domain.OverallEvaluation;
 import depromeet.onepiece.feedback.domain.ProjectEvaluation;
+import depromeet.onepiece.feedback.query.application.ChatGPTConstantsProvider;
 import depromeet.onepiece.feedback.query.application.FeedbackQueryService;
 import depromeet.onepiece.file.command.infrastructure.PresignedUrlGenerator;
 import java.util.Collections;
@@ -35,6 +34,7 @@ public class FeedbackCommandFacadeService {
   private final FeedbackCommandService feedbackCommandService;
   private final FeedbackQueryService feedbackQueryService;
   private final GPTEventProducer gptEventProducer;
+  private final ChatGPTConstantsProvider constantsProvider;
 
   @Transactional
   public void requestEvaluation(final ObjectId feedbackId, final ObjectId fileId) {
@@ -50,7 +50,8 @@ public class FeedbackCommandFacadeService {
   private void requestProjectEvaluation(List<String> imageUrls, Feedback feedback) {
     if (feedback.getProjectStatus() == COMPLETE) return;
     String projectFeedback =
-        azureService.processChat(imageUrls, ChatGPTConstants.PROJECT_PROMPT, ProjectSchema);
+        azureService.processChat(
+            imageUrls, constantsProvider.getProjectPrompt(), constantsProvider.getProjectSchema());
     JsonNode projectJsonNode = ConvertService.readTree(projectFeedback, "projectEvaluation");
     feedback.completeProjectEvaluation(
         ConvertService.convertValue(
@@ -60,7 +61,8 @@ public class FeedbackCommandFacadeService {
   private void requestOverallEvaluation(List<String> imageUrls, Feedback feedback) {
     if (feedback.getProjectStatus() == COMPLETE) return;
     String overallFeedback =
-        azureService.processChat(imageUrls, ChatGPTConstants.OVERALL_PROMPT, OverallSchema);
+        azureService.processChat(
+            imageUrls, constantsProvider.getOverallPrompt(), constantsProvider.getOverallSchema());
     feedback.completeOverallEvaluation(
         ConvertService.readValue(overallFeedback, OverallEvaluation.class));
   }
@@ -88,13 +90,15 @@ public class FeedbackCommandFacadeService {
 
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
 
-    String overallJsonSchema = OverallSchema;
-    String projectJsonSchema = ProjectSchema;
+    String overallJsonSchema = constantsProvider.getOverallSchema();
+    String projectJsonSchema = constantsProvider.getProjectSchema();
 
     String overallFeedback =
-        azureService.processChat(imageUrls, ChatGPTConstants.OVERALL_PROMPT, overallJsonSchema);
+        azureService.processChat(
+            imageUrls, constantsProvider.getOverallPrompt(), overallJsonSchema);
     String projectFeedback =
-        azureService.processChat(imageUrls, ChatGPTConstants.PROJECT_PROMPT, projectJsonSchema);
+        azureService.processChat(
+            imageUrls, constantsProvider.getProjectPrompt(), projectJsonSchema);
 
     OverallEvaluation overallEvaluation =
         ConvertService.readValue(overallFeedback, OverallEvaluation.class);
