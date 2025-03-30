@@ -5,7 +5,7 @@ import depromeet.onepiece.common.utils.RedisPrefix;
 import depromeet.onepiece.feedback.domain.Feedback;
 import depromeet.onepiece.feedback.query.presentation.response.FeedbackDetailResponse;
 import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackListResponse;
-import depromeet.onepiece.file.command.infrastructure.PresignedUrlGenerator;
+import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
 import depromeet.onepiece.file.domain.FileDocument;
 import depromeet.onepiece.file.query.application.FileQueryService;
 import java.util.List;

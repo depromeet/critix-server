@@ -12,7 +12,7 @@ import depromeet.onepiece.feedback.domain.OverallEvaluation;
 import depromeet.onepiece.feedback.domain.ProjectEvaluation;
 import depromeet.onepiece.feedback.query.application.ChatGPTConstantsProvider;
 import depromeet.onepiece.feedback.query.application.FeedbackQueryService;
-import depromeet.onepiece.file.command.infrastructure.PresignedUrlGenerator;
+import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
