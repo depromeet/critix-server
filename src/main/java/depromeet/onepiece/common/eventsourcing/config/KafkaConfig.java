@@ -1,6 +1,6 @@
 package depromeet.onepiece.common.eventsourcing.config;
 
-import static org.apache.kafka.common.requests.CreateTopicsRequest.NO_REPLICATION_FACTOR;
+import static org.apache.kafka.common.requests.CreateTopicsRequest.*;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;

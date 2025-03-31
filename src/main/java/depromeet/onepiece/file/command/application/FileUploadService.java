@@ -1,6 +1,5 @@
 package depromeet.onepiece.file.command.application;
 
-import depromeet.onepiece.file.command.infrastructure.PresignedUrlProperties;
 import depromeet.onepiece.file.command.presentation.response.FileUploadResponse;
 import depromeet.onepiece.file.domain.FileDocument;
 import depromeet.onepiece.file.domain.FileType;

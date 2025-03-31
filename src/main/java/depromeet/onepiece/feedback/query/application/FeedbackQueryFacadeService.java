@@ -3,7 +3,9 @@ package depromeet.onepiece.feedback.query.application;
 import depromeet.onepiece.common.utils.EncryptionUtil;
 import depromeet.onepiece.common.utils.RedisPrefix;
 import depromeet.onepiece.feedback.domain.Feedback;
+import depromeet.onepiece.feedback.query.presentation.response.FeedbackDetailResponse;
 import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackListResponse;
+import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
 import depromeet.onepiece.file.domain.FileDocument;
 import depromeet.onepiece.file.query.application.FileQueryService;
 import java.util.List;
@@ -25,6 +27,7 @@ public class FeedbackQueryFacadeService {
   private final FeedbackQueryService feedbackQueryService;
   private final FileQueryService fileQueryService;
   private final RedisTemplate<String, String> redisTemplate;
+  private final PresignedUrlGenerator presignedUrlGenerator;
 
   public List<RecentFeedbackListResponse> getFeedbackList(ObjectId userId) {
     List<Feedback> feedbackList = feedbackQueryService.findByUserId(userId);
@@ -56,5 +59,13 @@ public class FeedbackQueryFacadeService {
     redisTemplate.opsForValue().setIfAbsent(RedisPrefix.RATE_LIMIT_MAX_REQUEST, "10");
     String maxRequest = redisTemplate.opsForValue().get(RedisPrefix.RATE_LIMIT_MAX_REQUEST);
     return Long.parseLong(Objects.requireNonNull(maxRequest)) - size;
+  }
+
+  public FeedbackDetailResponse getFeedback(ObjectId feedbackId) {
+    Feedback feedback = feedbackQueryService.findById(feedbackId);
+    List<String> imageList =
+        presignedUrlGenerator.generatePresignedUrl(feedback.getFileId().toString());
+
+    return new FeedbackDetailResponse(feedback, imageList);
   }
 }

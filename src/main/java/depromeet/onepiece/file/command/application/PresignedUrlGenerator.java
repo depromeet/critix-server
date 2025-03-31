@@ -1,11 +1,16 @@
-package depromeet.onepiece.file.command.infrastructure;
+package depromeet.onepiece.file.command.application;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +26,8 @@ public class PresignedUrlGenerator {
   @Value("${cloud.ncp.object-storage.credentials.bucket}")
   private String bucketName;
 
+  private final String s3Host = "https://kr.object.ncloudstorage.com/";
+
   public List<String> generatePresignedUrl(String folderPath) {
     List<S3ObjectSummary> objectSummaries =
         amazonS3.listObjects(bucketName, folderPath + "/processed").getObjectSummaries();
@@ -28,10 +35,15 @@ public class PresignedUrlGenerator {
     objectSummaries.sort(Comparator.comparing(o -> extractSortableKey(o.getKey())));
 
     List<String> presignedUrls = new ArrayList<>();
+
     for (S3ObjectSummary objectSummary : objectSummaries) {
       String objectKey = objectSummary.getKey();
+      if (!objectKey.endsWith("png")) {
+        continue;
+      }
       URL presignedUrl = generatePresignedUrlForObject(objectKey, 30);
-      presignedUrls.add(presignedUrl.toString());
+      // url로 보내면 image 다운로드 에러떠서 base64로 변경
+      // presignedUrls.add(convertBase64Url(presignedUrl.toString()));
     }
 
     return presignedUrls;
@@ -60,5 +72,17 @@ public class PresignedUrlGenerator {
     }
     matcher.appendTail(stringBuffer);
     return stringBuffer.toString();
+  }
+
+  private String convertBase64Url(String s3Url) {
+    try {
+      URL url = new URL(s3Url);
+      try (InputStream in = url.openStream()) {
+        byte[] imageBytes = in.readAllBytes(); // Java 9+
+        return "data:image/png;base64," + Base64.getEncoder().encodeToString(imageBytes);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
