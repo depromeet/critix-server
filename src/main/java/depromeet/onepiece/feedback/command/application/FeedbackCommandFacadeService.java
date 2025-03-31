@@ -61,7 +61,7 @@ public class FeedbackCommandFacadeService {
   }
 
   private void requestOverallEvaluation(List<String> imageUrls, Feedback feedback) {
-    if (feedback.getProjectStatus() == FeedbackStatus.COMPLETE) {
+    if (feedback.getOverallStatus() == FeedbackStatus.COMPLETE) {
       return;
     }
     feedbackCommandService.updateOverallStatus(feedback.getId(), FeedbackStatus.IN_PROGRESS);

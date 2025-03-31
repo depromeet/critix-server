@@ -31,6 +31,7 @@ public class KafkaConfig {
     return new DefaultErrorHandler(
         (consumerRecord, exception) -> {
           log.error("Error Data: {}", consumerRecord.toString());
+          log.error(exception.getMessage(), exception);
         },
         fixedBackOff);
   }
