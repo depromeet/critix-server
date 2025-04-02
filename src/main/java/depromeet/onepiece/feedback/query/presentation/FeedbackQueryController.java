@@ -26,7 +26,7 @@ public class FeedbackQueryController {
   private final FeedbackQueryFacadeService feedbackQueryFacadeService;
 
   @Operation(summary = "전체 피드백 반환", description = "전체 피드백을 반환하는 API [담당자 : 김수진]")
-  @GetMapping(value = "/recent/feedback")
+  @GetMapping(value = "/list")
   public ResponseEntity<CustomResponse<List<RecentFeedbackListResponse>>> getRecentFeedback(
       @CurrentUserId ObjectId userId) {
     List<RecentFeedbackListResponse> feedbackList =
