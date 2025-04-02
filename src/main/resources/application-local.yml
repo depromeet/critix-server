@@ -1,0 +1,14 @@
+spring:
+  security:
+    login-url: ${LOGIN_URL:/login}
+    redirect-url: ${REDIRECT_URL:/swagger-ui/index.html}
+    cookie:
+      domain: ${COOKIE_DOMAIN:localhost}
+      secure: ${COOKIE_SECURE:true}
+  data:
+    mongodb:
+      uri: mongodb://localhost/onepiece
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}

@@ -1,0 +1,94 @@
+spring:
+  security:
+    login-url: ${LOGIN_URL}
+    redirect-url: ${REDIRECT_URL}
+    cookie:
+      domain: ${COOKIE_DOMAIN:critix.kr}
+      secure: ${COOKIE_SECURE:true}
+      http-only: ${COOKIE_HTTP_ONLY:false}
+    jwt:
+      secret_key: ${JWT_SECRET_KEY}
+      expiration-time:
+        access-token: ${JWT_EXPIRATION_TIME_ACCESS_TOKEN:3600}
+        refresh-token: ${JWT_EXPIRATION_TIME_REFRESH_TOKEN:86400}
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+                - email
+                - profile
+            redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080/login/oauth2/code/google}
+            authorization-grant-type: authorization_code
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: ${MAX_FILE_SIZE:50MB}
+      max-request-size: ${MAX_REQUEST_SIZE:50MB}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    template:
+      default-topic: ${KAFKA_TOPIC:gpt-limiter}
+    consumer:
+      client-id: kafka-consumer
+      group-id: gpt-limiter-group
+      auto-offset-reset: earliest
+      max-poll-records: 10
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "depromeet.onepiece.common.eventsourcing.dto"
+    producer:
+      client-id: kafka-producer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    listener:
+      concurrency: 3
+      ack-mode: record
+
+springdoc:
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    operations-sorter: alpha
+    tags-sorter: alpha
+
+chatgpt:
+  api-key: ${CHATGPT_API_KEY}
+  model: "gpt-4"
+  temperature: 0.7
+  maxTokens: 4096
+  overall-assistant-id: ${OVERALL_ASSISTANT_ID}
+  project-assistant-id: ${PROJECT_ASSISTANT_ID}
+cloud:
+  ncp:
+    object-storage:
+      endpoint: "https://kr.object.ncloudstorage.com"
+      credentials:
+        access-key: ${NCP_ACCESS_KEY}
+        secret-key: ${NCP_SECRET_KEY}
+        bucket: ${NCP_BUCKET_NAME}
+    region:
+      auto: false
+      static-region: "ap-southeast-2"
+    stack:
+      auto: false
+
+encryption:
+  secret-key: ${ENCRYPTION_SECRET_KEY}
+  algorithm: ${ENCRYPTION_ALGORITHM}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

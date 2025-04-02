@@ -1,0 +1,104 @@
+name: Deploy to Development Server
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-22.04
+    environment: development
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: set up jdk 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: setup gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
+
+      - name: build with gradle wrapper
+        run: ./gradlew clean build -x test
+
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: docker image build
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/onepiece-api:latest .
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/onepiece-api:latest ${{ secrets.DOCKERHUB_USERNAME }}/onepiece-api:${{ github.sha }}
+
+      - name: docker push
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/onepiece-api:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/onepiece-api:${{ github.sha }}
+
+  deploy:
+    runs-on: ubuntu-22.04
+    needs: docker-build
+    environment: development
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: scp docker-compose.yml
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.NCP_SERVER_HOST }}
+          username: ${{ secrets.NCP_SERVER_USERNAME }}
+          password: ${{ secrets.NCP_SERVER_PASSWORD }}
+          port: ${{ secrets.NCP_SERVER_PORT }}
+          source: "infra/development/docker/docker-compose.yml, infra/development/docker/monitoring-docker-compose.yml, infra/development/docker/kafka-docker-compose.yml"
+          target: ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}
+          strip_components: 3
+
+      - name: run application server
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.NCP_SERVER_HOST }}
+          username: ${{ secrets.NCP_SERVER_USERNAME }}
+          password: ${{ secrets.NCP_SERVER_PASSWORD }}
+          port: ${{ secrets.NCP_SERVER_PORT }}
+          script: |
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/docker-compose.yml pull
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/docker-compose.yml --env-file ${{ secrets.ENV_FILE_PATH }} up -d
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/monitoring-docker-compose.yml pull
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/monitoring-docker-compose.yml --env-file ${{ secrets.ENV_FILE_PATH }} up -d
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/kafka-docker-compose.yml pull
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_YAML_PATH }}/kafka-docker-compose.yml --env-file ${{ secrets.ENV_FILE_PATH }} up -d
+
+  check:
+    needs: deploy
+    runs-on: ubuntu-22.04
+    environment: development
+
+    steps:
+      - name: health check
+        uses: jtalk/url-health-check-action@v3
+        with:
+          url: ${{ secrets.HEALTH_CHECK_ENDPOINT }}
+          max-attempts: 3
+          retry-delay: 1s
+
+      - name: action-slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: Github Action Health Check
+          fields: repo,message,commit,author,eventName,workflow,job,took,pullRequest
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEB_HOOK_URL }}
+        if: always()
