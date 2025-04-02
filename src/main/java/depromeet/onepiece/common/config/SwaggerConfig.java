@@ -41,6 +41,7 @@ public class SwaggerConfig {
   public void init() {
     PROFILE_SERVER_URL_MAP.put("local", "http://localhost:8080");
     PROFILE_SERVER_URL_MAP.put("dev", "https://dev.critix.kr");
+    PROFILE_SERVER_URL_MAP.put("prod", "https://api.critix.kr");
   }
 
   @Bean
