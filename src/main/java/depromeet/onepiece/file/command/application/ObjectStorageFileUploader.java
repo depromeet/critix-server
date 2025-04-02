@@ -85,31 +85,37 @@ public class ObjectStorageFileUploader implements FileUploader {
               .withCannedAcl(CannedAccessControlList.Private));
       log.info("PDF 업로드: " + pdfUploadPath);
 
-      try (PDDocument document = PDDocument.load(pdfFile);
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(); ) {
+      try (PDDocument document = PDDocument.load(pdfFile)) {
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         for (int page = 0; page < document.getNumberOfPages(); page++) {
           BufferedImage image = pdfRenderer.renderImageWithDPI(page, 72);
           String imageName = (page + 1) + PNG;
-          ImageIO.write(image, "png", bos);
 
-          String processedPath = Path.of(fileId.toString(), "processed", imageName).toString();
-          try (ByteArrayInputStream input = new ByteArrayInputStream(bos.toByteArray()); ) {
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(bos.toByteArray().length);
-            amazonS3.putObject(
-                new PutObjectRequest(bucketName, processedPath, input, metadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-            log.info("이미지 업로드: " + processedPath);
-            uploadedFilePaths.add(processedPath);
+          try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            ImageIO.write(image, "png", bos);
+            String processedPath = Path.of(fileId.toString(), "processed", imageName).toString();
+
+            try (ByteArrayInputStream input = new ByteArrayInputStream(bos.toByteArray())) {
+              ObjectMetadata metadata = new ObjectMetadata();
+              metadata.setContentLength(bos.size());
+
+              amazonS3.putObject(
+                  new PutObjectRequest(bucketName, processedPath, input, metadata)
+                      .withCannedAcl(CannedAccessControlList.PublicRead));
+              log.info("이미지 업로드: " + processedPath);
+              uploadedFilePaths.add(processedPath);
+            }
           }
         }
       }
+
       removeUploadedFile(pdfFile);
       uploadCompletedFile(fileId);
+
       return fileRepository.save(
           FileDocument.create(fileId, logicalName, fileType)
               .setPhysicalPath(pdfUploadPath + "," + String.join(",", uploadedFilePaths)));
+
     } catch (IOException e) {
       throw new FileUploadFailedException();
     }
