@@ -1,6 +1,5 @@
 package depromeet.onepiece.feedback.command.presentation;
 
-import depromeet.onepiece.common.auth.annotation.CurrentUserId;
 import depromeet.onepiece.common.error.CustomResponse;
 import depromeet.onepiece.feedback.command.application.FeedbackCommandFacadeService;
 import depromeet.onepiece.feedback.command.presentation.response.StartFeedbackResponse;
@@ -25,7 +24,8 @@ public class FeedbackCommandController {
       description = "fileId 받아 포트폴리오 피드백 API 호출 후 feedbackId 반환하는 API [담당자 : 김수진]")
   @GetMapping(value = "/start")
   public CustomResponse<StartFeedbackResponse> startFeedback(
-      @RequestParam(value = "fileId") ObjectId fileId, @CurrentUserId ObjectId userId) {
+      @RequestParam(value = "fileId") ObjectId fileId) {
+    ObjectId userId = new ObjectId("67eb400e3702373008d4844b");
     StartFeedbackResponse response = feedbackCommandFacadeService.startFeedback(userId, fileId);
     return new CustomResponse<>(response);
   }

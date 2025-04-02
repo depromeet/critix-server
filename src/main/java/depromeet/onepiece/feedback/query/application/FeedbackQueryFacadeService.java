@@ -8,6 +8,7 @@ import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackLis
 import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
 import depromeet.onepiece.file.domain.FileDocument;
 import depromeet.onepiece.file.query.application.FileQueryService;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -63,9 +64,34 @@ public class FeedbackQueryFacadeService {
 
   public FeedbackDetailResponse getFeedback(ObjectId feedbackId) {
     Feedback feedback = feedbackQueryService.findById(feedbackId);
+    updateImageUrls(feedback);
     List<String> imageList =
         presignedUrlGenerator.generatePresignedUrl(feedback.getFileId().toString());
-
+    log.info("피드백 응답", feedback.getProjectEvaluation().toString());
     return new FeedbackDetailResponse(feedback, imageList);
+  }
+
+  private void updateImageUrls(Feedback feedback) {
+    feedback
+        .getProjectEvaluation()
+        .forEach(
+            projectEvaluation -> {
+              projectEvaluation
+                  .getFeedbackPerPage()
+                  .forEach(
+                      feedbackPerPage -> {
+                        String pageNumber = feedbackPerPage.getPageNumber();
+                        String processedPath =
+                            Path.of(feedback.getFileId().toString(), "processed", pageNumber)
+                                .toString();
+                        if (pageNumber != null) {
+                          List<String> presignedUrls =
+                              presignedUrlGenerator.generatePresignedUrl(processedPath);
+                          if (!presignedUrls.isEmpty()) {
+                            feedbackPerPage.updateImageUrl(presignedUrls.get(0));
+                          }
+                        }
+                      });
+            });
   }
 }
