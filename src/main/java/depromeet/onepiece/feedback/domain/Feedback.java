@@ -50,6 +50,7 @@ public class Feedback extends BaseTimeDocument {
   private List<ProjectEvaluation> projectEvaluation;
 
   public static Feedback saveEmptyFeedback(ObjectId userId, ObjectId fileId) {
+
     return Feedback.builder()
         .userId(userId)
         .fileId(fileId)
@@ -71,5 +72,9 @@ public class Feedback extends BaseTimeDocument {
   public void completeProjectEvaluation(List<ProjectEvaluation> projectEvaluation) {
     this.projectStatus = COMPLETE;
     this.projectEvaluation = projectEvaluation;
+  }
+
+  public void updateTitle(String title) {
+    this.title = title;
   }
 }
