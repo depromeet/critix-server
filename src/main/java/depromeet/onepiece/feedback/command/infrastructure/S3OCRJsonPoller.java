@@ -22,8 +22,8 @@ public class S3OCRJsonPoller {
   private String bucketName;
 
   @SneakyThrows
-  public String waitForResult(String userId, long timeoutMillis, long intervalMillis) {
-    String objectKey = userId + "/ocr/result.json";
+  public String waitForResult(String fileId, long timeoutMillis, long intervalMillis) {
+    String objectKey = fileId + "/ocr/result.json";
 
     long startTime = System.currentTimeMillis();
 
