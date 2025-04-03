@@ -72,4 +72,8 @@ public class Feedback extends BaseTimeDocument {
     this.projectStatus = COMPLETE;
     this.projectEvaluation = projectEvaluation;
   }
+
+  public void updateTitle(String title) {
+    this.title = title;
+  }
 }

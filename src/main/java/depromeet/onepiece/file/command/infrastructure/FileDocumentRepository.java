@@ -7,5 +7,5 @@ import org.bson.types.ObjectId;
 public interface FileDocumentRepository {
   FileDocument save(FileDocument fileDocument);
 
-  Optional<FileDocument> fileById(ObjectId fileId);
+  Optional<FileDocument> findById(ObjectId fileId);
 }
