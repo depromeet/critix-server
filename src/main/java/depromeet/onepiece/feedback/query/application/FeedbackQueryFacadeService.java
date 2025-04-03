@@ -8,7 +8,6 @@ import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackLis
 import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
 import depromeet.onepiece.file.domain.FileDocument;
 import depromeet.onepiece.file.query.application.FileQueryService;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -74,23 +73,35 @@ public class FeedbackQueryFacadeService {
   }
 
   private void updateImageUrls(Feedback feedback) {
+    if (feedback.getProjectEvaluation() == null) {
+      log.warn("프로젝트 평가 정보가 없습니다. 피드백 ID: {}", feedback.getId());
+      return;
+    }
+
     feedback
         .getProjectEvaluation()
         .forEach(
             projectEvaluation -> {
+              if (projectEvaluation.getFeedbackPerPage() == null) return;
+
               projectEvaluation
                   .getFeedbackPerPage()
                   .forEach(
                       feedbackPerPage -> {
                         String pageNumber = feedbackPerPage.getPageNumber();
-                        String processedPath =
-                            Path.of(feedback.getFileId().toString(), "processed", pageNumber)
-                                .toString();
                         if (pageNumber != null) {
-                          List<String> presignedUrls =
-                              presignedUrlGenerator.generatePresignedUrl(processedPath);
-                          if (!presignedUrls.isEmpty()) {
-                            feedbackPerPage.updateImageUrl(presignedUrls.get(0));
+                          String objectKey =
+                              feedback.getFileId().toString() + "/processed/" + pageNumber;
+                          try {
+                            String presignedUrl =
+                                presignedUrlGenerator.generatePresignedUrlForKey(objectKey);
+                            if (presignedUrl != null && !presignedUrl.isEmpty()) {
+                              feedbackPerPage.updateImageUrl(presignedUrl);
+                            } else {
+                              log.warn("Presigned URL이 비어 있습니다: {}", objectKey);
+                            }
+                          } catch (Exception e) {
+                            log.error("Presigned URL 생성 중 오류 발생: {}", objectKey, e);
                           }
                         }
                       });
