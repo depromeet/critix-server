@@ -36,6 +36,9 @@ public class FeedbackQueryFacadeService {
         fileQueryService.findAllByIds(fileIdList).stream()
             .collect(Collectors.toMap(FileDocument::getId, Function.identity()));
     return feedbackList.stream()
+        .filter(
+            feedback ->
+                feedback.getOverallEvaluation() != null && feedback.getProjectEvaluation() != null)
         .map(
             feedback -> {
               String title = getFileTitle(feedback.getFileId(), fileMap);
@@ -65,7 +68,6 @@ public class FeedbackQueryFacadeService {
     Feedback feedback = feedbackQueryService.findById(feedbackId);
     List<String> imageList =
         presignedUrlGenerator.generatePresignedUrl(feedback.getFileId().toString());
-
     return new FeedbackDetailResponse(feedback, imageList);
   }
 }
