@@ -103,7 +103,9 @@ public class SecurityConfig {
               "http://localhost:3000",
               "https://dev.critix.kr",
               "https://onepiece-fe.vercel.app",
-              "https://critix.kr:3000"));
+              "https://critix.kr:3000",
+              "https://critix.kr",
+              "https://api.critix.kr"));
       config.setAllowCredentials(true);
       return config;
     };
