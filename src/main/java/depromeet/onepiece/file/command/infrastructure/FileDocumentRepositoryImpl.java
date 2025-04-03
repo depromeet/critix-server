@@ -17,7 +17,7 @@ public class FileDocumentRepositoryImpl implements FileDocumentRepository {
   }
 
   @Override
-  public Optional<FileDocument> fileById(ObjectId id) {
+  public Optional<FileDocument> findById(ObjectId id) {
     return fileDocumentMongoRepository.findById(id);
   }
 }
