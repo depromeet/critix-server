@@ -108,13 +108,14 @@ public class FeedbackQueryFacadeService {
 
               String projectImageUrl = projectEvaluation.getProjectImageUrl();
               if (projectImageUrl != null && !projectImageUrl.isEmpty()) {
+                String objectKey =
+                    feedback.getFileId().toString() + "/processed/" + projectImageUrl;
                 try {
-                  String presignedUrl =
-                      presignedUrlGenerator.generatePresignedUrlForKey(projectImageUrl);
+                  String presignedUrl = presignedUrlGenerator.generatePresignedUrlForKey(objectKey);
                   if (presignedUrl != null && !presignedUrl.isEmpty()) {
                     projectEvaluation.updatePageImageUrl(presignedUrl);
                   } else {
-                    log.warn("프로젝트 대표 이미지 Presigned URL이 비어 있습니다: {}", projectImageUrl);
+                    log.warn("프로젝트 대표 이미지 필드가 비어 있습니다: {}", presignedUrl);
                   }
                 } catch (Exception e) {
                   log.error("프로젝트 대표 이미지 Presigned URL 생성 중 오류 발생: {}", projectImageUrl, e);
