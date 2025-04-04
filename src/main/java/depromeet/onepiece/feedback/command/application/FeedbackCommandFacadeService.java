@@ -37,6 +37,7 @@ public class FeedbackCommandFacadeService {
   // @Transactional
   public void requestEvaluation(final ObjectId feedbackId, final ObjectId fileId) {
     Feedback feedback = feedbackQueryService.getById(feedbackId);
+    log.info("피드백 요청 메서드 호출");
     String ocrResult = "";
     try {
       log.info("OCR 결과 요청 file Id: {}", fileId);

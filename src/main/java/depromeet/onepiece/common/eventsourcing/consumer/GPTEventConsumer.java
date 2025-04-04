@@ -32,5 +32,6 @@ public class GPTEventConsumer {
     // TODO: 필요 시 resilience4j 같은 라이브러리 사용
     feedbackCommandFacadeService.requestEvaluation(
         new ObjectId(topic.feedbackId()), new ObjectId(topic.fileId()));
+    log.info("feedback request 호출 완료");
   }
 }
