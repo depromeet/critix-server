@@ -16,7 +16,7 @@ public class ProjectEvaluation {
   @Field("project_name")
   private String projectName;
 
-  @Field("project_iamge_url")
+  @Field("project_image_url")
   private String projectImageUrl;
 
   @Field("process")
