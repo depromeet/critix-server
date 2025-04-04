@@ -16,8 +16,8 @@ public class ProjectEvaluation {
   @Field("project_name")
   private String projectName;
 
-  @Field("image_url")
-  private String imageUrl;
+  @Field("project_iamge_url")
+  private String projectImageUrl;
 
   @Field("process")
   private List<ProcessType> process;
@@ -36,4 +36,8 @@ public class ProjectEvaluation {
 
   @Field("project_summary")
   private String projectSummary;
+
+  public void updatePageImageUrl(String projectImageUrl) {
+    this.projectImageUrl = projectImageUrl;
+  }
 }

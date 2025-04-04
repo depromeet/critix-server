@@ -47,9 +47,8 @@ public class FeedbackCommandFacadeService {
       log.warn("OCR 결과를 시간 내에 찾을 수 없습니다.");
     }
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
-    String userName = feedback.getUserId().toString();
 
-    requestOverallEvaluation(imageUrls, feedback, ocrResult, userName);
+    requestOverallEvaluation(imageUrls, feedback, ocrResult);
     requestProjectEvaluation(imageUrls, feedback, ocrResult);
   }
 
@@ -77,7 +76,7 @@ public class FeedbackCommandFacadeService {
   }
 
   private void requestOverallEvaluation(
-      List<String> imageUrls, Feedback feedback, String ocrResult, String userName) {
+      List<String> imageUrls, Feedback feedback, String ocrResult) {
     if (feedback.getOverallStatus() == FeedbackStatus.COMPLETE) {
       return;
     }
@@ -85,9 +84,7 @@ public class FeedbackCommandFacadeService {
         chatGPTConstantsProvider.getOverallPrompt()
             + "\n\n"
             + "포트폴리오 각 페이지의 내용은 다음과 같아:\n"
-            + ocrResult
-            + "디자이너의 이름은 다음과 같아:\n"
-            + userName;
+            + ocrResult;
     feedbackCommandService.updateOverallStatus(feedback.getId(), FeedbackStatus.IN_PROGRESS);
     String overallFeedback =
         azureService.processChat(

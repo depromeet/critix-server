@@ -82,29 +82,44 @@ public class FeedbackQueryFacadeService {
         .getProjectEvaluation()
         .forEach(
             projectEvaluation -> {
-              if (projectEvaluation.getFeedbackPerPage() == null) return;
-
-              projectEvaluation
-                  .getFeedbackPerPage()
-                  .forEach(
-                      feedbackPerPage -> {
-                        String pageNumber = feedbackPerPage.getPageNumber();
-                        if (pageNumber != null) {
-                          String objectKey =
-                              feedback.getFileId().toString() + "/processed/" + pageNumber;
-                          try {
-                            String presignedUrl =
-                                presignedUrlGenerator.generatePresignedUrlForKey(objectKey);
-                            if (presignedUrl != null && !presignedUrl.isEmpty()) {
-                              feedbackPerPage.updateImageUrl(presignedUrl);
-                            } else {
-                              log.warn("Presigned URL이 비어 있습니다: {}", objectKey);
+              if (projectEvaluation.getFeedbackPerPage() != null) {
+                projectEvaluation
+                    .getFeedbackPerPage()
+                    .forEach(
+                        feedbackPerPage -> {
+                          String pageNumber = feedbackPerPage.getPageNumber();
+                          if (pageNumber != null) {
+                            String objectKey =
+                                feedback.getFileId().toString() + "/processed/" + pageNumber;
+                            try {
+                              String presignedUrl =
+                                  presignedUrlGenerator.generatePresignedUrlForKey(objectKey);
+                              if (presignedUrl != null && !presignedUrl.isEmpty()) {
+                                feedbackPerPage.updateImageUrl(presignedUrl);
+                              } else {
+                                log.warn("Presigned URL이 비어 있습니다: {}", objectKey);
+                              }
+                            } catch (Exception e) {
+                              log.error("Presigned URL 생성 중 오류 발생: {}", objectKey, e);
                             }
-                          } catch (Exception e) {
-                            log.error("Presigned URL 생성 중 오류 발생: {}", objectKey, e);
                           }
-                        }
-                      });
+                        });
+              }
+
+              String projectImageUrl = projectEvaluation.getProjectImageUrl();
+              if (projectImageUrl != null && !projectImageUrl.isEmpty()) {
+                try {
+                  String presignedUrl =
+                      presignedUrlGenerator.generatePresignedUrlForKey(projectImageUrl);
+                  if (presignedUrl != null && !presignedUrl.isEmpty()) {
+                    projectEvaluation.updatePageImageUrl(presignedUrl);
+                  } else {
+                    log.warn("프로젝트 대표 이미지 Presigned URL이 비어 있습니다: {}", projectImageUrl);
+                  }
+                } catch (Exception e) {
+                  log.error("프로젝트 대표 이미지 Presigned URL 생성 중 오류 발생: {}", projectImageUrl, e);
+                }
+              }
             });
   }
 }
