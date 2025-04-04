@@ -39,7 +39,7 @@ public class FeedbackCommandFacadeService {
     Feedback feedback = feedbackQueryService.getById(feedbackId);
     String ocrResult = "";
     try {
-      ocrResult = s3ocrJsonPoller.waitForResult(feedback.getFileId().toString(), 10000, 1000);
+      ocrResult = s3ocrJsonPoller.waitForResult(feedback.getFileId().toString(), 30000, 1000);
       log.info("OCR 결과 수신 완료: {}", ocrResult);
     } catch (OCRResultNotFoundException e) {
       log.warn("OCR 결과를 시간 내에 찾을 수 없습니다.");
