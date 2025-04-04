@@ -1,0 +1,15 @@
+spring:
+  security:
+    login-url: ${LOGIN_URL:/login}
+    redirect-url: ${REDIRECT_URL:/login}
+    cookie:
+      domain: ${COOKIE_DOMAIN:localhost}
+      secure: ${COOKIE_SECURE:true}
+      http-only: ${COOKIE_HTTP_ONLY:false}
+  data:
+    mongodb:
+      uri: ${MONGODB_URL}
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
