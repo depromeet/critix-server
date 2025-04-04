@@ -9,12 +9,17 @@ import com.azure.ai.openai.models.ChatCompletionsOptions;
 import com.azure.ai.openai.models.ChatMessageContentItem;
 import com.azure.ai.openai.models.ChatMessageImageContentItem;
 import com.azure.ai.openai.models.ChatMessageImageUrl;
+import com.azure.ai.openai.models.ChatMessageTextContentItem;
 import com.azure.ai.openai.models.ChatRequestMessage;
 import com.azure.ai.openai.models.ChatRequestSystemMessage;
+import com.azure.ai.openai.models.ChatRequestUserMessage;
 import com.azure.core.credential.KeyCredential;
 import com.azure.core.http.netty.NettyAsyncHttpClientBuilder;
 import com.azure.core.util.BinaryData;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import depromeet.onepiece.common.utils.ConvertService;
+import depromeet.onepiece.common.utils.RedisPrefix;
 import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -24,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,6 +38,8 @@ import org.springframework.stereotype.Service;
 public class AzureService {
   private final ChatGPTProperties chatGPTProperties;
   private OpenAIClient client;
+  private final ObjectMapper objectMapper;
+  private final RedisTemplate<String, String> redisTemplate;
 
   @PostConstruct
   private void initClient() {
@@ -47,20 +55,28 @@ public class AzureService {
             .buildClient();
   }
 
-  public String processChat(List<String> imageUrls, String prompt, String jsonSchema) {
+  public String processChat(
+      List<String> imageUrls, String prompt, String jsonSchema, String ocrResult) {
     List<ChatRequestMessage> chatMessages = new ArrayList<>();
 
     chatMessages.add(new ChatRequestSystemMessage(prompt));
 
-    List<ChatMessageContentItem> messageContent =
-        new ArrayList<>(
-            imageUrls.stream()
-                .limit(50)
-                .map(url -> new ChatMessageImageContentItem(new ChatMessageImageUrl(url)))
-                .toList());
+    JsonNode jsonNode = ConvertService.readTree(ocrResult);
+    int maxSize = 50;
+    List<ChatMessageContentItem> messageContent = new ArrayList<>();
 
-    // TODO 커넥션 타임아웃 해결해야됌
-    // chatMessages.add(new ChatRequestUserMessage(messageContent));
+    Boolean imageFlag = redisTemplate.hasKey(RedisPrefix.AI_INCLUDE_IMAGE_FLAG);
+    for (int i = 0; i < jsonNode.size(); i++) {
+      messageContent.add(
+          new ChatMessageTextContentItem(jsonNode.findValue((i + 1) + ".png").toString()));
+      if (imageFlag) {
+        messageContent.add(
+            new ChatMessageImageContentItem(new ChatMessageImageUrl(imageUrls.get(i))));
+      }
+      ;
+    }
+
+    chatMessages.add(new ChatRequestUserMessage(messageContent));
 
     ChatCompletionsOptions chatCompletionsOptions =
         new ChatCompletionsOptions(chatMessages)

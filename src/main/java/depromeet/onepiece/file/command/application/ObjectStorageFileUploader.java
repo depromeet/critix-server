@@ -4,6 +4,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import depromeet.onepiece.common.error.GlobalException;
+import depromeet.onepiece.common.utils.RedisPrefix;
+import depromeet.onepiece.file.command.exception.FileCommandExceptionCode;
 import depromeet.onepiece.file.command.exception.FileConvertErrorException;
 import depromeet.onepiece.file.command.exception.FileUploadFailedException;
 import depromeet.onepiece.file.command.infrastructure.FileDocumentRepository;
@@ -27,6 +30,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ObjectStorageFileUploader implements FileUploader {
 
   public static final String PNG = ".png";
+  private final RedisTemplate<String, String> redisTemplate;
 
   @Value("${cloud.ncp.object-storage.credentials.bucket}")
   private String bucketName;
@@ -45,11 +50,8 @@ public class ObjectStorageFileUploader implements FileUploader {
 
   @Override
   public FileDocument upload(MultipartFile multipartFile, String logicalName, FileType fileType) {
-    try {
-      return uploadPdf(multipartFile, logicalName, fileType);
-    } catch (Exception e) {
-      throw new FileUploadFailedException();
-    }
+
+    return uploadPdf(multipartFile, logicalName, fileType);
   }
 
   private void removeUploadedFile(File targetFile) {
@@ -72,12 +74,15 @@ public class ObjectStorageFileUploader implements FileUploader {
     }
   }
 
-  private FileDocument uploadPdf(MultipartFile multipartFile, String logicalName, FileType fileType)
-      throws IOException {
+  private FileDocument uploadPdf(
+      MultipartFile multipartFile, String logicalName, FileType fileType) {
     try {
       File pdfFile = convert(multipartFile).orElseThrow(FileConvertErrorException::new);
       List<String> uploadedFilePaths = new ArrayList<>();
       ObjectId fileId = new ObjectId();
+      redisTemplate.opsForValue().setIfAbsent(RedisPrefix.MAXIMUM_PAGE_SIZE, "20");
+      int maxImageNum =
+          Integer.parseInt(redisTemplate.opsForValue().get(RedisPrefix.MAXIMUM_PAGE_SIZE));
 
       String pdfUploadPath = Path.of(fileId.toString(), "upload", logicalName).toString();
       amazonS3.putObject(
@@ -87,7 +92,12 @@ public class ObjectStorageFileUploader implements FileUploader {
 
       try (PDDocument document = PDDocument.load(pdfFile)) {
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        for (int page = 0; page < document.getNumberOfPages(); page++) {
+        int numberOfPages = document.getNumberOfPages();
+        if (numberOfPages > maxImageNum) {
+          throw new GlobalException(
+              "파일 페이지 제한 현재 페이지 장수 : " + numberOfPages, FileCommandExceptionCode.FILE_MAX_IMAGE);
+        }
+        for (int page = 0; page < numberOfPages; page++) {
           BufferedImage image = pdfRenderer.renderImageWithDPI(page, 72);
           String imageName = (page + 1) + PNG;
 
