@@ -85,4 +85,13 @@ public class PresignedUrlGenerator {
       throw new RuntimeException(e);
     }
   }
+
+  public String generatePresignedUrlForKey(String objectKey) {
+    try {
+      URL presignedUrl = generatePresignedUrlForObject(objectKey, 600);
+      return presignedUrl.toString();
+    } catch (Exception e) {
+      throw new RuntimeException("Presigned URL 생성 실패: " + objectKey, e);
+    }
+  }
 }

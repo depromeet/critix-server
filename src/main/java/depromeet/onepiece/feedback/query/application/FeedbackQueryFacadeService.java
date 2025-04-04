@@ -36,6 +36,9 @@ public class FeedbackQueryFacadeService {
         fileQueryService.findAllByIds(fileIdList).stream()
             .collect(Collectors.toMap(FileDocument::getId, Function.identity()));
     return feedbackList.stream()
+        .filter(
+            feedback ->
+                feedback.getOverallEvaluation() != null && feedback.getProjectEvaluation() != null)
         .map(
             feedback -> {
               String title = getFileTitle(feedback.getFileId(), fileMap);
@@ -63,9 +66,45 @@ public class FeedbackQueryFacadeService {
 
   public FeedbackDetailResponse getFeedback(ObjectId feedbackId) {
     Feedback feedback = feedbackQueryService.findById(feedbackId);
+    updateImageUrls(feedback);
     List<String> imageList =
         presignedUrlGenerator.generatePresignedUrl(feedback.getFileId().toString());
-
     return new FeedbackDetailResponse(feedback, imageList);
+  }
+
+  private void updateImageUrls(Feedback feedback) {
+    if (feedback.getProjectEvaluation() == null) {
+      log.warn("프로젝트 평가 정보가 없습니다. 피드백 ID: {}", feedback.getId());
+      return;
+    }
+
+    feedback
+        .getProjectEvaluation()
+        .forEach(
+            projectEvaluation -> {
+              if (projectEvaluation.getFeedbackPerPage() == null) return;
+
+              projectEvaluation
+                  .getFeedbackPerPage()
+                  .forEach(
+                      feedbackPerPage -> {
+                        String pageNumber = feedbackPerPage.getPageNumber();
+                        if (pageNumber != null) {
+                          String objectKey =
+                              feedback.getFileId().toString() + "/processed/" + pageNumber;
+                          try {
+                            String presignedUrl =
+                                presignedUrlGenerator.generatePresignedUrlForKey(objectKey);
+                            if (presignedUrl != null && !presignedUrl.isEmpty()) {
+                              feedbackPerPage.updateImageUrl(presignedUrl);
+                            } else {
+                              log.warn("Presigned URL이 비어 있습니다: {}", objectKey);
+                            }
+                          } catch (Exception e) {
+                            log.error("Presigned URL 생성 중 오류 발생: {}", objectKey, e);
+                          }
+                        }
+                      });
+            });
   }
 }

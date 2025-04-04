@@ -118,12 +118,20 @@ jobs:
           password: ${{ secrets.NCP_SERVER_PASSWORD }}
           port: ${{ secrets.NCP_SERVER_PORT }}
           script: |
+            # 실행 중인 컨테이너들이 사용하는 이미지 ID 가져오기
+            used_images=$(docker ps --format "{{.Image}}" | xargs -r -n1 docker inspect --format '{{.Id}}')
+          
+            # critix-server 이미지 중 최신 3개 제외하고 삭제 (단, 사용 중인 이미지는 제외)
             docker images --format "{{.Repository}}:{{.Tag}} {{.ID}}" | \
               grep '${{ secrets.DOCKER_USERNAME }}/critix-server' | \
               sort -r | \
               tail -n +4 | \
               awk '{print $2}' | \
-              xargs -r docker rmi -f
+              while IFS= read -r image_id; do
+                if ! echo "$used_images" | grep -q "$image_id"; then
+                  docker rmi -f "$image_id"
+                fi
+              done
 
       - name: "슬랙에 배포 성공 여부 알림을 전송한다."
         uses: 8398a7/action-slack@v3
