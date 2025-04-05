@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
@@ -32,6 +33,7 @@ public class ProjectEvaluation {
   private List<FeedbackDetail> negativeFeedback;
 
   @Field("feedback_per_page")
+  @Setter
   private List<FeedbackPerPage> feedbackPerPage;
 
   @Field("project_summary")

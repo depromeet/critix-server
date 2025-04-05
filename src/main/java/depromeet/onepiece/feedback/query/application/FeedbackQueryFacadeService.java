@@ -3,11 +3,14 @@ package depromeet.onepiece.feedback.query.application;
 import depromeet.onepiece.common.utils.EncryptionUtil;
 import depromeet.onepiece.common.utils.RedisPrefix;
 import depromeet.onepiece.feedback.domain.Feedback;
+import depromeet.onepiece.feedback.domain.FeedbackPerPage;
+import depromeet.onepiece.feedback.domain.ProjectEvaluation;
 import depromeet.onepiece.feedback.query.presentation.response.FeedbackDetailResponse;
 import depromeet.onepiece.feedback.query.presentation.response.RecentFeedbackListResponse;
 import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
 import depromeet.onepiece.file.domain.FileDocument;
 import depromeet.onepiece.file.query.application.FileQueryService;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -66,6 +69,18 @@ public class FeedbackQueryFacadeService {
 
   public FeedbackDetailResponse getFeedback(ObjectId feedbackId) {
     Feedback feedback = feedbackQueryService.findById(feedbackId);
+    List<ProjectEvaluation> projectEvaluation = feedback.getProjectEvaluation();
+    for (ProjectEvaluation evaluation : projectEvaluation) {
+      List<FeedbackPerPage> feedbackPerPage = evaluation.getFeedbackPerPage();
+      List<FeedbackPerPage> notEmptyList = new ArrayList<>();
+      for (FeedbackPerPage perPage : feedbackPerPage) {
+        if (perPage.getContents().size() > 0) {
+          notEmptyList.add(perPage);
+        }
+        evaluation.setFeedbackPerPage(notEmptyList);
+      }
+    }
+
     updateImageUrls(feedback);
     List<String> imageList =
         presignedUrlGenerator.generatePresignedUrl(feedback.getFileId().toString());
