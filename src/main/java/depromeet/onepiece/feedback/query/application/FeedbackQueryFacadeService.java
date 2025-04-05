@@ -38,17 +38,17 @@ public class FeedbackQueryFacadeService {
     Map<ObjectId, FileDocument> fileMap =
         fileQueryService.findAllByIds(fileIdList).stream()
             .collect(Collectors.toMap(FileDocument::getId, Function.identity()));
-    return feedbackList.stream()
-        .filter(
-            feedback ->
-                feedback.getOverallEvaluation() != null && feedback.getProjectEvaluation() != null)
-        .map(
-            feedback -> {
-              String title = getFileTitle(feedback.getFileId(), fileMap);
-              return new RecentFeedbackListResponse(
-                  feedback.getId(), feedback.getCreatedAt().toLocalDate(), title);
-            })
-        .toList();
+    List<RecentFeedbackListResponse> list = new ArrayList<>();
+    for (Feedback feedback1 : feedbackList) {
+      if (feedback1.getOverallEvaluation() != null && feedback1.getProjectEvaluation() != null) {
+        String title = getFileTitle(feedback1.getFileId(), fileMap);
+        RecentFeedbackListResponse apply =
+            new RecentFeedbackListResponse(
+                feedback1.getId(), feedback1.getCreatedAt().toLocalDate(), title);
+        list.add(apply);
+      }
+    }
+    return list;
   }
 
   private String getFileTitle(ObjectId fileId, Map<ObjectId, FileDocument> fileMap) {
