@@ -70,7 +70,7 @@ public class FeedbackQueryFacadeService {
   public FeedbackDetailResponse getFeedback(ObjectId feedbackId) {
     Feedback feedback = feedbackQueryService.findById(feedbackId);
     List<ProjectEvaluation> projectEvaluation = feedback.getProjectEvaluation();
-    if (projectEvaluation == null || projectEvaluation.isEmpty()) {
+    if (projectEvaluation != null) {
       for (ProjectEvaluation evaluation : projectEvaluation) {
         List<FeedbackPerPage> feedbackPerPage = evaluation.getFeedbackPerPage();
         List<FeedbackPerPage> notEmptyList = new ArrayList<>();
