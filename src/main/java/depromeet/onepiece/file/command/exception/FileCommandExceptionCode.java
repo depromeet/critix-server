@@ -1,6 +1,6 @@
 package depromeet.onepiece.file.command.exception;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.*;
 
 import depromeet.onepiece.common.error.ErrorCode;
 import lombok.AllArgsConstructor;
@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus;
 public enum FileCommandExceptionCode implements ErrorCode {
   FILE_CONVERT_ERROR(BAD_REQUEST, "FILE_100", "파일 변환에 실패하였습니다."),
   FILE_UPLOAD_FAILED(BAD_REQUEST, "FILE_200", "파일 업로드에 실패하였습니다."),
-  FILE_NOT_FOUND(BAD_REQUEST, "FILE_300", "파일을 찾을 수 없습니다.");
-
+  FILE_NOT_FOUND(BAD_REQUEST, "FILE_300", "파일을 찾을 수 없습니다."),
+  FILE_MAX_IMAGE(BAD_REQUEST, "FILE_400", "파일 이미지 제한");
   private final HttpStatus status;
   private final String code;
   private final String message;
