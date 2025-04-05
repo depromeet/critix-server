@@ -9,8 +9,8 @@ spring:
     jwt:
       secret_key: ${JWT_SECRET_KEY}
       expiration-time:
-        access-token: ${JWT_EXPIRATION_TIME_ACCESS_TOKEN:3600}
-        refresh-token: ${JWT_EXPIRATION_TIME_REFRESH_TOKEN:86400}
+        access-token: ${JWT_EXPIRATION_TIME_ACCESS_TOKEN:86400}
+        refresh-token: ${JWT_EXPIRATION_TIME_REFRESH_TOKEN:172800}
     oauth2:
       client:
         registration:
