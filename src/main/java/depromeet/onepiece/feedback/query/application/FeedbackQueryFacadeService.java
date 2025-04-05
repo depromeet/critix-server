@@ -70,14 +70,16 @@ public class FeedbackQueryFacadeService {
   public FeedbackDetailResponse getFeedback(ObjectId feedbackId) {
     Feedback feedback = feedbackQueryService.findById(feedbackId);
     List<ProjectEvaluation> projectEvaluation = feedback.getProjectEvaluation();
-    for (ProjectEvaluation evaluation : projectEvaluation) {
-      List<FeedbackPerPage> feedbackPerPage = evaluation.getFeedbackPerPage();
-      List<FeedbackPerPage> notEmptyList = new ArrayList<>();
-      for (FeedbackPerPage perPage : feedbackPerPage) {
-        if (perPage.getContents().size() > 0) {
-          notEmptyList.add(perPage);
+    if (projectEvaluation == null || projectEvaluation.isEmpty()) {
+      for (ProjectEvaluation evaluation : projectEvaluation) {
+        List<FeedbackPerPage> feedbackPerPage = evaluation.getFeedbackPerPage();
+        List<FeedbackPerPage> notEmptyList = new ArrayList<>();
+        for (FeedbackPerPage perPage : feedbackPerPage) {
+          if (perPage.getContents().size() > 0) {
+            notEmptyList.add(perPage);
+          }
+          evaluation.setFeedbackPerPage(notEmptyList);
         }
-        evaluation.setFeedbackPerPage(notEmptyList);
       }
     }
 
