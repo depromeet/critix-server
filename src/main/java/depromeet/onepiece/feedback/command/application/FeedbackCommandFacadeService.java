@@ -51,10 +51,11 @@ public class FeedbackCommandFacadeService {
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
 
     String finalOcrResult = ocrResult;
+    String userName = feedback.getUserId().toString();
     CompletableFuture<Void> overallFuture =
         CompletableFuture.runAsync(
             () -> {
-              requestOverallEvaluation(imageUrls, feedback, finalOcrResult);
+              requestOverallEvaluation(imageUrls, feedback, finalOcrResult, userName);
             },
             Executors.newVirtualThreadPerTaskExecutor());
 
@@ -97,15 +98,18 @@ public class FeedbackCommandFacadeService {
   }
 
   private void requestOverallEvaluation(
-      List<String> imageUrls, Feedback feedback, String ocrResult) {
+      List<String> imageUrls, Feedback feedback, String ocrResult, String userName) {
     if (feedback.getOverallStatus() == FeedbackStatus.COMPLETE) {
       return;
     }
     String overallPrompt =
         chatGPTConstantsProvider.getOverallPrompt()
-            + "\n\n"
+            + """
             + "포트폴리오 각 페이지의 내용은 다음과 같아: 그리고 응답은 한글로 반환해야만 합니다\n";
-    // + ocrResult;
+            + "디자이너의 이름(userName)은 다음과 같아:\n"
+            + userName;
+             // -
+            """;
     feedbackCommandService.updateOverallStatus(feedback.getId(), FeedbackStatus.IN_PROGRESS);
     String overallFeedback =
         azureService.processChat(
