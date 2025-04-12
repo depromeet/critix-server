@@ -15,6 +15,7 @@ import depromeet.onepiece.feedback.domain.ProjectEvaluation;
 import depromeet.onepiece.feedback.query.application.ChatGPTConstantsProvider;
 import depromeet.onepiece.feedback.query.application.FeedbackQueryService;
 import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -49,13 +50,14 @@ public class FeedbackCommandFacadeService {
       log.warn("OCR 결과를 시간 내에 찾을 수 없습니다.");
     }
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
+    List<String> sortedImageUrls = sortImageUrls(imageUrls);
 
     String finalOcrResult = ocrResult;
     String userName = feedback.getUserId().toString();
     CompletableFuture<Void> overallFuture =
         CompletableFuture.runAsync(
             () -> {
-              requestOverallEvaluation(imageUrls, feedback, finalOcrResult, userName);
+              requestOverallEvaluation(sortedImageUrls, feedback, finalOcrResult, userName);
             },
             Executors.newVirtualThreadPerTaskExecutor());
 
@@ -63,7 +65,7 @@ public class FeedbackCommandFacadeService {
     CompletableFuture<Void> projectFuture =
         CompletableFuture.runAsync(
             () -> {
-              requestProjectEvaluation(imageUrls, feedback, finalOcrResult1);
+              requestProjectEvaluation(sortedImageUrls, feedback, finalOcrResult1);
             },
             Executors.newVirtualThreadPerTaskExecutor());
 
@@ -130,5 +132,16 @@ public class FeedbackCommandFacadeService {
 
     gptEventProducer.produceTopic(gptFeedbackStatusTopic);
     return new StartFeedbackResponse(feedbackId.toString());
+  }
+
+  private List<String> sortImageUrls(List<String> imageUrls) {
+    imageUrls.sort(
+        Comparator.comparing(
+            url -> {
+              String fileName = url.substring(url.lastIndexOf("/") + 1);
+              return Integer.parseInt(fileName.replaceAll("\\D", ""));
+            }));
+    log.info("정렬된 이미지 URL: {}", imageUrls);
+    return imageUrls;
   }
 }
