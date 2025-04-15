@@ -1,36 +1,20 @@
 version: '3.8'
 
 services:
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: onepiece-prometheus
-    user: "$UID:$GID"
-    ports:
-      - "${PROMETHEUS_PORT}:9090"
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
     volumes:
-      - ./prometheus:/etc/prometheus
+      - /monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
     command:
-      - '--web.enable-lifecycle'
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    networks:
-      - monitoring-network
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: onepiece-grafana
-    user: "$UID:$GID"
+      - run
+      - /etc/alloy/config.alloy
     ports:
-      - "${GRAFANA_PORT}:3000"
-    volumes:
-      - 'grafana_storage:/var/lib/grafana'
-    depends_on:
-      - prometheus
+      - "12345:12345"
+    restart: unless-stopped
     networks:
-      - monitoring-network
+      - onepiece
 
 networks:
-  monitoring-network:
-    driver: bridge
-
-volumes:
-  grafana_storage: {}
+  onepiece:
+    external: true
