@@ -16,6 +16,7 @@ import depromeet.onepiece.feedback.query.application.ChatGPTConstantsProvider;
 import depromeet.onepiece.feedback.query.application.FeedbackQueryService;
 import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -46,10 +47,30 @@ public class FeedbackCommandFacadeService {
     } catch (OCRResultNotFoundException e) {
       log.warn("OCR 결과를 시간 내에 찾을 수 없습니다.");
     }
+
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
+
     String userName = feedback.getUserId().toString();
     requestOverallEvaluation(imageUrls, feedback, ocrResult, userName);
     requestProjectEvaluation(imageUrls, feedback, ocrResult);
+  }
+
+  public boolean requestPortfolioFiltering(ObjectId fileId) {
+    String ocrResult = s3ocrJsonPoller.waitForResult(fileId.toString(), 30000, 1000);
+    List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
+
+    String portfolioFilteringPrompt = chatGPTConstantsProvider.getFilteringPrompt() + ocrResult;
+    String portfolioFilterSchema = chatGPTConstantsProvider.getFilteringSchema();
+    log.info("필터링 프롬프트, 스키마", portfolioFilteringPrompt, portfolioFilterSchema);
+
+    String filterPortfolio =
+        azureService.processChat(imageUrls, portfolioFilteringPrompt, portfolioFilterSchema);
+    log.info("필터링 결과: {}", filterPortfolio);
+    JsonNode projectJsonNode = ConvertService.readTree(filterPortfolio, "response");
+    log.info("필터링 결과 JsonNode: {}", projectJsonNode);
+    boolean isPortfolio = projectJsonNode.asText().toLowerCase(Locale.ROOT).equals("true");
+    log.info("포트폴리오 여부: {}", isPortfolio);
+    return isPortfolio;
   }
 
   private void requestProjectEvaluation(

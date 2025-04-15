@@ -4,6 +4,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import depromeet.onepiece.feedback.command.application.FeedbackCommandFacadeService;
+import depromeet.onepiece.feedback.command.application.exception.FilteringPortfolioFailed;
 import depromeet.onepiece.file.command.exception.FileConvertErrorException;
 import depromeet.onepiece.file.command.exception.FileUploadFailedException;
 import depromeet.onepiece.file.command.infrastructure.FileDocumentRepository;
@@ -42,6 +44,8 @@ public class ObjectStorageFileUploader implements FileUploader {
 
   private final AmazonS3 amazonS3;
   private final FileDocumentRepository fileRepository;
+  private final PresignedUrlGenerator presignedUrlGenerator;
+  private final FeedbackCommandFacadeService feedbackCommandFacadeService;
 
   @Override
   public FileDocument upload(MultipartFile multipartFile, String logicalName, FileType fileType) {
@@ -111,6 +115,15 @@ public class ObjectStorageFileUploader implements FileUploader {
 
       removeUploadedFile(pdfFile);
       uploadCompletedFile(fileId);
+
+      try {
+        log.info("포트폴리오 필터링 요청 시작");
+        boolean isPorfolio = feedbackCommandFacadeService.requestPortfolioFiltering(fileId);
+        if (!isPorfolio) return FilteringPortfolioFailed;
+        log.info("포트폴리오 필터링 요청 완료");
+      } catch (FilteringPortfolioFailed e) {
+        log.warn("포트폴리오 필터링 요청 실패: {}", e.getMessage());
+      }
 
       return fileRepository.save(
           FileDocument.create(fileId, logicalName, fileType)
