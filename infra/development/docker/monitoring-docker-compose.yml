@@ -5,7 +5,7 @@ services:
     image: grafana/alloy:latest
     container_name: alloy
     volumes:
-      - /monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
     command:
       - run
       - /etc/alloy/config.alloy
