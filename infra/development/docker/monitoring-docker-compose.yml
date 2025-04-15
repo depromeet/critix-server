@@ -51,6 +51,19 @@ services:
     networks:
       - onepiece
 
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yml
+      - loki_data:/tmp/loki
+    command: -config.file=/etc/loki/local-config.yml
+    networks:
+      - onepiece
+
 networks:
   onepiece:
     external: true
@@ -58,3 +71,4 @@ networks:
 volumes:
   prometheus_data:
   grafana_data:
+  loki_data:
