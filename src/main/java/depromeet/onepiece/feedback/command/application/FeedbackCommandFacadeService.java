@@ -16,6 +16,8 @@ import depromeet.onepiece.feedback.query.application.ChatGPTConstantsProvider;
 import depromeet.onepiece.feedback.query.application.FeedbackQueryService;
 import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -47,10 +49,25 @@ public class FeedbackCommandFacadeService {
       log.warn("OCR 결과를 시간 내에 찾을 수 없습니다.");
     }
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
-    String userName = feedback.getUserId().toString();
 
-    requestOverallEvaluation(imageUrls, feedback, ocrResult, userName);
-    requestProjectEvaluation(imageUrls, feedback, ocrResult);
+    String finalOcrResult = ocrResult;
+    String userName = feedback.getUserId().toString();
+    CompletableFuture<Void> overallFuture =
+        CompletableFuture.runAsync(
+            () -> {
+              requestOverallEvaluation(imageUrls, feedback, finalOcrResult, userName);
+            },
+            Executors.newVirtualThreadPerTaskExecutor());
+
+    String finalOcrResult1 = ocrResult;
+    CompletableFuture<Void> projectFuture =
+        CompletableFuture.runAsync(
+            () -> {
+              requestProjectEvaluation(imageUrls, feedback, finalOcrResult1);
+            },
+            Executors.newVirtualThreadPerTaskExecutor());
+
+    CompletableFuture.allOf(overallFuture, projectFuture).join();
   }
 
   private void requestProjectEvaluation(
@@ -60,13 +77,17 @@ public class FeedbackCommandFacadeService {
     }
     String projectPrompt =
         chatGPTConstantsProvider.getProjectPrompt()
-            + "\n\n"
-            + "포트폴리오 각 페이지의 내용(이걸 이용해 페이지 별 피드백을 작성하고 pageNumber 칸에 파일명(ex. 3.png)를 넣어줘:\n"
-            + ocrResult;
+            + """
+            응답은 한글로 반환해야합니다.
+            포트폴리오 각 페이지의 내용(이걸 이용해 페이지 별 피드백을 작성하고 pageNumber 칸에 파일명(ex. 3.png)를 넣어줘:
+            그리고 projectImgUrl에 파일명(ex. 1.png)을 넣어줘
+            """
+            + "\n\n";
+    // + ocrResult;
     feedbackCommandService.updateProjectStatus(feedback.getId(), FeedbackStatus.IN_PROGRESS);
     String projectFeedback =
         azureService.processChat(
-            imageUrls, projectPrompt, chatGPTConstantsProvider.getProjectSchema());
+            imageUrls, projectPrompt, chatGPTConstantsProvider.getProjectSchema(), ocrResult);
     feedbackCommandService.updateProjectStatus(feedback.getId(), FeedbackStatus.COMPLETE);
 
     JsonNode projectJsonNode = ConvertService.readTree(projectFeedback, "projectEvaluation");
@@ -83,15 +104,16 @@ public class FeedbackCommandFacadeService {
     }
     String overallPrompt =
         chatGPTConstantsProvider.getOverallPrompt()
-            + "\n\n"
-            + "포트폴리오 각 페이지의 내용은 다음과 같아:\n"
-            + ocrResult
-            + "디자이너의 이름은 다음과 같아:\n"
+            + """
+            + "포트폴리오 각 페이지의 내용은 다음과 같아: 그리고 응답은 한글로 반환해야만 합니다\n";
+            + "디자이너의 이름(userName)은 다음과 같아:\n"
             + userName;
+             // -
+            """;
     feedbackCommandService.updateOverallStatus(feedback.getId(), FeedbackStatus.IN_PROGRESS);
     String overallFeedback =
         azureService.processChat(
-            imageUrls, overallPrompt, chatGPTConstantsProvider.getOverallSchema());
+            imageUrls, overallPrompt, chatGPTConstantsProvider.getOverallSchema(), ocrResult);
     feedbackCommandService.updateOverallStatus(feedback.getId(), FeedbackStatus.COMPLETE);
     feedback.completeOverallEvaluation(
         ConvertService.readValue(overallFeedback, OverallEvaluation.class));

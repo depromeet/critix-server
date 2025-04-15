@@ -4,6 +4,7 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import depromeet.onepiece.common.utils.RedisPrefix;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 public class PresignedUrlGenerator {
 
   private final AmazonS3 amazonS3;
+
+  private final RedisTemplate<String, String> redisTemplate;
 
   @Value("${cloud.ncp.object-storage.credentials.bucket}")
   private String bucketName;
@@ -43,7 +47,9 @@ public class PresignedUrlGenerator {
       }
       URL presignedUrl = generatePresignedUrlForObject(objectKey, 30);
       // url로 보내면 image 다운로드 에러떠서 base64로 변경
-      // presignedUrls.add(convertBase64Url(presignedUrl.toString()));
+      if (redisTemplate.hasKey(RedisPrefix.AI_INCLUDE_IMAGE_FLAG)) {
+        presignedUrls.add(convertBase64Url(presignedUrl.toString()));
+      }
     }
 
     return presignedUrls;

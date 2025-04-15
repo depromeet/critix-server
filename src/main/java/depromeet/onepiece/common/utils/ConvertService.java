@@ -34,6 +34,14 @@ public class ConvertService {
     }
   }
 
+  public static JsonNode readTree(String json) {
+    try {
+      return objectMapper.readTree(json);
+    } catch (JsonProcessingException e) {
+      throw new GlobalException(e.getMessage(), GlobalErrorCode.JSON_PARSING_ERROR);
+    }
+  }
+
   public static <T> T convertValue(JsonNode json, TypeReference<T> typeReference) {
     return objectMapper.convertValue(json, typeReference);
   }
