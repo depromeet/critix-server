@@ -7,8 +7,12 @@ services:
     volumes:
       - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
     command:
-      - run
-      - /etc/alloy/config.alloy
+      [
+        "run",
+        "--server.http.listen-addr=0.0.0.0:12345",
+        "--storage.path=/var/lib/alloy/data",
+        "/etc/alloy/config.alloy"
+      ]
     ports:
       - "12345:12345"
     restart: unless-stopped
@@ -18,3 +22,4 @@ services:
 networks:
   onepiece:
     external: true
+
