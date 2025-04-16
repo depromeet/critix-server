@@ -58,9 +58,8 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yml
       - loki_data:/tmp/loki
-    command: -config.file=/etc/loki/local-config.yml
+    command: -config.file=/etc/loki/local-config.yaml
     networks:
       - onepiece
 

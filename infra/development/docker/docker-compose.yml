@@ -70,7 +70,7 @@ services:
       - ./mongo2data:/data/db
     command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
     networks:
-      - onepiece-network
+      - onepiece
 
   mongo3:
     image: mongo:8
