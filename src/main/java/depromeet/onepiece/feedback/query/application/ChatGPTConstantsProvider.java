@@ -35,10 +35,22 @@ public class ChatGPTConstantsProvider {
   }
 
   public String getFilteringPrompt() {
-    return getConstants().getFilteringPrompt();
+    return "이게 디자이너의 포트폴리오인지 true, false로 판단해줘. ";
   }
 
   public String getFilteringSchema() {
-    return getConstants().getFilteringSchema();
+    return "{\n"
+        + "    \"type\": \"object\",\n"
+        + "    \"properties\": {\n"
+        + "      \"response\": {\n"
+        + "        \"type\": \"boolean\",\n"
+        + "        \"description\": \"A boolean value indicating true or false.\"\n"
+        + "      }\n"
+        + "    },\n"
+        + "    \"required\": [\n"
+        + "      \"response\"\n"
+        + "    ],\n"
+        + "    \"additionalProperties\": false\n"
+        + "  }";
   }
 }

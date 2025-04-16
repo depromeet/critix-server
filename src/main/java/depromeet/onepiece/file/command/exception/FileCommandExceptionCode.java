@@ -12,7 +12,8 @@ import org.springframework.http.HttpStatus;
 public enum FileCommandExceptionCode implements ErrorCode {
   FILE_CONVERT_ERROR(BAD_REQUEST, "FILE_100", "파일 변환에 실패하였습니다."),
   FILE_UPLOAD_FAILED(BAD_REQUEST, "FILE_200", "파일 업로드에 실패하였습니다."),
-  FILE_NOT_FOUND(BAD_REQUEST, "FILE_300", "파일을 찾을 수 없습니다.");
+  FILE_NOT_FOUND(BAD_REQUEST, "FILE_300", "파일을 찾을 수 없습니다."),
+  FILE_FILTERING(BAD_REQUEST, "FILE_400", "파일 필터링에 실패하였습니다.");
 
   private final HttpStatus status;
   private final String code;
