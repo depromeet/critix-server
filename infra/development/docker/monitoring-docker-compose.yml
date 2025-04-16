@@ -1,36 +1,73 @@
 version: '3.8'
 
 services:
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: onepiece-prometheus
-    user: "$UID:$GID"
-    ports:
-      - "${PROMETHEUS_PORT}:9090"
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
     volumes:
-      - ./prometheus:/etc/prometheus
+      - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
     command:
-      - '--web.enable-lifecycle'
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      [
+        "run",
+        "--server.http.listen-addr=0.0.0.0:12345",
+        "--storage.path=/var/lib/alloy/data",
+        "/etc/alloy/config.alloy"
+      ]
+    ports:
+      - "12345:12345"
+    restart: unless-stopped
     networks:
-      - monitoring-network
+      - onepiece
 
   grafana:
     image: grafana/grafana:latest
-    container_name: onepiece-grafana
-    user: "$UID:$GID"
+    container_name: grafana
     ports:
-      - "${GRAFANA_PORT}:3000"
+      - "3000:3000"
     volumes:
-      - 'grafana_storage:/var/lib/grafana'
-    depends_on:
-      - prometheus
+      - 'grafana_data:/var/lib/grafana'
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
     networks:
-      - monitoring-network
+      - onepiece
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-remote-write-receiver'
+    ports:
+      - "9090:9090"
+    networks:
+      - onepiece
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/tmp/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - onepiece
 
 networks:
-  monitoring-network:
-    driver: bridge
+  onepiece:
+    external: true
 
 volumes:
-  grafana_storage: {}
+  prometheus_data:
+  grafana_data:
+  loki_data:

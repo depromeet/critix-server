@@ -118,10 +118,7 @@ jobs:
           password: ${{ secrets.NCP_SERVER_PASSWORD }}
           port: ${{ secrets.NCP_SERVER_PORT }}
           script: |
-            # 실행 중인 컨테이너들이 사용하는 이미지 ID 가져오기
             used_images=$(docker ps --format "{{.Image}}" | xargs -r -n1 docker inspect --format '{{.Id}}')
-          
-            # critix-server 이미지 중 최신 3개 제외하고 삭제 (단, 사용 중인 이미지는 제외)
             docker images --format "{{.Repository}}:{{.Tag}} {{.ID}}" | \
               grep '${{ secrets.DOCKER_USERNAME }}/critix-server' | \
               sort -r | \

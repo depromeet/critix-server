@@ -11,7 +11,7 @@ services:
     ports:
       - "2181:2181"
     networks:
-      - onepiece-network
+      - onepiece
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -33,7 +33,8 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
     networks:
-      - onepiece-network
+      - onepiece
+
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
@@ -46,7 +47,8 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:19092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
     networks:
-      - onepiece-network
+      - onepiece
+
 networks:
-  onepiece-network:
-    driver: bridge
+  onepiece:
+    external: true
