@@ -26,3 +26,4 @@ prometheus.remote_write "metrics_service" {
 livedebugging {
   enabled = true
 }
+
