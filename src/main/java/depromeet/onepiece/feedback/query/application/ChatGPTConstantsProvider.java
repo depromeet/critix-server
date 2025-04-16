@@ -33,4 +33,12 @@ public class ChatGPTConstantsProvider {
   public String getProjectSchema() {
     return getConstants().getProjectSchema();
   }
+
+  public String getFilteringPrompt() {
+    return getConstants().getFilteringPrompt();
+  }
+
+  public String getFilteringSchema() {
+    return getConstants().getFilteringSchema();
+  }
 }

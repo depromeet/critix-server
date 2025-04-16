@@ -32,4 +32,10 @@ public class ChatGPTConstants extends BaseTimeDocument {
 
   @Field("project_schema")
   private String projectSchema;
+
+  @Field("filtering_prompt")
+  private String filteringPrompt;
+
+  @Field("filtering_schema")
+  private String filteringSchema;
 }

@@ -4,7 +4,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import depromeet.onepiece.feedback.command.application.FeedbackCommandFacadeService;
 import depromeet.onepiece.file.command.exception.FileConvertErrorException;
+import depromeet.onepiece.file.command.exception.FileFilteringException;
 import depromeet.onepiece.file.command.exception.FileUploadFailedException;
 import depromeet.onepiece.file.command.infrastructure.FileDocumentRepository;
 import depromeet.onepiece.file.domain.FileDocument;
@@ -42,11 +44,15 @@ public class ObjectStorageFileUploader implements FileUploader {
 
   private final AmazonS3 amazonS3;
   private final FileDocumentRepository fileRepository;
+  private final PresignedUrlGenerator presignedUrlGenerator;
+  private final FeedbackCommandFacadeService feedbackCommandFacadeService;
 
   @Override
   public FileDocument upload(MultipartFile multipartFile, String logicalName, FileType fileType) {
     try {
       return uploadPdf(multipartFile, logicalName, fileType);
+    } catch (FileFilteringException e) {
+      throw e;
     } catch (Exception e) {
       throw new FileUploadFailedException();
     }
@@ -72,8 +78,8 @@ public class ObjectStorageFileUploader implements FileUploader {
     }
   }
 
-  private FileDocument uploadPdf(MultipartFile multipartFile, String logicalName, FileType fileType)
-      throws IOException {
+  private FileDocument uploadPdf(
+      MultipartFile multipartFile, String logicalName, FileType fileType) {
     try {
       File pdfFile = convert(multipartFile).orElseThrow(FileConvertErrorException::new);
       List<String> uploadedFilePaths = new ArrayList<>();
@@ -83,7 +89,7 @@ public class ObjectStorageFileUploader implements FileUploader {
       amazonS3.putObject(
           new PutObjectRequest(bucketName, pdfUploadPath, pdfFile)
               .withCannedAcl(CannedAccessControlList.Private));
-      log.info("PDF 업로드: " + pdfUploadPath);
+      log.info("PDF 업로드: {}", pdfUploadPath);
 
       try (PDDocument document = PDDocument.load(pdfFile)) {
         PDFRenderer pdfRenderer = new PDFRenderer(document);
@@ -102,7 +108,7 @@ public class ObjectStorageFileUploader implements FileUploader {
               amazonS3.putObject(
                   new PutObjectRequest(bucketName, processedPath, input, metadata)
                       .withCannedAcl(CannedAccessControlList.PublicRead));
-              log.info("이미지 업로드: " + processedPath);
+              log.info("이미지 업로드: {}", processedPath);
               uploadedFilePaths.add(processedPath);
             }
           }
@@ -112,11 +118,22 @@ public class ObjectStorageFileUploader implements FileUploader {
       removeUploadedFile(pdfFile);
       uploadCompletedFile(fileId);
 
+      boolean isPortfolio = feedbackCommandFacadeService.requestPortfolioFiltering(fileId);
+      log.info("포트폴리오 여부: {}", isPortfolio);
+
+      if (!isPortfolio) {
+        throw new FileFilteringException();
+      }
+
       return fileRepository.save(
           FileDocument.create(fileId, logicalName, fileType)
               .setPhysicalPath(pdfUploadPath + "," + String.join(",", uploadedFilePaths)));
 
+    } catch (FileFilteringException e) {
+      log.warn("포트폴리오 필터링 실패: {}", e.getMessage());
+      throw e;
     } catch (IOException e) {
+      log.error("파일 업로드 처리 중 오류 발생", e);
       throw new FileUploadFailedException();
     }
   }
