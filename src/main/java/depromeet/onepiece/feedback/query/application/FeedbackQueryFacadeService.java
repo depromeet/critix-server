@@ -30,7 +30,7 @@ public class FeedbackQueryFacadeService {
   private final PresignedUrlGenerator presignedUrlGenerator;
 
   public List<RecentFeedbackListResponse> getFeedbackList(ObjectId userId) {
-    List<Feedback> feedbackList = feedbackQueryService.findByUserId(userId);
+    List<Feedback> feedbackList = feedbackQueryService.getRecentFeedback(userId);
     List<ObjectId> fileIdList = feedbackList.stream().map(Feedback::getFileId).toList();
     Map<ObjectId, FileDocument> fileMap =
         fileQueryService.findAllByIds(fileIdList).stream()

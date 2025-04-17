@@ -16,12 +16,8 @@ public class FeedbackQueryService {
     return feedbackQueryRepository.findById(id);
   }
 
-  public List<Feedback> findByUserId(ObjectId id) {
-    return feedbackQueryRepository.findByUserId(id);
-  }
-
-  public List<Feedback> getRecentFeedback(ObjectId userId) {
-    return feedbackQueryRepository.findRecentFeedback(userId);
+  public List<Feedback> getRecentFeedback(ObjectId id) {
+    return feedbackQueryRepository.findRecentFeedback(id);
   }
 
   public Feedback findById(ObjectId feedbackId) {
