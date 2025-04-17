@@ -20,8 +20,8 @@ public class FeedbackQueryRepositoryImpl implements FeedbackQueryRepository {
   }
 
   @Override
-  public List<Feedback> findByUserId(ObjectId userId) {
-    return feedbackQueryMongoRepository.findByUserId(userId);
+  public List<Feedback> findByUserIdOrderByCreatedAtDesc(ObjectId userId) {
+    return feedbackQueryMongoRepository.findByUserIdOrderByCreatedAtDesc(userId);
   }
 
   @Override
