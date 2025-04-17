@@ -21,6 +21,6 @@ public class FeedbackQueryRepositoryImpl implements FeedbackQueryRepository {
 
   @Override
   public List<Feedback> findRecentFeedback(ObjectId userId) {
-    return feedbackQueryMongoRepository.findRecentFeedback(userId);
+    return feedbackQueryMongoRepository.findByUserIdOrderByCreatedAtDesc(userId);
   }
 }
