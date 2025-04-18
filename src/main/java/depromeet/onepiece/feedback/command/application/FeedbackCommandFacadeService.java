@@ -15,8 +15,11 @@ import depromeet.onepiece.feedback.domain.ProjectEvaluation;
 import depromeet.onepiece.feedback.query.application.ChatGPTConstantsProvider;
 import depromeet.onepiece.feedback.query.application.FeedbackQueryService;
 import depromeet.onepiece.file.command.application.PresignedUrlGenerator;
+import depromeet.onepiece.user.domain.User;
+import depromeet.onepiece.user.query.domain.UserQueryRepository;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -34,6 +37,7 @@ public class FeedbackCommandFacadeService {
   private final GPTEventProducer gptEventProducer;
   private final ChatGPTConstantsProvider chatGPTConstantsProvider;
   private final S3OCRJsonPoller s3ocrJsonPoller;
+  private final UserQueryRepository userQueryRepository;
 
   // @Transactional
   public void requestEvaluation(final ObjectId feedbackId, final ObjectId fileId) {
@@ -50,7 +54,10 @@ public class FeedbackCommandFacadeService {
 
     List<String> imageUrls = presignedUrlGenerator.generatePresignedUrl(fileId.toString());
 
-    String userName = feedback.getUserId().toString();
+    ObjectId userId = feedback.getUserId();
+    Optional<User> user = userQueryRepository.findUserById(userId);
+    String userName = user.map(User::getName).orElse("디자이너");
+
     requestOverallEvaluation(imageUrls, feedback, ocrResult, userName);
     requestProjectEvaluation(imageUrls, feedback, ocrResult);
   }
