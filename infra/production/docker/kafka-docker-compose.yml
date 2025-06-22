@@ -14,7 +14,7 @@ services:
       - critix
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
     restart: always
     depends_on:
